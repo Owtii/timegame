@@ -6,14 +6,14 @@
 <meta name="theme-color" content="#0A0C11">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Two pass-and-play duels — blind timing and number deduction — feeding Tic-Tac-Toe or Connect 4.">
+<meta name="description" content="Two pass-and-play duels - blind timing and number deduction - feeding Tic-Tac-Toe or Connect 4.">
 <title>Duel Board</title>
 </head>
 <body>
 <!-- ARTIFACT:BEGIN -->
 <style>
 /* ============================================================
-   Duel Board — precision-instrument treatment.
+   Duel Board - precision-instrument treatment.
    Single dark visual world, deliberately.
    ============================================================ */
 
@@ -571,7 +571,7 @@ var BOARDS={
   ttt:{ id:"ttt", name:"Tic-Tac-Toe", cols:3, rows:3, need:3, drop:false,
         desc:"3&times;3. Three in a row. Short matches.", pick:"Tap any open square." },
   c4:{  id:"c4",  name:"Connect 4",   cols:7, rows:6, need:4, drop:true,
-        desc:"7&times;6. Four in a row. Longer matches.", pick:"Tap a column — your piece drops." }
+        desc:"7&times;6. Four in a row. Longer matches.", pick:"Tap a column \u2014 your piece drops." }
 };
 var MODES={
   timer:{ id:"timer", name:"Timer Duel",  desc:"Stop a hidden clock closest to the target." },
@@ -763,6 +763,11 @@ function artC4(){
    DOM helpers
    ============================================================ */
 
+/* Keep this file pure ASCII. Punctuation that reaches the DOM is written as
+   \uXXXX escapes (or HTML entities in markup) rather than literal characters:
+   when the page is embedded without its own <meta charset>, a literal em dash
+   gets its UTF-8 bytes decoded as Windows-1252 and renders as mojibake. */
+
 var app=document.getElementById("app"), stage=document.getElementById("stage"),
     topbar=document.getElementById("topbar"), tabbar=document.getElementById("tabbar"),
     toasts=document.getElementById("toasts");
@@ -781,7 +786,7 @@ function markSVG(m,animate){
   if(m==="X") return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><line class="s1" x1="24" y1="24" x2="76" y2="76"/><line class="s2" x1="76" y1="24" x2="24" y2="76"/></svg>';
   return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="26"/></svg>';
 }
-/* player emblem — the X/O for tic-tac-toe, a disc for connect 4 */
+/* player emblem - the X/O for tic-tac-toe, a disc for connect 4 */
 function emblem(i,animate){
   var col=phex(i);
   if(G.board==="c4") return '<span style="color:'+col+';display:block;width:100%;height:100%"><span class="disc"></span></span>';
@@ -802,7 +807,7 @@ function marksOn(){ return G.cells.filter(Boolean).length; }
 function boardFull(){ return G.cells.every(Boolean); }
 function dropRow(col){ var b=B(); for(var r=b.rows-1;r>=0;r--) if(!G.cells[idx(r,col)]) return r; return -1; }
 
-/* generic n-in-a-row over the whole grid — serves 3-in-a-row and 4-in-a-row alike */
+/* generic n-in-a-row over the whole grid - serves 3-in-a-row and 4-in-a-row alike */
 function judge(){
   var b=B(), dirs=[[0,1],[1,0],[1,1],[1,-1]];
   for(var r=0;r<b.rows;r++) for(var c=0;c<b.cols;c++){
@@ -873,7 +878,7 @@ function c4HTML(size,live){
   return size==="sm" ? inner : '<div class="c4wrap">'+inner+"</div>";
 }
 
-/* topbar board glance — the 7x6 grid is unreadable at 44px, so show a tally instead */
+/* topbar board glance - the 7x6 grid is unreadable at 44px, so show a tally instead */
 function miniHTML(){
   if(G.board==="ttt") return boardHTML("sm",null);
   var n0=G.cells.filter(function(v){return v==="X";}).length, n1=G.cells.filter(function(v){return v==="O";}).length;
@@ -922,7 +927,7 @@ function chromeGame(show){
     + '<div class="slot mid" id="mini"></div><div class="slot right">'+soundBtn()+"</div>";
   document.getElementById("mini").innerHTML=miniHTML();
   wireSound();
-  // Connect 4 matches run long — leaving one shouldn't mean finishing it.
+  // Connect 4 matches run long - leaving one shouldn't mean finishing it.
   var q=document.getElementById("quitBtn"), lbl=document.getElementById("roundLbl");
   q.addEventListener("click",function(){
     if(q.dataset.armed){ sfx.tap(); tab="home"; showHub(); return; }
@@ -1153,7 +1158,7 @@ function viewProfile(){
 }
 
 /* ============================================================
-   Setup — pick the duel and the board
+   Setup - pick the duel and the board
    ============================================================ */
 
 function show(html){ haltAll(); stage.innerHTML=html; }
@@ -1317,7 +1322,7 @@ function screenReveal(){
     var el=document.getElementById("t"+i), off=document.getElementById("o"+i), pin=document.getElementById("p"+i);
     var v=G.times[i], delta=v-G.target;
     el.classList.remove("masked");
-    off.textContent=(G.devs[i]>VOID_LIMIT?"VOID • ":"")+(delta<0?"−":"+")+fx2(Math.abs(delta))+"s "+(delta<0?"early":"late");
+    off.textContent=(G.devs[i]>VOID_LIMIT?"VOID \u2022 ":"")+(delta<0?"\u2212":"+")+fx2(Math.abs(delta))+"s "+(delta<0?"early":"late");
     if(G.devs[i]>VOID_LIMIT) off.style.color="var(--void)";
     pin.style.left=pinPos(i)+"%"; pin.classList.add("on");
     sfx.ping(i); buzz(10);
@@ -1350,7 +1355,7 @@ function screenReveal(){
       creditRound(w);
     } else if(G.outcome==="tie"){
       document.getElementById("c0").classList.add("hero"); document.getElementById("c1").classList.add("hero");
-      head="Dead heat"; sub="Both off by exactly "+fx2(G.devs[0])+"s. Sudden death — replay for a new target.";
+      head="Dead heat"; sub="Both off by exactly "+fx2(G.devs[0])+"s. Sudden death \u2014 replay for a new target.";
       label="Replay round"; tint="#EDEFF5"; sfx.tie(); buzz([20,60,20]);
     } else {
       document.getElementById("c0").classList.add("dim"); document.getElementById("c1").classList.add("dim");
@@ -1393,7 +1398,7 @@ function numberPass(){
   var who=nActor();
   var lead = G.guesses.length===0
     ? (G.replay==="void" ? "New secret number. You open." : "You open. Guess between 1 and 100.")
-    : "Hand the phone over — guess "+(G.guesses.length+1)+" of "+GUESS_CAP+".";
+    : "Hand the phone over \u2014 guess "+(G.guesses.length+1)+" of "+GUESS_CAP+".";
   screenPass(who, lead, screenGuess);
 }
 
@@ -1433,7 +1438,7 @@ function screenGuess(){
 
   function state(){
     var s=G.entry;
-    val.textContent=s||"——";
+    val.textContent=s||"\u2014\u2014";
     val.classList.toggle("empty",!s);
     var n=parseInt(s,10);
     var ok=false, msg="Between 1 and 100";
