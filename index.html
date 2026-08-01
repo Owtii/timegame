@@ -145,6 +145,7 @@ button{ font:inherit; }
 .act.hero:hover{ filter:brightness(1.08); background:var(--pc); }
 .act[disabled]{ opacity:.4; cursor:default; transform:none; }
 .act.sm{ padding:10px 14px; font-size:10.5px; border-radius:11px; width:auto; }
+.act svg{ width:13px; height:13px; flex:none; }
 .act.ghost{ background:transparent; border-color:var(--hair); color:var(--grey); }
 
 /* ---------- setup (mode + board choice) ---------- */
@@ -168,10 +169,27 @@ button{ font:inherit; }
 .choice.on .tickmark{ display:grid; }
 .choice .tickmark svg{ width:9px; height:9px; }
 .choices.one{ grid-template-columns:1fr; }
-.setup.stack{ justify-content:flex-start; gap:11px; }
-/* the list runs past a phone screen, so keep Start within thumb reach */
+.setup.stack{ justify-content:flex-start; gap:13px; }
 .setup.stack .foot{ position:sticky; bottom:0; padding:14px 0 2px; margin-top:0;
   background:linear-gradient(to top, var(--ink) 58%, transparent); }
+.headline.mid{ text-align:center; align-items:center; }
+.hintline{ margin:2px 0 0; text-align:center; color:var(--grey-dim); font-size:12px; line-height:1.45; }
+
+/* ---------- setup tiles: one question, big targets ---------- */
+
+.tiles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tile{ appearance:none; cursor:pointer; border:1px solid var(--hair); border-radius:17px; background:var(--panel);
+  color:var(--text); padding:15px 12px 14px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  transition:border-color .2s, background .2s, transform .1s; }
+.tile:hover{ border-color:var(--hair-2); background:var(--panel-2); }
+.tile:active{ transform:scale(.965); border-color:var(--pc); }
+.tile:focus-visible{ outline:2px solid var(--pc); outline-offset:2px; }
+.tile .art{ height:38px; width:100%; color:var(--pc); display:block; }
+.tile .art svg{ display:block; margin-inline:auto; height:100%; }
+.tile .t{ font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:-.01em; text-align:center; }
+.tile .d{ font-size:10.5px; color:var(--grey-dim); text-align:center; line-height:1.35; }
+.tile.big{ padding:22px 14px 18px; gap:10px; }
+.tile.big .art{ height:44px; }
 
 /* ---------- boards ---------- */
 
@@ -632,6 +650,10 @@ button{ font:inherit; }
   .verdict .arrowbox{ width:64px; height:64px; margin-bottom:14px }
   .choice.wide{ padding:9px 10px }
   .choice.wide .art{ height:28px }
+  .tile{ padding:11px 10px 10px; gap:6px }
+  .tile .art{ height:28px }
+  .tile.big{ padding:15px 12px 13px }
+  .tile.big .art{ height:34px }
   .numgrid .key{ padding:12px 0; font-size:18px }
   .stepper .v{ font-size:25px }
 }
@@ -856,6 +878,8 @@ var I={
   bullseye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
   close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>',
   hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.8 19 12 7 19.2V4.8Z"/></svg>',
   bot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4"/><circle cx="9" cy="13.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
   duo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="3"/><path d="M3.2 19a5.3 5.3 0 0 1 10.6 0"/><circle cx="17" cy="9" r="2.4"/><path d="M14.6 18.4A4.6 4.6 0 0 1 21 15.2"/></svg>'
 };
@@ -1105,11 +1129,6 @@ function chromeGame(show){
     },2800);
   });
 }
-function chromePlain(){
-  topbar.classList.remove("recede");
-  topbar.innerHTML='<div class="slot"><span class="lbl">Setup</span></div><div class="slot right">'+soundBtn()+"</div>";
-  wireSound();
-}
 
 var TABS=[
   {id:"home",label:"Home",icon:I.home},{id:"quests",label:"Quests",icon:I.quest},
@@ -1177,8 +1196,12 @@ function viewHome(){
             }).join("")
           + "</div>"
         : "")
-    + '<div class="foot"><button class="act hero" id="play" type="button">New match</button></div></div>';
+    + '<div class="foot"><button class="act hero" id="play" type="button">New match</button>'
+    +   (quickLabel()?'<button class="act ghost" id="quick" type="button">'+I.play+esc(quickLabel())+"</button>":"")
+    + "</div></div>";
   document.getElementById("play").addEventListener("click",function(){ sfx.warm(); sfx.tap(); screenSetup(); });
+  var qk=document.getElementById("quick");
+  if(qk) qk.addEventListener("click",function(){ sfx.tap(); quickPlay(); });
   var ah=document.getElementById("allHist");
   if(ah) ah.addEventListener("click",function(){ sfx.tap(); openMatchHistory(); });
 
@@ -1549,94 +1572,146 @@ function enterGame(){ stage.classList.remove("scrolls"); tabbar.classList.add("h
 var pickGame="dtimer", pickBoard="ttt", pickOpp="friend", pickTap=null;
 
 function artFor(k){ return k==="ttt"?artTTT():k==="c4"?artC4():k==="number"?artNumber():artTimer(); }
+function needsThird(id){ var g=GAMES[id]; return g.kind==="duel"||g.kind==="tap"; }
+function oppName(o){ return o==="bot"?"Bot":"a friend"; }
+/* the one-liner under a heading: what you have chosen so far */
+function pickedSoFar(){
+  var g=GAMES[pickGame];
+  return g.name+(needsThird(pickGame)?"":" &middot; vs "+oppName(pickOpp));
+}
 
-function screenSetup(){
-  enterGame(); chromePlain(); accent(phex(DB.me));
-  stage.classList.add("scrolls");
+function tile(attr,id,title,desc,art,big){
+  return '<button class="tile'+(big?" big":"")+'" data-'+attr+'="'+id+'" type="button">'
+    + '<span class="art">'+art+"</span>"
+    + '<span class="t">'+title+"</span>"
+    + (desc?'<span class="d">'+desc+"</span>":"")+"</button>";
+}
+
+/* Setup is a wizard, not a form: one question per screen, and answering it
+   moves you on. Two taps starts a classic game, three a duel. */
+function screenSetup(step){
+  enterGame(); stage.classList.add("scrolls"); accent(phex(DB.me));
+  if(step===undefined||step===null){
+    pickGame=DB.lastGame; pickBoard=DB.lastBoard; pickOpp=DB.lastOpp;
+    pickTap=(typeof DB.lastTap==="number")?DB.lastTap:null;
+    step=0;
+  }
+  if(step===0) setupGame();
+  else if(step===1) setupOpponent();
+  else setupThird();
+}
+
+function chromeSetup(back,label){
+  topbar.classList.remove("recede");
+  topbar.innerHTML='<div class="slot">'
+    + '<button class="icon-btn tiny" id="upBtn" type="button" aria-label="'+(back===null?"Back to hub":"Back")+'">'
+    +   (back===null?I.close:I.back)+"</button>"
+    + '<span class="lbl">'+label+"</span></div>"
+    + '<div class="slot right">'+soundBtn()+"</div>";
+  document.getElementById("upBtn").addEventListener("click",function(){
+    sfx.tap();
+    if(back===null){ tab="home"; showHub(); } else screenSetup(back);
+  });
+  wireSound();
+}
+
+function setupGame(){
+  chromeSetup(null,"New match");
+  function row(group){
+    return Object.keys(GAMES).filter(function(k){ return GAMES[k].group===group; })
+      .map(function(k){ var g=GAMES[k]; return tile("game",k,g.name,"",artFor(g.art)); }).join("");
+  }
+  show('<div class="screen setup stack">'
+     + '<div class="headline mid"><span class="lbl">Step 1 of 2</span><span class="big">Pick a game</span></div>'
+     + '<div class="tiles">'+row("classic")+"</div>"
+     + '<div class="grouplbl"><span class="lbl">Or duel for a board</span></div>'
+     + '<div class="tiles">'+row("duel")+"</div></div>");
+  stage.querySelectorAll("[data-game]").forEach(function(b){
+    b.addEventListener("click",function(){ pickGame=b.dataset.game; sfx.tap(); screenSetup(1); });
+  });
+}
+
+function setupOpponent(){
+  var g=GAMES[pickGame];
+  chromeSetup(0,g.name);
+  show('<div class="screen setup stack">'
+     + '<div class="headline mid"><span class="lbl">Step 2 of 2</span><span class="big">Who are you playing?</span></div>'
+     + '<div class="tiles">'
+     +   tile("opp","friend","A friend","Pass and play on this phone",I.duo,true)
+     +   tile("opp","bot","The bot","Play on your own",I.bot,true)
+     + "</div>"
+     + '<p class="hintline">'+g.desc+"</p></div>");
+  stage.querySelectorAll("[data-opp]").forEach(function(b){
+    b.addEventListener("click",function(){
+      pickOpp=b.dataset.opp; sfx.tap();
+      if(needsThird(pickGame)) screenSetup(2); else launch();
+    });
+  });
+}
+
+function setupThird(){
+  var g=GAMES[pickGame];
+  chromeSetup(1,pickedSoFar());
+  if(g.kind==="duel"){
+    show('<div class="screen setup stack">'
+       + '<div class="headline mid"><span class="lbl">Last one</span><span class="big">Board to claim</span></div>'
+       + '<div class="tiles">'
+       +   tile("board","ttt",BOARDS.ttt.name,"3&times;3, three in a row",artTTT(),true)
+       +   tile("board","c4",BOARDS.c4.name,"7&times;6, four in a row",artC4(),true)
+       + "</div>"
+       + '<p class="hintline">Win a round, claim a square.</p></div>');
+    stage.querySelectorAll("[data-board]").forEach(function(b){
+      b.addEventListener("click",function(){ pickBoard=b.dataset.board; sfx.tap(); launch(); });
+    });
+    return;
+  }
+  var custom=pickTap!==null;
+  show('<div class="screen setup stack">'
+     + '<div class="headline mid"><span class="lbl">Last one</span><span class="big">Which target?</span></div>'
+     + '<div class="tiles">'
+     +   tile("tap","rnd","Surprise me",fx2(TAP_MIN)+"s to "+fx2(TAP_MAX)+"s",artTimer(),true)
+     +   tile("tap","fix","Set it myself","Pick your own time",artNumber(),true)
+     + "</div>"
+     + (custom
+        ? '<div class="panel tight"><div class="stepper">'
+          + '<button class="rnd" data-step="-1" type="button" aria-label="Lower target">&minus;</button>'
+          + '<span class="v">'+fx2(pickTap)+"<small>s</small></span>"
+          + '<button class="rnd" data-step="1" type="button" aria-label="Raise target">+</button></div></div>'
+          + '<div class="foot"><button class="act hero" id="begin" type="button">Start</button></div>'
+        : '<p class="hintline">The clock hides after one second either way.</p>')
+     + "</div>");
+  stage.querySelectorAll("[data-tap]").forEach(function(b){
+    b.addEventListener("click",function(){
+      sfx.tap();
+      if(b.dataset.tap==="rnd"){ pickTap=null; launch(); }
+      else { pickTap=(pickTap===null?5:pickTap); screenSetup(2); }
+    });
+  });
+  stage.querySelectorAll("[data-step]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var v=(pickTap||5)+(+b.dataset.step)*0.5;
+      pickTap=Math.round(Math.min(20,Math.max(1,v))*100)/100;
+      sfx.key(); screenSetup(2);
+    });
+  });
+  var go=document.getElementById("begin");
+  if(go) go.addEventListener("click",function(){ sfx.warm(); sfx.tap(); launch(); });
+}
+
+function launch(){
+  sfx.warm();
+  DB.lastGame=pickGame; DB.lastBoard=pickBoard; DB.lastOpp=pickOpp; DB.lastTap=pickTap; save();
+  newMatch(pickGame,{ board:pickBoard, bot:pickOpp==="bot", tap:pickTap });
+}
+/* one-tap restart of whatever was played last */
+function quickPlay(){
   pickGame=DB.lastGame; pickBoard=DB.lastBoard; pickOpp=DB.lastOpp;
   pickTap=(typeof DB.lastTap==="number")?DB.lastTap:null;
-
-  function card(kind,id,title,desc,art,on,wide){
-    return '<button class="choice'+(wide?" wide":"")+(on?" on":"")+'" data-'+kind+'="'+id+'" type="button">'
-      + '<span class="tickmark">'+I.check+"</span>"
-      + '<span class="art">'+art+"</span>"
-      + (wide?'<span class="txt">':"")
-      + '<span class="t">'+title+'</span><span class="d">'+desc+"</span>"
-      + (wide?"</span>":"")+"</button>";
-  }
-  function group(name){
-    return Object.keys(GAMES).filter(function(k){ return GAMES[k].group===name; })
-      .map(function(k){ var g=GAMES[k]; return card("game",k,g.name,g.desc,artFor(g.art),pickGame===k,true); }).join("");
-  }
-  function render(){
-    var g=GAMES[pickGame], extra="";
-    if(g.kind==="duel"){
-      extra='<div class="grouplbl"><span class="lbl">Board to claim</span></div>'
-        + '<div class="choices">'
-        +   card("board","ttt",BOARDS.ttt.name,BOARDS.ttt.desc,artTTT(),pickBoard==="ttt")
-        +   card("board","c4",BOARDS.c4.name,BOARDS.c4.desc,artC4(),pickBoard==="c4")
-        + "</div>";
-    } else if(g.kind==="tap"){
-      extra='<div class="grouplbl"><span class="lbl">Target</span></div>'
-        + '<div class="opts">'
-        +   '<button class="opt'+(pickTap===null?" on":"")+'" data-tap="rnd" type="button">'
-        +     '<span class="t">Random</span><span class="d">'+fx2(TAP_MIN)+"s to "+fx2(TAP_MAX)+"s</span></button>"
-        +   '<button class="opt'+(pickTap!==null?" on":"")+'" data-tap="fix" type="button">'
-        +     '<span class="t">Your own</span><span class="d">Set the target yourself</span></button>'
-        + "</div>"
-        + (pickTap!==null
-            ? '<div class="stepper"><button class="rnd" data-step="-1" type="button" aria-label="Lower target">&minus;</button>'
-              + '<span class="v">'+fx2(pickTap)+"<small>s</small></span>"
-              + '<button class="rnd" data-step="1" type="button" aria-label="Raise target">+</button></div>'
-            : "");
-    }
-    stage.innerHTML='<div class="screen setup stack">'
-      + '<div class="headline" style="text-align:center;align-items:center"><span class="lbl">New match</span><span class="big">Pick a game</span></div>'
-      + '<div class="grouplbl"><span class="lbl">Classic</span></div>'
-      + '<div class="choices one">'+group("classic")+"</div>"
-      + '<div class="grouplbl"><span class="lbl">Duel for a board</span></div>'
-      + '<div class="choices one">'+group("duel")+"</div>"
-      + '<div class="grouplbl"><span class="lbl">Opponent</span></div>'
-      + '<div class="opts">'
-      +   '<button class="opt'+(pickOpp==="friend"?" on":"")+'" data-opp="friend" type="button">'
-      +     '<span class="t">Friend</span><span class="d">Pass and play, one device</span></button>'
-      +   '<button class="opt'+(pickOpp==="bot"?" on":"")+'" data-opp="bot" type="button">'
-      +     '<span class="t">Bot</span><span class="d">Play the machine, solo</span></button>'
-      + "</div>"
-      + extra
-      + '<div class="foot"><button class="act hero" id="begin" type="button">Start</button>'
-      +   '<button class="act ghost" id="back" type="button">Back to hub</button></div></div>';
-
-    stage.querySelectorAll("[data-game]").forEach(function(b){
-      b.addEventListener("click",function(){ pickGame=b.dataset.game; sfx.tap(); render(); });
-    });
-    stage.querySelectorAll("[data-board]").forEach(function(b){
-      b.addEventListener("click",function(){ pickBoard=b.dataset.board; sfx.tap(); render(); });
-    });
-    stage.querySelectorAll("[data-opp]").forEach(function(b){
-      b.addEventListener("click",function(){ pickOpp=b.dataset.opp; sfx.tap(); render(); });
-    });
-    stage.querySelectorAll("[data-tap]").forEach(function(b){
-      b.addEventListener("click",function(){
-        pickTap = b.dataset.tap==="rnd" ? null : (pickTap===null?5:pickTap);
-        sfx.tap(); render();
-      });
-    });
-    stage.querySelectorAll("[data-step]").forEach(function(b){
-      b.addEventListener("click",function(){
-        var v=(pickTap||5)+(+b.dataset.step)*0.5;
-        pickTap=Math.round(Math.min(20,Math.max(1,v))*100)/100;
-        sfx.key(); render();
-      });
-    });
-    document.getElementById("begin").addEventListener("click",function(){
-      sfx.warm(); sfx.tap();
-      DB.lastGame=pickGame; DB.lastBoard=pickBoard; DB.lastOpp=pickOpp; DB.lastTap=pickTap; save();
-      newMatch(pickGame,{ board:pickBoard, bot:pickOpp==="bot", tap:pickTap });
-    });
-    document.getElementById("back").addEventListener("click",function(){ sfx.tap(); tab="home"; showHub(); });
-  }
-  render();
+  launch();
+}
+function quickLabel(){
+  var g=GAMES[DB.lastGame]; if(!g) return null;
+  return g.name+" vs "+(DB.lastOpp==="bot"?"Bot":"a friend");
 }
 
 /* ============================================================

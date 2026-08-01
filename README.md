@@ -9,8 +9,11 @@ dependencies, no network calls.
 
 ## The games
 
-Pick a game, an opponent (**Friend** or **Bot**), and — for the two duels — the
-board you're fighting over.
+Starting a match is a wizard, one question per screen: pick a game, then pick an
+opponent (**a friend** or **the bot**). Two taps and you're playing. The duels
+ask a third question — which board you're fighting over — and Tap the Time asks
+whether you want a random target or your own. Home keeps a one-tap shortcut back
+into whatever you played last.
 
 ### Classic
 
