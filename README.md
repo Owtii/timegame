@@ -30,6 +30,20 @@ into whatever you played last.
 | --- | --- |
 | Timer Duel | Target between **3.00s** and **8.00s**. Closest stop claims a square. |
 | Number Duel | Secret number **1–10**, **three tries each**. An exact hit ends it; otherwise the closest guess claims the square, and a shared distance goes to whoever reached it first. |
+| Bid-Tac-Toe | **24 points each** (configurable). Sealed bids for one square at a time, in reading order. Highest bid takes the square — **both** players pay what they bid. |
+
+### Bid-Tac-Toe in detail
+
+Squares come up in reading order, skipping any already claimed. Each round both
+players seal a bid in private — enter it, hit **Seal**, hand the phone over —
+and the two numbers flip up together after a held beat. A tie means nobody takes
+the square, **both still pay**, and the same square comes straight back up. A
+running log under the board shows every settled square with both bids and who
+took it, so you can track how much of the other pool is gone.
+
+Bidding 0 is always legal, so an empty pool can still pass on squares. If both
+pools are empty and the bids tie at 0 there is nothing left to decide anything
+with, so the match ends there on the board as it stands.
 
 Both clock games hide the digits after the first second — from there you're
 running blind against a tick scale.
@@ -63,10 +77,12 @@ and both diagonals — so the only difference between them is `need: 3` vs
 
 ## History
 
-The clock icon in the match topbar opens the history sheet at any point: every
-round of the current match with the board as it stood, then the last 14 finished
-matches — tap one to replay its rounds. The hub's home tab lists the most recent
-three. Nothing pauses; closing the sheet drops you back exactly where you were.
+The clock icon in the match topbar opens the history sheet at any point. It
+shows one list at a time behind a two-way switch — **This match**, every round
+with the board as it stood, or **Past matches**, the last 14 finished ones with
+the game's own icon. Tap a past match to open it round by round, with a back
+control in the sheet header. The hub's home tab lists the most recent three.
+Nothing pauses; closing the sheet drops you back exactly where you were.
 
 ## The hub
 
@@ -90,6 +106,11 @@ greyed out in the shop, so you always stay distinguishable.
 
 ## Design notes
 
+- **The bid reveal is the beat the round is built around.** Both numbers stay
+  masked through a held pause with a low three-pulse cue, then flip up together
+  rather than one after the other — reading one before the other would leak the
+  result early. A win by one point or a blowout gets a burst behind the winning
+  card, so the two outcomes worth reacting to look different from an ordinary win.
 - **A tap is only asked for where it means something.** Results advance on their
   own with a depleting bar showing when; the button next to it skips ahead. The
   taps that remain are the ones you'd want: acting on your turn, and the
