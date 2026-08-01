@@ -1160,6 +1160,7 @@ var I={
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"/><path d="m5 12 7 7 7-7"/></svg>',
   bullseye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
   close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"/></svg>',
   hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></svg>',
   chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
@@ -1391,7 +1392,9 @@ function dropDisc(wrap,i,who,done){
    the active one lit, and a bar draining under them. Long enough to think,
    short enough that nobody sits on the phone. */
 
-var TURN_MOVE=30, TURN_BID=45, TURN_GUESS=30;
+/* Room to say something and still play: a turn should not punish you for
+   typing a line first. */
+var TURN_MOVE=48, TURN_BID=65, TURN_GUESS=48;
 
 function playerBar(active,subs,clock){
   return '<div class="pbar">'+[0,1].map(function(i){
@@ -1515,12 +1518,14 @@ function chromeGame(show){
     + '<button class="icon-btn tiny" id="quitBtn" type="button" aria-label="Leave match">'+I.back+"</button>"
     + '<span class="lbl" id="roundLbl">Round '+rn+"</span></div>"
     + '<div class="slot mid" id="mini"></div><div class="slot right">'
+    + '<button class="icon-btn tiny" id="chatBtn" type="button" aria-label="Chat">'+I.chat+"</button>"
     + '<button class="icon-btn tiny" id="histBtn" type="button" aria-label="Match history">'+I.hist+"</button>"
     + soundBtn()+"</div>";
   document.getElementById("mini").innerHTML = hasBoard() ? miniHTML()
     : '<span class="tally"><i style="background:'+phex(0)+'"></i>'+G.score[0]
       + '<span class="sep">/</span>'+G.score[1]+'<i style="background:'+phex(1)+'"></i></span>';
   document.getElementById("histBtn").addEventListener("click",function(){ sfx.tap(); openHistory(); });
+  document.getElementById("chatBtn").addEventListener("click",function(){ sfx.tap(); chatWho=null; openChat(); });
   wireSound();
   // Connect 4 matches run long - leaving one shouldn't mean finishing it.
   document.getElementById("quitBtn").addEventListener("click",function(){ sfx.tap(); leaveMatch(); });
@@ -1989,6 +1994,56 @@ function openHistory(){
   renderSheet();
 }
 function openMatchHistory(){ sheetView={ mode:"past", index:-1 }; renderSheet(); }
+
+/* Chat without leaving the match. The sender defaults to whoever is on the
+   clock, since that is who is holding the phone. */
+var chatWho=null;
+function openChat(){
+  if(chatWho===null) chatWho = (typeof G.turn==="number"&&G.game) ? G.turn : DB.me;
+  if(isBot(chatWho)) chatWho=1-chatWho;
+  var el=document.getElementById("sheet");
+  if(!el){
+    el=document.createElement("div"); el.id="sheet";
+    el.innerHTML='<div class="scrim"></div><div class="body"></div>';
+    document.body.appendChild(el);
+    el.querySelector(".scrim").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
+  }
+  var msgs=DB.chat.length
+    ? DB.chat.map(function(m){
+        return '<div class="msg '+(m.from===chatWho?"b":"a")+'" style="--pc:'+phex(m.from)+'">'
+          + '<span class="who">'+esc(pname(m.from))+'<span class="tm">'+timeOf(m.ts)+"</span></span>"+esc(m.text)+"</div>";
+      }).join("")
+    : emptyNote("Nothing said yet","Say something between moves.");
+  el.querySelector(".body").innerHTML=
+      '<div class="head"><span class="txt"><span class="ttl">Chat</span>'
+    +   '<span class="sub">Both of you, on this phone</span></span>'
+    +   '<button class="whoami" id="chatWho" type="button" style="--pc:'+phex(chatWho)+'">'
+    +     '<span class="dot"></span><span class="nm">'+esc(pname(chatWho))+'</span><span class="sw">'+I.swap+"</span></button>"
+    +   '<button class="icon-btn tiny" id="chatX" type="button" aria-label="Close">'+I.close+"</button></div>"
+    + '<div class="scroll" id="cmsgs">'+msgs+"</div>"
+    + '<div class="composer" style="margin-top:11px;flex:none">'
+    +   '<input id="cIn" type="text" maxlength="240" placeholder="Message as '+esc(pname(chatWho))+'" autocomplete="off">'
+    +   '<button class="send" id="cSend" type="button" aria-label="Send" disabled>'+I.send+"</button></div>";
+
+  var box=document.getElementById("cmsgs"); box.scrollTop=box.scrollHeight;
+  var input=document.getElementById("cIn"), send=document.getElementById("cSend");
+  function sync(){ send.disabled=!input.value.trim(); }
+  function post(){
+    var t=input.value.trim(); if(!t) return;
+    DB.chat.push({ from:chatWho, text:t.slice(0,240), ts:Date.now() });
+    if(DB.chat.length>200) DB.chat=DB.chat.slice(-200);
+    save(); sfx.msg(); buzz(8); input.value=""; openChat();
+    var i2=document.getElementById("cIn"); if(i2) i2.focus({preventScroll:true});
+  }
+  input.addEventListener("input",sync);
+  input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); post(); } });
+  send.addEventListener("click",post);
+  document.getElementById("chatX").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
+  document.getElementById("chatWho").addEventListener("click",function(){
+    chatWho=1-chatWho; if(isBot(chatWho)) chatWho=1-chatWho;
+    sfx.tap(); openChat();
+  });
+}
 
 function renderSheet(){
   var el=document.getElementById("sheet");
