@@ -2820,7 +2820,7 @@ function seqResult(w){
   creditRound(w); save();
   logRound({ t:pname(w)+" cracked the order",
              d:"Order "+G.seqSecret.map(function(id){ return SEQ_ITEMS.filter(function(x){return x.id===id;})[0].name; }).join(" ")
-               + " · "+G.seqTries[0]+" v "+G.seqTries[1]+" tries", winner:w });
+               + " \u00b7 "+G.seqTries[0]+" v "+G.seqTries[1]+" tries", winner:w });
   var wait=3200, fired=false;
   var cells=G.seqSecret.map(function(id){ return '<div class="cell">'+seqShape(id)+"</div>"; }).join("");
   show('<div class="screen verdict" style="color:'+phex(w)+'">'
