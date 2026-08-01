@@ -198,12 +198,13 @@ button{ font:inherit; }
 /* tic-tac-toe */
 .board.ttt{ grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); aspect-ratio:1/1; }
 /* px caps only - a vw cap ignores the app's own padding and overflows narrow screens */
-.board.ttt.lg{ width:100%; max-width:368px; gap:10px; margin-inline:auto; }
+.board.ttt.lg{ width:100%; max-width:min(92vw,430px); gap:11px; margin-inline:auto; }
 .board.ttt.sm{ width:54px; gap:3px; }
 .board.ttt .cell{ background:var(--panel); border:1px solid var(--hair); border-radius:14px; }
 .board.ttt.sm .cell{ border-radius:4px; border-color:rgba(255,255,255,.07); }
-.board.ttt.t-etched .cell{ border-radius:3px; background:transparent; border-color:var(--hair-2); }
-.board.ttt.t-void .cell{ border-radius:50%; background:#0C0E14; border-color:rgba(255,255,255,.06); }
+/* the terrain drives both boards through the same three variables */
+.board.ttt .cell{ background:var(--frame,var(--panel)); border-radius:var(--rad,14px); }
+.board.ttt.sm .cell{ border-radius:calc(var(--rad,14px)/3); }
 
 .cell{ position:relative; appearance:none; padding:0; min-width:0; min-height:0; overflow:hidden;
   display:grid; place-items:center; transition:background .2s, border-color .2s, transform .12s var(--ease); }
@@ -222,6 +223,10 @@ button{ font:inherit; }
 
 .mk{ display:block; width:100%; height:100%; overflow:visible; }
 .mk line,.mk circle{ fill:none; stroke:currentColor; stroke-width:9; stroke-linecap:round; }
+/* the design inside the piece: filled by default, `st` for the stroked bits */
+.mk .mo *{ fill:currentColor; stroke:none; }
+.mk .mo .st{ fill:none; stroke:currentColor; stroke-width:6; }
+.mk .mo .tw{ fill:none; stroke:rgba(255,255,255,.72); stroke-width:4; }
 .board.sm .mk line,.board.sm .mk circle{ stroke-width:13; }
 .mk.anim.mk-x line{ stroke-dasharray:74; stroke-dashoffset:74; animation:draw .3s var(--ease) forwards; }
 .mk.anim.mk-x line.s2{ animation-delay:.13s; }
@@ -229,41 +234,45 @@ button{ font:inherit; }
 .mk-o circle{ transform:rotate(-90deg); transform-origin:50% 50%; }
 @keyframes draw{ to{ stroke-dashoffset:0; } }
 
-/* connect 4 */
-.c4wrap{ position:relative; width:100%; max-width:424px; margin-inline:auto; }
+/* ---------- connect 4 ----------
+   Three stacked layers. Pieces sit *under* a frame that has its holes punched
+   out with a mask, so a piece crossing a hole is visible and a piece crossing
+   the frame is not. That is what lets a single element fall the whole way in
+   one continuous move and still read as falling *into* the board. */
+.c4wrap{ position:relative; width:100%; max-width:min(96vw,470px); margin-inline:auto; }
 .board.c4{
-  grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
-  gap:clamp(3px,1.4vw,6px); aspect-ratio:var(--cols)/var(--rows); padding:clamp(4px,1.6vw,7px);
-  background:var(--panel); border:1px solid var(--hair); border-radius:14px;
+  position:relative; display:block; aspect-ratio:var(--cols)/var(--rows);
+  background:var(--well,#08090D); border-radius:var(--rad,14px); overflow:hidden;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.55);
 }
-.board.c4 .cell{ border-radius:50%; background:#08090D; border:1px solid rgba(255,255,255,.055); box-shadow:inset 0 2px 5px rgba(0,0,0,.6); }
-.board.c4.t-etched .cell{ border-radius:4px; }
-.board.c4.t-void .cell{ background:#06070A; }
-.board.c4 .cell .pad{ padding:9%; }
-.board.c4 .cell.wincell{ background:#0C0E14; border-color:var(--pc); }
-
-.disc{ display:block; width:100%; height:100%; border-radius:50%; background:currentColor;
-  box-shadow:inset 0 2px 3px rgba(255,255,255,.28), inset 0 -3px 6px rgba(0,0,0,.4), 0 0 12px -5px currentColor; }
-.disc.drop{ animation:dropIn var(--dur,.4s) cubic-bezier(.35,.05,.35,1) both; }
-@keyframes dropIn{
-  0%{ transform:translateY(var(--from,-600%)); }
-  72%{ transform:translateY(0); }
-  84%{ transform:translateY(-9%); }
-  100%{ transform:translateY(0); }
+.c4pieces{ position:absolute; inset:0; z-index:1;
+  display:grid; grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr); }
+.c4pieces .cell{ display:grid; place-items:center; background:none; border:0; }
+.c4front{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:var(--frame,#12151D); border-radius:var(--rad,14px);
+  -webkit-mask-image:radial-gradient(circle closest-side,#0000 0 79%,#000 81%);
+          mask-image:radial-gradient(circle closest-side,#0000 0 79%,#000 81%);
+  -webkit-mask-size:calc(100%/var(--cols)) calc(100%/var(--rows));
+          mask-size:calc(100%/var(--cols)) calc(100%/var(--rows));
+  -webkit-mask-repeat:repeat; mask-repeat:repeat;
 }
-.discghost{ display:block; width:100%; height:100%; border-radius:50%; border:2px dashed currentColor; opacity:.4; }
+.board.c4 .winline{ z-index:3; }
+.disc{ display:block; width:84%; height:84%; overflow:visible;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)) drop-shadow(0 0 9px color-mix(in srgb,currentColor 45%,transparent)); }
+.c4fall{ position:absolute; top:0; z-index:1; display:grid; place-items:center; will-change:transform; }
+.discghost{ display:block; width:80%; height:80%; border-radius:50%; border:2px dashed currentColor; opacity:.45; }
+.c4pieces .cell.wincell .disc{ filter:drop-shadow(0 0 10px var(--pc)) drop-shadow(0 0 3px var(--pc)); }
 
-.c4cols{ position:absolute; inset:clamp(4px,1.6vw,7px); display:grid; grid-template-columns:repeat(var(--cols),1fr); gap:clamp(3px,1.4vw,6px); }
-.c4col{ appearance:none; border:0; background:transparent; border-radius:9px; cursor:pointer; padding:0;
-  transition:background .15s; }
-.c4col:hover{ background:rgba(255,255,255,.05); }
-.c4col:active{ background:rgba(255,255,255,.09); }
+.c4cols{ position:absolute; inset:0; z-index:4; display:grid; grid-template-columns:repeat(var(--cols),1fr); }
+.c4col{ appearance:none; border:0; background:transparent; cursor:pointer; padding:0; transition:background .15s; }
+.c4col:hover{ background:rgba(255,255,255,.055); }
+.c4col:active{ background:rgba(255,255,255,.1); }
 .c4col[disabled]{ cursor:default; }
-.c4col:focus-visible{ outline:2px solid var(--pc); outline-offset:-2px; }
+.c4col:focus-visible{ outline:2px solid var(--pc); outline-offset:-3px; }
 
-.board.c4.sm{ width:74px; gap:1.5px; padding:2.5px; border-radius:5px; }
-.board.c4.sm .cell{ border-width:0; box-shadow:none; }
-.board.c4.sm .cell .pad{ padding:6%; }
+.board.c4.sm{ width:78px; border-radius:4px; box-shadow:none; }
+.board.c4.sm .disc{ width:88%; height:88%; filter:none; }
 
 .winline{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
 .winline line{ stroke:var(--pc); stroke-linecap:round; stroke-dasharray:400; stroke-dashoffset:400;
@@ -314,6 +323,11 @@ button{ font:inherit; }
 .sw .p{ font-family:var(--mono); font-size:9px; color:var(--grey-dim); display:flex; align-items:center; gap:3px; }
 .sw .p svg{ width:9px; height:9px; }
 .sw.equipped{ border-color:currentColor; background:var(--panel-3); }
+.sw{ position:relative; }
+.sw .patprev{ width:30px; height:30px; display:block; }
+.sw .alsoworn{ position:absolute; top:3px; right:4px; font-family:var(--mono); font-size:7.5px;
+  letter-spacing:.06em; color:var(--grey-dim); text-transform:uppercase; }
+.twinnote{ margin:0; font-size:11px; line-height:1.45; color:var(--void); }
 .sw.taken{ opacity:.32; cursor:not-allowed; }
 .sw.locked .chip{ opacity:.35; }
 
@@ -580,7 +594,7 @@ button{ font:inherit; }
 .bidhint{ text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--grey-dim); min-height:12px; }
 
-.board.ttt.md{ width:100%; max-width:248px; gap:8px; margin-inline:auto; }
+.board.ttt.md{ width:100%; max-width:min(80vw,310px); gap:9px; margin-inline:auto; }
 .board.ttt.md .cell{ border-radius:12px; }
 /* needs to out-rank `.board.ttt .cell`, hence the long selector */
 .board.ttt .cell.bidcell{ border-color:var(--pc); background:color-mix(in srgb, var(--pc) 16%, var(--panel));
@@ -779,9 +793,9 @@ button{ font:inherit; }
   .window{ height:84px } .live{ font-size:40px } .fuse{ bottom:14px }
   .target .val{ font-size:clamp(38px,11.5vw,48px) }
   .timer{ gap:8px } .actuator{ width:min(50vw,180px) }
-  .board.ttt.lg{ max-width:286px }
-  .board.ttt.md{ max-width:196px }
-  .c4wrap{ max-width:330px }
+  .board.ttt.lg{ max-width:min(86vw,330px) }
+  .board.ttt.md{ max-width:min(72vw,240px) }
+  .c4wrap{ max-width:min(94vw,380px) }
   .pchip{ padding:7px 9px 9px }
   .pchip .big{ font-size:17px }
   .bidval .rnd{ width:40px; height:40px }
@@ -867,12 +881,29 @@ var COLORS=[
   {id:"flare",name:"Flare",hex:"#FF6154",price:0},   {id:"arc",name:"Arc",hex:"#8B7BFF",price:0},
   {id:"signal",name:"Signal",hex:"#FFB020",price:60},{id:"mint",name:"Mint",hex:"#2ED3A0",price:60},
   {id:"ice",name:"Ice",hex:"#4CC9F0",price:90},      {id:"rose",name:"Rose",hex:"#FF5FA2",price:90},
-  {id:"lime",name:"Lime",hex:"#B4E33D",price:140},   {id:"ember",name:"Ember",hex:"#FF3B30",price:140}
+  {id:"lime",name:"Lime",hex:"#B4E33D",price:140},   {id:"ember",name:"Ember",hex:"#FF3B30",price:140},
+  {id:"sky",  name:"Sky",  hex:"#5AA9FF",price:170}, {id:"plum",name:"Plum",hex:"#C264F0",price:170},
+  {id:"sand", name:"Sand", hex:"#E8C77A",price:210}, {id:"jade",name:"Jade",hex:"#19C79B",price:210},
+  {id:"coral",name:"Coral",hex:"#FF8A5B",price:260}, {id:"steel",name:"Steel",hex:"#9FB3C8",price:260},
+  {id:"neon", name:"Neon", hex:"#39F5C0",price:340}, {id:"blood",name:"Blood",hex:"#C4213A",price:340}
 ];
-var THEMES=[
-  {id:"default",name:"Instrument",desc:"Rounded panels, hairline edges.",price:0},
-  {id:"etched", name:"Etched",    desc:"Sharp corners, engraved outlines.",price:180},
-  {id:"void",   name:"Void",      desc:"Wells cut into the dark.",price:260}
+
+/* the design carried inside the piece, so two players can share a colour */
+var PATTERNS=[
+  {id:"solid",name:"Solid",  price:0},   {id:"ring", name:"Ring",  price:45},
+  {id:"core", name:"Core",   price:45},  {id:"halo", name:"Halo",  price:80},
+  {id:"quad", name:"Quarter",price:80},  {id:"orbit",name:"Orbit", price:130},
+  {id:"star", name:"Star",   price:130}, {id:"bars", name:"Bars",  price:180}
+];
+
+/* a terrain belongs to a player - you play on somebody's home ground */
+var TERRAINS=[
+  {id:"default",name:"Instrument",desc:"Rounded panels, hairline edges.", price:0,   frame:"#12151D",well:"#08090D",rad:14},
+  {id:"etched", name:"Etched",    desc:"Sharp corners, engraved lines.",  price:180, frame:"#141821",well:"#0A0C11",rad:3},
+  {id:"void",   name:"Void",      desc:"Wells cut into the dark.",        price:260, frame:"#0E1016",well:"#05060A",rad:20},
+  {id:"slate",  name:"Slate",     desc:"Cool stone, soft edges.",         price:220, frame:"#1B2029",well:"#0C0F15",rad:16},
+  {id:"copper", name:"Copper",    desc:"Warm metal, tight radius.",       price:340, frame:"#261D15",well:"#0F0A06",rad:8},
+  {id:"frost",  name:"Frost",     desc:"Pale rime over deep blue.",       price:340, frame:"#17232F",well:"#060B11",rad:18}
 ];
 var QUESTS=[
   {id:"play5", t:"Clock in",     d:"Play 5 rounds in any mode",            goal:5, reward:15, track:"roundsPlayed"},
@@ -892,15 +923,15 @@ var KEY="duelboard.v1", DB=null, memOnly=false;
 function today(){ var d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
 
 function freshPlayer(i){
-  return { name:"Player "+(i+1), color:COLORS[i].id, coins:0, owned:[COLORS[0].id,COLORS[1].id],
+  return { name:"Player "+(i+1), color:COLORS[i].id, pattern:"solid", terrain:"default", coins:0,
+           owned:[COLORS[0].id,COLORS[1].id], ownedPat:["solid"], ownedTer:["default"],
            stats:{ matches:0, wins:0, roundsWon:0, best:null, bestGuess:null, streak:0, bestStreak:0 },
            q:{}, claimed:{} };
 }
 function freshDB(){
-  return { v:2, players:[freshPlayer(0),freshPlayer(1)], me:0,
-           shared:{ themes:["default"], theme:"default" },
+  return { v:3, players:[freshPlayer(0),freshPlayer(1)], me:0,
            chat:[], day:today(), series:[0,0], history:[],
-           lastGame:"dtimer", lastBoard:"ttt", lastOpp:"friend", lastTap:null, lastPool:24 };
+           lastGame:"dtimer", lastBoard:"ttt", lastOpp:"friend", lastTap:null, lastPool:24, lastHome:0 };
 }
 function load(){
   try{ var raw=localStorage.getItem(KEY); DB=raw?JSON.parse(raw):freshDB(); }
@@ -914,11 +945,23 @@ function load(){
     if(!COLORS.some(function(c){return c.id===p.color;})) p.color=d.color;
     if(typeof p.coins!=="number"||!isFinite(p.coins)) p.coins=0;
     if(!Array.isArray(p.owned)) p.owned=d.owned;
+    if(!Array.isArray(p.ownedPat)) p.ownedPat=d.ownedPat;
+    if(!Array.isArray(p.ownedTer)) p.ownedTer=d.ownedTer;
+    if(!PATTERNS.some(function(x){return x.id===p.pattern;})) p.pattern=d.pattern;
+    if(!TERRAINS.some(function(x){return x.id===p.terrain;})) p.terrain=d.terrain;
     p.stats=Object.assign(d.stats,p.stats||{});
     if(!p.q) p.q={}; if(!p.claimed) p.claimed={};
   });
-  if(!DB.shared||!Array.isArray(DB.shared.themes)) DB.shared=f.shared;
-  if(!THEMES.some(function(t){return t.id===DB.shared.theme;})) DB.shared.theme="default";
+  /* v2 kept one shared board style; terrains belong to players now, so hand the
+     old unlocks to both of them rather than quietly repossessing them */
+  if(DB.shared&&Array.isArray(DB.shared.themes)){
+    DB.players.forEach(function(p){
+      DB.shared.themes.forEach(function(t){ if(TERRAINS.some(function(x){return x.id===t;})&&p.ownedTer.indexOf(t)<0) p.ownedTer.push(t); });
+      if(TERRAINS.some(function(x){return x.id===DB.shared.theme;})) p.terrain=DB.shared.theme;
+    });
+    delete DB.shared;
+  }
+  if(DB.lastHome!==0&&DB.lastHome!==1) DB.lastHome=0;
   if(!Array.isArray(DB.chat)) DB.chat=[];
   if(!Array.isArray(DB.series)) DB.series=[0,0];
   if(!Array.isArray(DB.history)) DB.history=[];
@@ -941,7 +984,47 @@ function P(i){ return DB.players[i]; }
 function isBot(i){ return G.vsBot&&i===G.bot; }
 function pname(i){ return isBot(i)?"Bot":P(i).name; }
 function pmark(i){ return i===0?"X":"O"; }
-function phex(i){ var c=COLORS.filter(function(c){return c.id===P(i).color;})[0]; return c?c.hex:COLORS[i].hex; }
+function phexRaw(i){ var c=COLORS.filter(function(c){return c.id===P(i).color;})[0]; return c?c.hex:COLORS[i].hex; }
+/* Two players are allowed to wear the same colour now. When they do, the second
+   one is shifted and ringed so the pieces still read apart at a glance. */
+function twinned(){ return phexRaw(0)===phexRaw(1); }
+function phex(i){ return (i===1&&twinned()) ? shade(phexRaw(i),-0.30) : phexRaw(i); }
+function shade(hex,amt){
+  var n=parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  var f=function(v){ return Math.max(0,Math.min(255,Math.round(amt<0 ? v*(1+amt) : v+(255-v)*amt))); };
+  return "#"+((1<<24)+(f(r)<<16)+(f(g)<<8)+f(b)).toString(16).slice(1);
+}
+function ppat(i){ return P(i).pattern||"solid"; }
+function terrainOf(i){ var t=TERRAINS.filter(function(x){return x.id===P(i).terrain;})[0]; return t||TERRAINS[0]; }
+/* whose ground the match is played on */
+function homeTerrain(){ return terrainOf(typeof G.home==="number"?G.home:0); }
+
+/* The design inside a filled piece. Drawn as a dark overlay so it works on any
+   hue, in a 100x100 box centred on the piece. */
+function patternSVG(pid,ring){
+  var d='rgba(0,0,0,.36)', s="";
+  if(pid==="ring")      s='<circle cx="50" cy="50" r="30" fill="none" stroke="'+d+'" stroke-width="8"/>';
+  else if(pid==="core") s='<circle cx="50" cy="50" r="16" fill="'+d+'"/>';
+  else if(pid==="halo") s='<circle cx="50" cy="50" r="34" fill="none" stroke="'+d+'" stroke-width="5"/>'
+                        + '<circle cx="50" cy="50" r="18" fill="none" stroke="'+d+'" stroke-width="5"/>';
+  else if(pid==="quad") s='<path d="M50 50 L50 6 A44 44 0 0 1 94 50 Z" fill="'+d+'"/>'
+                        + '<path d="M50 50 L50 94 A44 44 0 0 1 6 50 Z" fill="'+d+'"/>';
+  else if(pid==="orbit")s='<circle cx="50" cy="50" r="31" fill="none" stroke="'+d+'" stroke-width="5"/>'
+                        + '<circle cx="50" cy="19" r="9" fill="'+d+'"/>';
+  else if(pid==="star") s='<path d="M50 14 L60 40 L88 42 L66 60 L74 88 L50 72 L26 88 L34 60 L12 42 L40 40 Z" fill="'+d+'"/>';
+  else if(pid==="bars") s='<rect x="20" y="34" width="60" height="8" rx="4" fill="'+d+'"/>'
+                        + '<rect x="26" y="46" width="48" height="8" rx="4" fill="'+d+'"/>'
+                        + '<rect x="34" y="58" width="32" height="8" rx="4" fill="'+d+'"/>';
+  /* the twin marker: a hard rim the other player never has */
+  if(ring) s+='<circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="4"/>';
+  return s;
+}
+/* a Connect 4 piece, pattern and all */
+function discSVG(i,cls){
+  return '<svg class="disc'+(cls?" "+cls:"")+'" viewBox="0 0 100 100" style="color:'+phex(i)+'" aria-hidden="true">'
+    + '<circle cx="50" cy="50" r="47" fill="currentColor"/>'
+    + patternSVG(ppat(i), i===1&&twinned()) + "</svg>";
+}
 function hexA(hex,a){ var n=parseInt(hex.slice(1),16); return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"; }
 
 /* ============================================================
@@ -1094,10 +1177,26 @@ function toast(amount,reason){
   el.innerHTML=I.coin+"+"+amount+(reason?' <span class="r">'+esc(reason)+"</span>":"");
   toasts.appendChild(el); setTimeout(function(){ el.remove(); },2400); sfx.coin();
 }
-function markSVG(m,animate){
+/* `who` opts the piece into that player's design; omit it for a plain glyph */
+function markMotif(pid,ring){
+  var s="";
+  if(pid==="ring")      s='<circle class="st" cx="50" cy="50" r="13"/>';
+  else if(pid==="core") s='<circle cx="50" cy="50" r="8"/>';
+  else if(pid==="halo") s='<circle class="st" cx="50" cy="50" r="15"/><circle cx="50" cy="50" r="5"/>';
+  else if(pid==="quad") s='<path d="M50 50 L50 32 A18 18 0 0 1 68 50 Z"/><path d="M50 50 L50 68 A18 18 0 0 1 32 50 Z"/>';
+  else if(pid==="orbit")s='<circle cx="50" cy="33" r="6"/>';
+  else if(pid==="star") s='<path d="M50 33 L54 44 L66 45 L57 52 L60 64 L50 57 L40 64 L43 52 L34 45 L46 44 Z"/>';
+  else if(pid==="bars") s='<rect x="37" y="44" width="26" height="5" rx="2.5"/><rect x="41" y="53" width="18" height="5" rx="2.5"/>';
+  if(ring) s+='<circle class="tw" cx="50" cy="50" r="41"/>';
+  return s ? '<g class="mo">'+s+"</g>" : "";
+}
+function markSVG(m,animate,who){
   var cls="mk mk-"+m.toLowerCase()+(animate?" anim":"");
-  if(m==="X") return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><line class="s1" x1="24" y1="24" x2="76" y2="76"/><line class="s2" x1="76" y1="24" x2="24" y2="76"/></svg>';
-  return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="26"/></svg>';
+  var known=(who===0||who===1);
+  var motif=known?markMotif(ppat(who), who===1&&twinned()):"";
+  if(m==="X") return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true">'+motif
+    + '<line class="s1" x1="24" y1="24" x2="76" y2="76"/><line class="s2" x1="76" y1="24" x2="24" y2="76"/></svg>';
+  return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="26"/>'+motif+"</svg>";
 }
 /* player emblem - the X/O for tic-tac-toe, a disc for connect 4 */
 function emblem(i,animate){
@@ -1163,21 +1262,25 @@ function tttHTML(size,live){
   var cells=G.cells.map(function(v,i){
     var isWin=G.result&&G.result.line&&G.result.line.indexOf(i)>-1;
     var open=!v&&mark;
+    var who=v?(v==="X"?0:1):live;
     var col=v?phex(v==="X"?0:1):(mark?phex(live):null);
-    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced)+"</span>"
-              :(open?'<span class="ghost" style="color:'+col+'">'+markSVG(mark,false)+"</span>":"");
+    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced,who)+"</span>"
+              :(open?'<span class="ghost" style="color:'+col+'">'+markSVG(mark,false,who)+"</span>":"");
     return '<button type="button" class="cell'+(open?" live":"")+(isWin?" wincell":"")+'" data-i="'+i+'"'+(open?"":" disabled")
          + ' aria-label="Square '+(i+1)+(v?", "+v:", empty")+'"><span class="pad">'+inner+"</span></button>";
   }).join("");
-  return '<div class="board ttt '+size+" t-"+DB.shared.theme+'" role="group" aria-label="Board">'+cells+winLineSVG()+"</div>";
+  return '<div class="board ttt '+size+'" style="'+terrainVars()+'" role="group" aria-label="Board">'+cells+winLineSVG()+"</div>";
+}
+function terrainVars(){
+  var t=homeTerrain();
+  return "--frame:"+t.frame+";--well:"+t.well+";--rad:"+t.rad+"px;";
 }
 function c4HTML(size,live){
   var b=B(), playable=(live!==null&&live!==undefined);
-  /* a piece mid-flight lives in the overlay layer, not in its cell - the cell clips it */
+  /* a piece mid-flight is drawn by the falling layer instead of its cell */
   var cells=G.cells.map(function(v,i){
     var isWin=G.result&&G.result.line&&G.result.line.indexOf(i)>-1;
-    var inner=(v&&i!==G.inFlight)
-      ? '<span class="pad"><span class="disc" style="color:'+phex(v==="X"?0:1)+'"></span></span>' : "";
+    var inner=(v&&i!==G.inFlight) ? discSVG(v==="X"?0:1) : "";
     return '<div class="cell'+(isWin?" wincell":"")+'" data-i="'+i+'">'+inner+"</div>";
   }).join("");
   var cols="";
@@ -1187,40 +1290,58 @@ function c4HTML(size,live){
       cols+='<button type="button" class="c4col" data-col="'+c+'"'+(full?" disabled":"")+' aria-label="Column '+(c+1)+(full?", full":"")+'"></button>';
     }
   }
-  var inner='<div class="board c4 '+size+" t-"+DB.shared.theme+'" style="--cols:'+b.cols+";--rows:"+b.rows+'" role="group" aria-label="Board">'+cells+winLineSVG()+"</div>"
+  var style="--cols:"+b.cols+";--rows:"+b.rows+";"+terrainVars();
+  var inner='<div class="board c4 '+size+'" style="'+style+'" role="group" aria-label="Board">'
+          +   '<div class="c4pieces">'+cells+"</div>"
+          +   '<div class="c4front"></div>'
+          +   winLineSVG()
+          + "</div>"
           + (playable?'<div class="c4cols" style="--cols:'+b.cols+'">'+cols+"</div>":"");
   return size==="sm" ? inner : '<div class="c4wrap">'+inner+"</div>";
 }
 
-/* Drop a disc down column `i`. The piece is drawn inside the holes it passes
-   through, one row at a time, so it reads as falling *into* the board rather
-   than sliding across the front of it. Steps are spaced on sqrt(row), which is
-   what constant acceleration actually looks like. */
+/* One continuous fall. The piece lives in the pieces layer, under the frame, so
+   it can travel the whole column in a single move: visible through each hole it
+   crosses and hidden by the frame between them. */
 function dropDisc(wrap,i,who,done){
-  var b=B(), col=i%b.cols, target=Math.floor(i/b.cols), tint=phex(who);
+  var b=B(), col=i%b.cols, row=Math.floor(i/b.cols);
+  var board=wrap.querySelector(".board.c4"), layer=wrap.querySelector(".c4pieces");
   var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-  function cellAt(r){ return wrap.querySelector('.cell[data-i="'+(r*b.cols+col)+'"]'); }
-  function fill(r,cls){
-    var c=cellAt(r); if(!c) return null;
-    c.innerHTML='<span class="pad"><span class="disc'+(cls?" "+cls:"")+'" style="color:'+tint+'"></span></span>';
-    return c;
-  }
-  function clear(r){ var c=cellAt(r); if(c) c.innerHTML=""; }
-  function land(){
-    var c=fill(target,reduced?"":"thud");
-    if(c&&!reduced){ c.style.color=tint; c.classList.add("landed"); }
+  function rest(){
+    var c=layer&&layer.querySelector('.cell[data-i="'+i+'"]');
+    if(c) c.innerHTML=discSVG(who);
     sfx.landc4(); buzz(18);
-    later(done,reduced?40:190);
+    later(done,reduced?30:120);
   }
-  if(reduced||target<=0){ land(); return; }
+  if(reduced||!board||!layer||!board.animate){ rest(); return; }
 
-  var total=Math.min(600,190+target*85);
-  for(var r=0;r<target;r++){
-    (function(row){
-      later(function(){ if(row) clear(row-1); fill(row); }, total*Math.sqrt(row/target));
-    })(r);
+  var el=document.createElement("div");
+  el.className="c4fall";
+  el.style.left=(col*100/b.cols)+"%";
+  el.style.width=(100/b.cols)+"%";
+  el.style.height=(100/b.rows)+"%";
+  el.innerHTML=discSVG(who);
+  layer.appendChild(el);
+
+  var end=row*100, dur=Math.round(170+90*Math.sqrt(row+1.1));
+  var a=el.animate([
+    { transform:"translateY(-112%)", offset:0,   easing:"cubic-bezier(.42,0,.92,.58)" },
+    { transform:"translateY("+end+"%)",     offset:.82, easing:"cubic-bezier(.32,0,.36,1)" },
+    { transform:"translateY("+(end-7)+"%)", offset:.90, easing:"ease-in" },
+    { transform:"translateY("+end+"%)",     offset:1 }
+  ],{ duration:dur, fill:"forwards" });
+
+  /* A document timeline can stall - a backgrounded tab, a pane that isn't
+     compositing - and onfinish would never arrive. The match must not hang on
+     an animation, so whichever lands first wins. */
+  var settled=false;
+  function land(){
+    if(settled) return; settled=true;
+    try{ a.cancel(); }catch(e){}
+    el.remove(); rest();
   }
-  later(function(){ clear(target-1); land(); },total);
+  a.onfinish=land;
+  later(land,dur+280);
 }
 
 /* ---------- player bar + turn clock ----------
@@ -1450,45 +1571,80 @@ function viewQuests(){
 }
 
 function viewShop(){
-  var me=DB.me, p=P(me), other=P(1-me);
+  var me=DB.me, p=P(me), other=P(1-me), clash=(other.color===p.color);
+
   var sw=COLORS.map(function(c){
-    var owned=p.owned.indexOf(c.id)>-1, equipped=p.color===c.id, taken=other.color===c.id;
-    return '<button class="sw'+(owned?"":" locked")+(equipped?" equipped":"")+(taken?" taken":"")+'" data-color="'+c.id+'" type="button" style="color:'+c.hex+'"'+(taken?" disabled":"")+">"
+    var owned=p.owned.indexOf(c.id)>-1, equipped=p.color===c.id, worn=other.color===c.id;
+    return '<button class="sw'+(owned?"":" locked")+(equipped?" equipped":"")+'" data-color="'+c.id+'" type="button" style="color:'+c.hex+'">'
       + '<span class="chip" style="background:'+c.hex+'"></span><span class="p" style="color:'+(equipped?c.hex:"var(--grey-dim)")+'">'
-      + (taken?"In use":equipped?"Equipped":owned?"Equip":I.coin+c.price)+"</span></button>";
+      + (equipped?"Worn":owned?"Wear":I.coin+c.price)+"</span>"
+      + (worn&&!equipped?'<span class="alsoworn">also '+esc(pname(1-me)).slice(0,6)+"</span>":"")+"</button>";
   }).join("");
-  var th=THEMES.map(function(t){
-    var owned=DB.shared.themes.indexOf(t.id)>-1, equipped=DB.shared.theme===t.id;
-    return '<button class="theme'+(equipped?" equipped":"")+'" data-theme="'+t.id+'" type="button"><span class="prev">'+themePreview(t.id)+"</span>"
+
+  var pats=PATTERNS.map(function(x){
+    var owned=p.ownedPat.indexOf(x.id)>-1, equipped=p.pattern===x.id;
+    return '<button class="sw'+(owned?"":" locked")+(equipped?" equipped":"")+'" data-pat="'+x.id+'" type="button" style="color:'+phex(me)+'">'
+      + '<span class="patprev">'+patPreview(x.id,phex(me))+"</span>"
+      + '<span class="p" style="color:'+(equipped?phex(me):"var(--grey-dim)")+'">'
+      + (equipped?"Worn":owned?"Wear":I.coin+x.price)+"</span></button>";
+  }).join("");
+
+  var ter=TERRAINS.map(function(t){
+    var owned=p.ownedTer.indexOf(t.id)>-1, equipped=p.terrain===t.id;
+    return '<button class="theme'+(equipped?" equipped":"")+'" data-ter="'+t.id+'" type="button"><span class="prev">'+terrainPreview(t)+"</span>"
       + '<span class="body"><span class="t">'+esc(t.name)+'</span><span class="d">'+esc(t.desc)+"</span></span>"
-      + (equipped?'<span class="qmeta done">Active</span>':owned?'<span class="qmeta">Use</span>':coinTag(t.price))+"</button>";
+      + (equipped?'<span class="qmeta done">Home</span>':owned?'<span class="qmeta">Use</span>':coinTag(t.price))+"</button>";
   }).join("");
+
   stage.innerHTML='<div class="view">'
     + '<div class="headline"><span class="lbl">Balance '+p.coins+' &middot; '+esc(pname(me))+'</span><span class="big">Shop</span></div>'
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Your colour</span></div><div class="swatches">'+sw+"</div>"
-    +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">A colour the other player is wearing is greyed out &mdash; you two always stay distinguishable.</p></div>'
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Board style &middot; shared</span></div><div class="themerow">'+th+"</div></div></div>";
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Colour</span></div><div class="swatches">'+sw+"</div>"
+    +   (clash?'<p class="twinnote">You and '+esc(pname(1-me))+" share a colour. "+esc(pname(1))
+             +"'s pieces are darkened and ringed so the two still read apart.</p>"
+            :'<p style="margin:0;color:var(--grey-dim);font-size:11px">You may both wear the same colour &mdash; the second player gets a rim so nothing is ambiguous.</p>')
+    +   "</div>"
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Design</span></div><div class="swatches">'+pats+"</div>"
+    +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">Carried inside your piece, on every board.</p></div>'
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Terrain &middot; your home ground</span></div><div class="themerow">'+ter+"</div>"
+    +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">Matches are played at one player&rsquo;s home. Whoever&rsquo;s it is, their terrain is the board you both play on.</p></div>'
+    + "</div>";
+
+  function buy(cost,ownList,id,btn){
+    if(ownList.indexOf(id)>-1){ sfx.tap(); return true; }
+    if(p.coins<cost){ sfx.nope(); buzz(40); flash(btn); return false; }
+    p.coins-=cost; ownList.push(id); sfx.buy(); buzz([12,30,12]); return true;
+  }
   stage.querySelectorAll("[data-color]").forEach(function(b){
     b.addEventListener("click",function(){
-      var c=COLORS.filter(function(x){return x.id===b.dataset.color;})[0];
-      if(!c||other.color===c.id) return;
-      if(p.owned.indexOf(c.id)===-1){
-        if(p.coins<c.price){ sfx.nope(); buzz(40); flash(b); return; }
-        p.coins-=c.price; p.owned.push(c.id); sfx.buy(); buzz([12,30,12]);
-      } else sfx.tap();
+      var c=COLORS.filter(function(x){return x.id===b.dataset.color;})[0]; if(!c) return;
+      if(!buy(c.price,p.owned,c.id,b)) return;
       p.color=c.id; save(); accent(phex(DB.me)); renderHub();
     });
   });
-  stage.querySelectorAll("[data-theme]").forEach(function(b){
+  stage.querySelectorAll("[data-pat]").forEach(function(b){
     b.addEventListener("click",function(){
-      var t=THEMES.filter(function(x){return x.id===b.dataset.theme;})[0]; if(!t) return;
-      if(DB.shared.themes.indexOf(t.id)===-1){
-        if(p.coins<t.price){ sfx.nope(); buzz(40); flash(b); return; }
-        p.coins-=t.price; DB.shared.themes.push(t.id); sfx.buy(); buzz([12,30,12]);
-      } else sfx.tap();
-      DB.shared.theme=t.id; save(); renderHub();
+      var x=PATTERNS.filter(function(y){return y.id===b.dataset.pat;})[0]; if(!x) return;
+      if(!buy(x.price,p.ownedPat,x.id,b)) return;
+      p.pattern=x.id; save(); renderHub();
     });
   });
+  stage.querySelectorAll("[data-ter]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var t=TERRAINS.filter(function(x){return x.id===b.dataset.ter;})[0]; if(!t) return;
+      if(!buy(t.price,p.ownedTer,t.id,b)) return;
+      p.terrain=t.id; save(); renderHub();
+    });
+  });
+}
+function patPreview(pid,hex){
+  return '<svg viewBox="0 0 100 100" width="100%" height="100%" style="color:'+hex+'">'
+    + '<circle cx="50" cy="50" r="47" fill="currentColor"/>'+patternSVG(pid,false)+"</svg>";
+}
+function terrainPreview(t){
+  var cells="";
+  for(var y=0;y<3;y++) for(var x=0;x<3;x++)
+    cells+='<rect x="'+(x*13+1)+'" y="'+(y*13+1)+'" width="11" height="11" rx="'+Math.min(5,t.rad/3)+'" fill="'+t.frame+'" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+  return '<svg viewBox="0 0 40 40" width="100%" height="100%"><rect width="40" height="40" rx="'+Math.min(8,t.rad/2)+'" fill="'+t.well+'"/>'+cells+"</svg>";
 }
 function themePreview(id){
   var r=id==="etched"?"1":id==="void"?"6":"2.6", fill=id==="void"?"#0C0E14":id==="etched"?"none":"#171B25", cells="";
@@ -2576,14 +2732,14 @@ function bidBoardHTML(pickFor){
     var col=v?phex(v==="X"?0:1):null;
     var isWin=G.result&&G.result.line&&G.result.line.indexOf(i)>-1;
     var open=!v&&live;
-    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced)+"</span>"
-             :(open?'<span class="ghost" style="color:'+phex(pickFor)+'">'+markSVG(pmark(pickFor),false)+"</span>":"");
+    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced,v==="X"?0:1)+"</span>"
+             :(open?'<span class="ghost" style="color:'+phex(pickFor)+'">'+markSVG(pmark(pickFor),false,pickFor)+"</span>":"");
     var cls="cell"+(i===k?" bidcell":"")+(isWin?" wincell":"")+(open?" pickable":"");
     return open
       ? '<button type="button" class="'+cls+'" data-i="'+i+'" aria-label="Put '+SQNAMES[i]+' up for bid"><span class="pad">'+inner+"</span></button>"
       : '<div class="'+cls+'" data-i="'+i+'"><span class="pad">'+inner+"</span></div>";
   }).join("");
-  return '<div class="board ttt md t-'+DB.shared.theme+'">'+cells+winLineSVG()+"</div>";
+  return '<div class="board ttt md" style="'+terrainVars()+'">'+cells+winLineSVG()+"</div>";
 }
 
 function screenBidEntry(p){
@@ -2981,6 +3137,11 @@ function newMatch(id,opts){
   G.cells=hasBoard() ? new Array(BOARDS[G.board].cols*BOARDS[G.board].rows).fill(null) : [];
   G.lastPlaced=-1; G.inFlight=-1; G.result=null; G.winner=null;
   G.first=Math.random()<.5?0:1; G.turn=G.first;
+  /* you play at somebody's place, and their terrain is the board. Against the
+     bot that is always you; between two players it takes turns. */
+  G.home = G.vsBot ? 0 : DB.lastHome;
+  if(!G.vsBot){ DB.lastHome=1-DB.lastHome; save(); }
+  if(hasBoard()) logRound({ t:"At "+pname(G.home)+"'s place", d:terrainOf(G.home).name+" terrain", winner:null });
   if(g.kind==="board") screenClassic();
   else if(g.kind==="bid") bidStart(Math.min(BID_MAX,Math.max(BID_MIN,opts.pool||BID_POOL)));
   else startRound(null,true);
