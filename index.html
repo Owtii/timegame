@@ -167,6 +167,11 @@ button{ font:inherit; }
   background:var(--pc); color:var(--ink); display:none; place-items:center; }
 .choice.on .tickmark{ display:grid; }
 .choice .tickmark svg{ width:9px; height:9px; }
+.choices.one{ grid-template-columns:1fr; }
+.setup.stack{ justify-content:flex-start; gap:11px; }
+/* the list runs past a phone screen, so keep Start within thumb reach */
+.setup.stack .foot{ position:sticky; bottom:0; padding:14px 0 2px; margin-top:0;
+  background:linear-gradient(to top, var(--ink) 58%, transparent); }
 
 /* ---------- boards ---------- */
 
@@ -518,6 +523,91 @@ button{ font:inherit; }
 @keyframes toastIn{ from{ opacity:0; transform:translateY(-12px) scale(.94) } }
 @keyframes toastOut{ to{ opacity:0; transform:translateY(-10px) scale(.97) } }
 
+/* ---------- auto-advance ---------- */
+
+.autoline{ position:relative; height:2px; width:104px; margin-inline:auto; border-radius:2px;
+  background:rgba(255,255,255,.09); overflow:hidden; flex:none; }
+.autoline i{ display:block; height:100%; background:var(--pc); transform-origin:left center;
+  animation:autorun var(--dur,1.6s) linear forwards; }
+@keyframes autorun{ from{ transform:scaleX(1) } to{ transform:scaleX(0) } }
+
+/* ---------- classic board play ---------- */
+
+.classic{ justify-content:center; gap:16px; }
+.turnstrip{ display:flex; align-items:center; justify-content:center; gap:9px; flex:none; }
+.turnstrip .side{ display:flex; align-items:center; gap:7px; padding:6px 12px 6px 9px; border:1px solid var(--hair);
+  border-radius:999px; opacity:.38; transition:opacity .25s var(--ease), border-color .25s, transform .25s var(--ease); }
+.turnstrip .side.on{ opacity:1; border-color:currentColor; transform:scale(1.04); }
+.turnstrip .side .g{ width:16px; height:16px; display:block; }
+.turnstrip .side .n{ font-family:var(--mono); font-size:11.5px; font-weight:700; max-width:11ch;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.turnstrip .mid{ font-family:var(--mono); font-size:9px; letter-spacing:.16em; color:var(--grey-dim); }
+.statusline{ min-height:16px; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; }
+.statusline .dots i{ width:4px; height:4px; }
+
+/* ---------- connect 4 drop layer ---------- */
+
+.c4fall{ position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:14px; z-index:2; }
+.c4fall .fdisc{ position:absolute; border-radius:50%; background:currentColor; will-change:transform;
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.28), inset 0 -3px 6px rgba(0,0,0,.4), 0 0 12px -5px currentColor; }
+
+/* ---------- sheet (history) ---------- */
+
+#sheet{ position:fixed; inset:0; z-index:60; display:flex; flex-direction:column; justify-content:flex-end; }
+#sheet .scrim{ position:absolute; inset:0; background:rgba(4,6,10,.74); animation:fadeIn .25s var(--ease) both; }
+@keyframes fadeIn{ from{ opacity:0 } }
+#sheet .body{ position:relative; width:100%; max-width:560px; margin-inline:auto; background:var(--panel);
+  border:1px solid var(--hair); border-bottom:0; border-radius:20px 20px 0 0; max-height:84%;
+  display:flex; flex-direction:column; animation:sheetIn .3s var(--ease) both;
+  padding:14px 16px calc(env(safe-area-inset-bottom) + 16px); }
+@keyframes sheetIn{ from{ transform:translateY(26px); opacity:0 } }
+#sheet .head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex:none; padding-bottom:12px; }
+#sheet .scroll{ overflow-y:auto; scrollbar-width:none; display:flex; flex-direction:column; gap:9px; }
+#sheet .scroll::-webkit-scrollbar{ display:none; }
+
+.logrow{ display:flex; align-items:center; gap:12px; border:1px solid var(--hair); border-radius:14px;
+  background:var(--panel-2); padding:10px 12px; }
+.logrow .body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.logrow .t{ font-family:var(--mono); font-size:12px; font-weight:700; }
+.logrow .d{ font-size:11.5px; color:var(--grey); line-height:1.4; }
+.logrow .mini{ flex:none; display:grid; place-items:center; }
+.logrow .rn{ font-family:var(--mono); font-size:10px; color:var(--grey-dim); flex:none; width:22px; text-align:center; }
+.emptylog{ text-align:center; color:var(--grey-dim); font-size:12px; padding:22px 0; }
+
+/* ---------- setup extras ---------- */
+
+.grouplbl{ display:flex; align-items:center; gap:9px; }
+.grouplbl::after{ content:''; flex:1 1 auto; height:1px; background:var(--hair); }
+.choice.wide{ flex-direction:row; align-items:center; gap:11px; padding:11px 12px; }
+.choice.wide .art{ width:42px; height:34px; flex:none; }
+.choice.wide .txt{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.opts{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.opt{ appearance:none; cursor:pointer; border:1px solid var(--hair); border-radius:13px; background:var(--panel);
+  color:var(--text); padding:11px 12px; display:flex; flex-direction:column; gap:3px; text-align:left;
+  transition:border-color .2s, background .2s, transform .1s; }
+.opt:active{ transform:scale(.98); }
+.opt.on{ border-color:var(--pc); background:var(--panel-2); }
+.opt .t{ font-family:var(--mono); font-size:12px; font-weight:700; }
+.opt .d{ font-size:10.5px; color:var(--grey-dim); }
+.stepper{ display:flex; align-items:center; justify-content:center; gap:14px; }
+.stepper .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:30px; font-weight:700;
+  letter-spacing:-.03em; min-width:4.6ch; text-align:center; }
+.stepper .v small{ font-size:.42em; color:var(--grey); margin-left:2px; }
+.stepper .rnd{ appearance:none; width:42px; height:42px; border-radius:12px; border:1px solid var(--hair);
+  background:var(--panel-2); color:var(--text); font-family:var(--mono); font-size:20px; cursor:pointer;
+  display:grid; place-items:center; transition:transform .1s, border-color .2s; }
+.stepper .rnd:active{ transform:scale(.92); border-color:var(--pc); }
+
+/* ---------- number pads ---------- */
+
+.numgrid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; flex:none; }
+.numgrid .key{ padding:16px 0; font-size:20px; }
+.numgrid .key.used{ opacity:.28; }
+.turnflash{ display:flex; flex-direction:column; align-items:center; gap:5px; min-height:44px; justify-content:center; }
+.turnflash .big2{ font-family:var(--mono); font-size:15px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.turnflash .sub2{ font-size:12px; color:var(--grey); }
+.gchip.mine{ box-shadow:0 0 0 1px currentColor inset; }
+
 /* ---------- short screens ---------- */
 
 @media (max-height:700px){
@@ -540,6 +630,10 @@ button{ font:inherit; }
   .choice .d{ font-size:10.5px }
   .setup .headline .big{ font-size:17px }
   .verdict .arrowbox{ width:64px; height:64px; margin-bottom:14px }
+  .choice.wide{ padding:9px 10px }
+  .choice.wide .art{ height:28px }
+  .numgrid .key{ padding:12px 0; font-size:18px }
+  .stepper .v{ font-size:25px }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -564,8 +658,11 @@ button{ font:inherit; }
    Catalogue
    ============================================================ */
 
-var VOID_LIMIT=1.5, TARGET_MIN=3.00, TARGET_MAX=8.00, BLIND_AT=1000, ARM_DELAY=200;
-var GUESS_CAP=7, NUM_MIN=1, NUM_MAX=100;
+var VOID_LIMIT=1.5, BLIND_AT=1000, ARM_DELAY=200;
+/* duel targets stay tight; the standalone clock game spans the full 2-10s range */
+var TARGET_MIN=3.00, TARGET_MAX=8.00, TAP_MIN=2.00, TAP_MAX=10.00;
+/* standalone deduction: 1-100. Duel deduction: 1-10, three tries each, closest takes the square. */
+var SOLO_HI=100, SOLO_CAP=14, DUEL_HI=10, DUEL_TRIES=3;
 
 var BOARDS={
   ttt:{ id:"ttt", name:"Tic-Tac-Toe", cols:3, rows:3, need:3, drop:false,
@@ -573,9 +670,23 @@ var BOARDS={
   c4:{  id:"c4",  name:"Connect 4",   cols:7, rows:6, need:4, drop:true,
         desc:"7&times;6. Four in a row. Longer matches.", pick:"Tap a column \u2014 your piece drops." }
 };
-var MODES={
-  timer:{ id:"timer", name:"Timer Duel",  desc:"Stop a hidden clock closest to the target." },
-  number:{ id:"number", name:"Number Duel", desc:"Guess the secret number in 7 tries." }
+
+/* Every game the app can start. `kind` decides which engine drives it:
+   board = play the grid directly, guess/tap = a standalone duel with no grid,
+   duel  = win the mini-game, then claim a square. */
+var GAMES={
+  ttt:    { id:"ttt",    kind:"board", board:"ttt", group:"classic", name:"Tic-Tac-Toe",
+            desc:"Straight up. Three in a row.", art:"ttt" },
+  c4:     { id:"c4",     kind:"board", board:"c4",  group:"classic", name:"Connect 4",
+            desc:"Straight up. Four in a row.", art:"c4" },
+  guess:  { id:"guess",  kind:"guess", group:"classic", name:"Number Guess",
+            desc:"1 to 100. Higher or lower.", art:"number", winTo:2 },
+  tap:    { id:"tap",    kind:"tap",   group:"classic", name:"Tap the Time",
+            desc:"Stop the blind clock on target.", art:"timer", winTo:3 },
+  dtimer: { id:"dtimer", kind:"duel", mode:"timer",  group:"duel", name:"Timer Duel",
+            desc:"Closest to the target claims a square.", art:"timer" },
+  dnumber:{ id:"dnumber",kind:"duel", mode:"number", group:"duel", name:"Number Duel",
+            desc:"1 to 10, three tries. Closest claims a square.", art:"number" }
 };
 
 var COLORS=[
@@ -612,9 +723,10 @@ function freshPlayer(i){
            q:{}, claimed:{} };
 }
 function freshDB(){
-  return { v:1, players:[freshPlayer(0),freshPlayer(1)], me:0,
+  return { v:2, players:[freshPlayer(0),freshPlayer(1)], me:0,
            shared:{ themes:["default"], theme:"default" },
-           chat:[], day:today(), series:[0,0], lastMode:"timer", lastBoard:"ttt" };
+           chat:[], day:today(), series:[0,0], history:[],
+           lastGame:"dtimer", lastBoard:"ttt", lastOpp:"friend", lastTap:null };
 }
 function load(){
   try{ var raw=localStorage.getItem(KEY); DB=raw?JSON.parse(raw):freshDB(); }
@@ -635,8 +747,13 @@ function load(){
   if(!THEMES.some(function(t){return t.id===DB.shared.theme;})) DB.shared.theme="default";
   if(!Array.isArray(DB.chat)) DB.chat=[];
   if(!Array.isArray(DB.series)) DB.series=[0,0];
+  if(!Array.isArray(DB.history)) DB.history=[];
+  if(DB.history.length>14) DB.history=DB.history.slice(0,14);
   if(DB.me!==0&&DB.me!==1) DB.me=0;
-  if(!MODES[DB.lastMode]) DB.lastMode="timer";
+  /* v1 stored a mode id; the catalogue replaced it with a game id */
+  if(!GAMES[DB.lastGame]) DB.lastGame=(DB.lastMode==="number")?"dnumber":"dtimer";
+  if(DB.lastOpp!=="bot"&&DB.lastOpp!=="friend") DB.lastOpp="friend";
+  if(typeof DB.lastTap!=="number"||!isFinite(DB.lastTap)) DB.lastTap=null;
   if(!BOARDS[DB.lastBoard]) DB.lastBoard="ttt";
   if(DB.day!==today()){ DB.day=today(); DB.players.forEach(function(p){ p.q={}; p.claimed={}; }); }
   save();
@@ -644,7 +761,9 @@ function load(){
 function save(){ if(memOnly) return; try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ memOnly=true; } }
 
 function P(i){ return DB.players[i]; }
-function pname(i){ return P(i).name; }
+/* the bot borrows player 2's slot for colour and mark, never for name or progress */
+function isBot(i){ return G.vsBot&&i===G.bot; }
+function pname(i){ return isBot(i)?"Bot":P(i).name; }
 function pmark(i){ return i===0?"X":"O"; }
 function phex(i){ var c=COLORS.filter(function(c){return c.id===P(i).color;})[0]; return c?c.hex:COLORS[i].hex; }
 function hexA(hex,a){ var n=parseInt(hex.slice(1),16); return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"; }
@@ -735,7 +854,10 @@ var I={
   up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5"/><path d="m5 12 7-7 7 7"/></svg>',
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"/><path d="m5 12 7 7 7-7"/></svg>',
   bullseye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
-  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>'
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+  hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></svg>',
+  bot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4"/><circle cx="9" cy="13.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  duo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="3"/><path d="M3.2 19a5.3 5.3 0 0 1 10.6 0"/><circle cx="17" cy="9" r="2.4"/><path d="M14.6 18.4A4.6 4.6 0 0 1 21 15.2"/></svg>'
 };
 
 /* art for the setup cards */
@@ -789,7 +911,7 @@ function markSVG(m,animate){
 /* player emblem - the X/O for tic-tac-toe, a disc for connect 4 */
 function emblem(i,animate){
   var col=phex(i);
-  if(G.board==="c4") return '<span style="color:'+col+';display:block;width:100%;height:100%"><span class="disc"></span></span>';
+  if(hasBoard()&&G.board==="c4") return '<span style="color:'+col+';display:block;width:100%;height:100%"><span class="disc"></span></span>';
   return '<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(pmark(i),animate)+"</span>";
 }
 
@@ -797,34 +919,38 @@ function emblem(i,animate){
    Match state + board engine
    ============================================================ */
 
-var G={ mode:"timer", board:"ttt", cells:[], lastPlaced:-1, first:0, result:null,
-        /* timer */ turnIdx:0, target:0, times:[null,null], devs:[null,null], outcome:null, winner:null, replay:null,
-        /* number */ secret:0, guesses:[], entry:"", lastVerdict:null };
+var G={ game:"dtimer", kind:"duel", mode:"timer", board:"ttt", vsBot:false, bot:-1,
+        cells:[], lastPlaced:-1, inFlight:-1, first:0, result:null, turn:0, log:[], round:1, score:[0,0],
+        /* timer */ turnIdx:0, target:0, tapTarget:null, times:[null,null], devs:[null,null],
+                    outcome:null, winner:null, replay:null,
+        /* number */ secret:0, hi:100, cap:14, guesses:[], entry:"", lastVerdict:null };
 
 function B(){ return BOARDS[G.board]; }
+function hasBoard(){ return G.kind==="board"||G.kind==="duel"; }
 function idx(r,c){ return r*B().cols+c; }
 function marksOn(){ return G.cells.filter(Boolean).length; }
 function boardFull(){ return G.cells.every(Boolean); }
 function dropRow(col){ var b=B(); for(var r=b.rows-1;r>=0;r--) if(!G.cells[idx(r,col)]) return r; return -1; }
 
 /* generic n-in-a-row over the whole grid - serves 3-in-a-row and 4-in-a-row alike */
-function judge(){
-  var b=B(), dirs=[[0,1],[1,0],[1,1],[1,-1]];
+function judgeOn(cells,b){
+  var dirs=[[0,1],[1,0],[1,1],[1,-1]];
   for(var r=0;r<b.rows;r++) for(var c=0;c<b.cols;c++){
-    var v=G.cells[idx(r,c)]; if(!v) continue;
+    var v=cells[r*b.cols+c]; if(!v) continue;
     for(var d=0;d<4;d++){
-      var dr=dirs[d][0], dc=dirs[d][1], line=[idx(r,c)], ok=true;
+      var dr=dirs[d][0], dc=dirs[d][1], line=[r*b.cols+c], ok=true;
       for(var k=1;k<b.need;k++){
         var rr=r+dr*k, cc=c+dc*k;
-        if(rr<0||rr>=b.rows||cc<0||cc>=b.cols||G.cells[idx(rr,cc)]!==v){ ok=false; break; }
-        line.push(idx(rr,cc));
+        if(rr<0||rr>=b.rows||cc<0||cc>=b.cols||cells[rr*b.cols+cc]!==v){ ok=false; break; }
+        line.push(rr*b.cols+cc);
       }
       if(ok) return { winner:v==="X"?0:1, line:line };
     }
   }
-  if(boardFull()) return { winner:null, line:null };
+  if(cells.every(Boolean)) return { winner:null, line:null };
   return null;
 }
+function judge(){ return judgeOn(G.cells,B()); }
 
 function winLineSVG(){
   if(!G.result||!G.result.line) return "";
@@ -855,15 +981,11 @@ function tttHTML(size,live){
 }
 function c4HTML(size,live){
   var b=B(), playable=(live!==null&&live!==undefined);
+  /* a piece mid-flight lives in the overlay layer, not in its cell - the cell clips it */
   var cells=G.cells.map(function(v,i){
     var isWin=G.result&&G.result.line&&G.result.line.indexOf(i)>-1;
-    var inner="";
-    if(v){
-      var col=phex(v==="X"?0:1), r=Math.floor(i/b.cols);
-      var dropping=(i===G.lastPlaced);
-      inner='<span class="pad"><span class="disc'+(dropping?" drop":"")+'" style="color:'+col
-          + (dropping?";--from:"+(-(r+1)*100)+"%;--dur:"+(0.30+r*0.045).toFixed(2)+"s":"")+'"></span></span>';
-    }
+    var inner=(v&&i!==G.inFlight)
+      ? '<span class="pad"><span class="disc" style="color:'+phex(v==="X"?0:1)+'"></span></span>' : "";
     return '<div class="cell'+(isWin?" wincell":"")+'" data-i="'+i+'">'+inner+"</div>";
   }).join("");
   var cols="";
@@ -874,8 +996,39 @@ function c4HTML(size,live){
     }
   }
   var inner='<div class="board c4 '+size+" t-"+DB.shared.theme+'" style="--cols:'+b.cols+";--rows:"+b.rows+'" role="group" aria-label="Board">'+cells+winLineSVG()+"</div>"
+          + (size==="sm"?"":'<div class="c4fall" id="c4fall"></div>')
           + (playable?'<div class="c4cols" style="--cols:'+b.cols+'">'+cols+"</div>":"");
   return size==="sm" ? inner : '<div class="c4wrap">'+inner+"</div>";
+}
+
+/* Drop a disc down the column and land it in `i`. The animated disc sits in an
+   overlay clipped to the board, so it is visible the whole way down. */
+function dropDisc(wrap,i,who,done){
+  var fall=wrap.querySelector("#c4fall"), cell=wrap.querySelector('.cell[data-i="'+i+'"]');
+  var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if(!fall||!cell||!cell.getBoundingClientRect||reduced){ done(); return; }
+  var wr=wrap.getBoundingClientRect(), cr=cell.getBoundingClientRect(), size=cr.width;
+  if(!size){ done(); return; }
+  var pad=size*0.09, left=cr.left-wr.left+pad, top=cr.top-wr.top+pad, d=size-pad*2;
+  var start=-(top+d+size*0.2), travel=Math.abs(start);
+  var disc=document.createElement("span");
+  disc.className="fdisc";
+  disc.style.cssText="left:"+left+"px;top:"+top+"px;width:"+d+"px;height:"+d+"px;color:"+phex(who);
+  fall.appendChild(disc);
+  var dur=Math.min(700,220+travel*1.15);
+  var anim=disc.animate([
+    { transform:"translateY("+start+"px)", offset:0,   easing:"cubic-bezier(.45,0,.9,.45)" },
+    { transform:"translateY(0)",           offset:.70, easing:"cubic-bezier(.2,.7,.4,1)" },
+    { transform:"translateY("+(-d*0.17)+"px)", offset:.84, easing:"cubic-bezier(.5,0,.9,.5)" },
+    { transform:"translateY(0)",           offset:.94 },
+    { transform:"translateY("+(-d*0.05)+"px)", offset:.97 },
+    { transform:"translateY(0)",           offset:1 }
+  ],{ duration:dur, fill:"forwards" });
+  later(function(){ sfx.landc4(); buzz(18); },dur*0.70);
+  var ended=false;
+  function finish(){ if(ended) return; ended=true; disc.remove(); done(); }
+  anim.onfinish=finish;
+  later(finish,dur+80);
 }
 
 /* topbar board glance - the 7x6 grid is unreadable at 44px, so show a tally instead */
@@ -889,8 +1042,11 @@ function miniHTML(){
    Rewards
    ============================================================ */
 
-function bump(pi,key,n){ var q=P(pi).q; q[key]=(q[key]||0)+(n||1); }
-function award(pi,amount,reason){ P(pi).coins+=amount; save(); toast(amount,reason); }
+/* Nothing the bot does may touch a real profile - these three are the only doors in. */
+var scratch={ matches:0, wins:0, roundsWon:0, best:null, bestGuess:null, streak:0, bestStreak:0 };
+function ST(i){ return isBot(i)?scratch:P(i).stats; }
+function bump(pi,key,n){ if(isBot(pi)) return; var q=P(pi).q; q[key]=(q[key]||0)+(n||1); }
+function award(pi,amount,reason){ if(isBot(pi)) return; P(pi).coins+=amount; save(); toast(amount,reason); }
 function questsReady(pi){
   var p=P(pi), n=0;
   QUESTS.forEach(function(q){ if(!p.claimed[q.id]&&(p.q[q.track]||0)>=q.goal) n++; });
@@ -921,11 +1077,17 @@ function chromeHub(){
 }
 function chromeGame(show){
   topbar.classList.toggle("recede",!show);
+  var rn=hasBoard()?(marksOn()+1):G.round;
   topbar.innerHTML='<div class="slot">'
     + '<button class="icon-btn tiny" id="quitBtn" type="button" aria-label="Quit match">'+I.close+"</button>"
-    + '<span class="lbl" id="roundLbl">Round '+(marksOn()+1)+"</span></div>"
-    + '<div class="slot mid" id="mini"></div><div class="slot right">'+soundBtn()+"</div>";
-  document.getElementById("mini").innerHTML=miniHTML();
+    + '<span class="lbl" id="roundLbl">Round '+rn+"</span></div>"
+    + '<div class="slot mid" id="mini"></div><div class="slot right">'
+    + '<button class="icon-btn tiny" id="histBtn" type="button" aria-label="Match history">'+I.hist+"</button>"
+    + soundBtn()+"</div>";
+  document.getElementById("mini").innerHTML = hasBoard() ? miniHTML()
+    : '<span class="tally"><i style="background:'+phex(0)+'"></i>'+G.score[0]
+      + '<span class="sep">/</span>'+G.score[1]+'<i style="background:'+phex(1)+'"></i></span>';
+  document.getElementById("histBtn").addEventListener("click",function(){ sfx.tap(); openHistory(); });
   wireSound();
   // Connect 4 matches run long - leaving one shouldn't mean finishing it.
   var q=document.getElementById("quitBtn"), lbl=document.getElementById("roundLbl");
@@ -945,7 +1107,7 @@ function chromeGame(show){
 }
 function chromePlain(){
   topbar.classList.remove("recede");
-  topbar.innerHTML='<div class="slot"><span class="lbl">New match</span></div><div class="slot right">'+soundBtn()+"</div>";
+  topbar.innerHTML='<div class="slot"><span class="lbl">Setup</span></div><div class="slot right">'+soundBtn()+"</div>";
   wireSound();
 }
 
@@ -973,7 +1135,11 @@ tabbar.addEventListener("click",function(e){
    Hub
    ============================================================ */
 
-function showHub(){ haltAll(); accent(phex(DB.me)); stage.classList.add("scrolls"); renderHub(); }
+function showHub(){
+  haltAll(); sheetClose();
+  G.vsBot=false; G.bot=-1;   /* back in the hub both slots are people again */
+  accent(phex(DB.me)); stage.classList.add("scrolls"); renderHub();
+}
 function renderHub(){
   chromeHub(); renderTabs(); stage.scrollTop=0;
   if(tab==="home") viewHome();
@@ -987,7 +1153,7 @@ function viewHome(){
   var s=P(DB.me).stats;
   stage.innerHTML='<div class="view">'
     + '<div class="wordmark"><h1>Duel<br><span class="l2">Board</span></h1>'
-    +   "<p>Two duels, two boards. Win the duel, claim a square &mdash; first to line them up takes the match.</p></div>"
+    +   "<p>Play the classics straight up, or duel for every square. Against a friend on this device, or the bot.</p></div>"
     + '<div class="demo"><div class="layer"><span class="readout" id="demoNum">0.00</span></div>'
     +   '<div class="layer"><span class="ticks" id="demoTicks"></span></div></div>'
     + '<div class="panel tight"><div class="vsrow">'
@@ -1000,8 +1166,21 @@ function viewHome(){
     +   '<div class="stat"><span class="v">'+s.wins+'</span><span class="k">Wins</span></div>'
     +   '<div class="stat"><span class="v">'+(s.best===null?"&mdash;":fx2(s.best))+'</span><span class="k">Best miss</span></div>'
     + "</div>"
+    + (DB.history.length
+        ? '<div class="panel tight"><div class="panel-h"><span class="lbl">Recent matches</span>'
+          + '<button class="act sm ghost" id="allHist" type="button">All</button></div>'
+          + DB.history.slice(0,3).map(function(m){
+              var g=GAMES[m.game]||{name:"Match"}, tint=m.winner===null?"var(--grey-dim)":phex(m.winner);
+              return '<div class="qrow" style="padding:8px 0"><div class="body">'
+                + '<span class="t" style="color:'+tint+'">'+esc(m.winner===null?"Draw":m.names[m.winner]+" won")+"</span>"
+                + '<span class="d">'+esc(g.name)+(m.vsBot?" &middot; vs Bot":"")+" &middot; "+timeAgo(m.ts)+"</span></div></div>";
+            }).join("")
+          + "</div>"
+        : "")
     + '<div class="foot"><button class="act hero" id="play" type="button">New match</button></div></div>';
   document.getElementById("play").addEventListener("click",function(){ sfx.warm(); sfx.tap(); screenSetup(); });
+  var ah=document.getElementById("allHist");
+  if(ah) ah.addEventListener("click",function(){ sfx.tap(); openMatchHistory(); });
 
   var num=document.getElementById("demoNum"), tk=document.getElementById("demoTicks"), t0=performance.now();
   (function loop(now){
@@ -1158,47 +1337,302 @@ function viewProfile(){
 }
 
 /* ============================================================
-   Setup - pick the duel and the board
+   Bot
+   ============================================================ */
+
+var BOT={
+  /* --- boards --- */
+  move:function(cells,board,me){
+    return board==="ttt" ? this.ttt(cells,me) : this.c4(cells,me);
+  },
+  /* perfect 3x3 search, with a deliberate slip now and then so it stays beatable */
+  ttt:function(cells,me){
+    var open=[]; cells.forEach(function(v,i){ if(!v) open.push(i); });
+    if(!open.length) return -1;
+    if(Math.random()<0.14) return open[Math.floor(Math.random()*open.length)];
+    var b=BOARDS.ttt, mk=me===0?"X":"O", best=-Infinity, pick=open[0];
+    open.forEach(function(i){
+      var c=cells.slice(); c[i]=mk;
+      var s=BOT.mm(c,b,mk,false,0);
+      if(s>best){ best=s; pick=i; }
+    });
+    return pick;
+  },
+  mm:function(cells,b,mk,maxing,d){
+    var r=judgeOn(cells,b);
+    if(r){ if(r.winner===null) return 0; return (r.winner===(mk==="X"?0:1)) ? 10-d : d-10; }
+    var other=mk==="X"?"O":"X", turn=maxing?mk:other, best=maxing?-Infinity:Infinity;
+    for(var i=0;i<cells.length;i++){
+      if(cells[i]) continue;
+      cells[i]=turn;
+      var s=BOT.mm(cells,b,mk,!maxing,d+1);
+      cells[i]=null;
+      best=maxing?Math.max(best,s):Math.min(best,s);
+    }
+    return best===Infinity||best===-Infinity?0:best;
+  },
+  /* connect 4: alpha-beta to a shallow depth over a window-count evaluation */
+  c4:function(cells,me){
+    var b=BOARDS.c4, mk=me===0?"X":"O", cols=[];
+    for(var c=0;c<b.cols;c++) if(BOT.free(cells,b,c)>=0) cols.push(c);
+    if(!cols.length) return -1;
+    var best=-Infinity, pick=cols[Math.floor(cols.length/2)];
+    /* centre-out ordering makes the pruning bite */
+    cols.sort(function(a,z){ return Math.abs(a-3)-Math.abs(z-3); });
+    cols.forEach(function(c){
+      var n=BOT.play(cells,b,c,mk);
+      var s=BOT.ab(n,b,mk,4,-Infinity,Infinity,false)+Math.random()*0.6;
+      if(s>best){ best=s; pick=c; }
+    });
+    return pick;
+  },
+  free:function(cells,b,c){ for(var r=b.rows-1;r>=0;r--) if(!cells[r*b.cols+c]) return r; return -1; },
+  play:function(cells,b,c,mk){ var n=cells.slice(), r=BOT.free(n,b,c); if(r>=0) n[r*b.cols+c]=mk; return n; },
+  ab:function(cells,b,mk,depth,a,bb,maxing){
+    var r=judgeOn(cells,b);
+    if(r){ if(r.winner===null) return 0; return (r.winner===(mk==="X"?0:1)) ? 9000+depth : -9000-depth; }
+    if(depth===0) return BOT.score(cells,b,mk);
+    var other=mk==="X"?"O":"X", turn=maxing?mk:other, best=maxing?-Infinity:Infinity;
+    for(var c=0;c<b.cols;c++){
+      if(BOT.free(cells,b,c)<0) continue;
+      var s=BOT.ab(BOT.play(cells,b,c,turn),b,mk,depth-1,a,bb,!maxing);
+      if(maxing){ best=Math.max(best,s); a=Math.max(a,s); } else { best=Math.min(best,s); bb=Math.min(bb,s); }
+      if(bb<=a) break;
+    }
+    return best===Infinity||best===-Infinity?0:best;
+  },
+  score:function(cells,b,mk){
+    var other=mk==="X"?"O":"X", total=0, dirs=[[0,1],[1,0],[1,1],[1,-1]];
+    for(var r=0;r<b.rows;r++) for(var c=0;c<b.cols;c++){
+      if(c===3) { var mid=cells[r*b.cols+c]; if(mid===mk) total+=3; else if(mid===other) total-=3; }
+      for(var d=0;d<4;d++){
+        var dr=dirs[d][0], dc=dirs[d][1], mine=0, theirs=0, ok=true;
+        for(var k=0;k<b.need;k++){
+          var rr=r+dr*k, cc=c+dc*k;
+          if(rr<0||rr>=b.rows||cc<0||cc>=b.cols){ ok=false; break; }
+          var v=cells[rr*b.cols+cc];
+          if(v===mk) mine++; else if(v===other) theirs++;
+        }
+        if(!ok||(mine&&theirs)) continue;
+        if(mine===3) total+=60; else if(mine===2) total+=9; else if(mine===1) total+=1;
+        if(theirs===3) total-=75; else if(theirs===2) total-=11;
+      }
+    }
+    return total;
+  },
+  /* --- clock --- */
+  /* a human-ish miss: usually inside a quarter second, sometimes much worse */
+  time:function(target){
+    var e=(Math.random()+Math.random()+Math.random()-1.5)/1.5*0.30;
+    if(Math.random()<0.12) e*=2.6;
+    var t=Math.max(0.15,target+e);
+    return Math.round(t*100)/100;
+  },
+  /* --- numbers --- */
+  guess:function(lo,hi,taken){
+    var pool=[];
+    for(var n=lo;n<=hi;n++) if(taken.indexOf(n)===-1) pool.push(n);
+    if(!pool.length) return lo;
+    /* halve the range, but not with machine precision */
+    var mid=pool[Math.floor(pool.length/2)];
+    if(Math.random()<0.25) return pool[Math.floor(Math.random()*pool.length)];
+    return mid;
+  }
+};
+
+/* ============================================================
+   History - rounds of this match, then matches before it
+   ============================================================ */
+
+function logRound(entry){
+  entry.r=G.round;
+  entry.cells=hasBoard()?G.cells.slice():null;
+  entry.board=G.board;
+  G.log.push(entry);
+  G.round++;
+}
+function archiveMatch(winner){
+  DB.history.unshift({
+    ts:Date.now(), game:G.game, board:G.board, vsBot:G.vsBot, winner:winner,
+    names:[pname(0),pname(1)], rounds:G.log.slice(-24)
+  });
+  if(DB.history.length>14) DB.history.length=14;
+  save();
+}
+/* render a board that is not the live one */
+function snapshotHTML(cells,board){
+  if(!cells) return "";
+  var kc=G.cells, kb=G.board, kr=G.result, kf=G.inFlight;
+  G.cells=cells; G.board=board||G.board; G.result=null; G.inFlight=-1;
+  var html=boardHTML("sm",null);
+  G.cells=kc; G.board=kb; G.result=kr; G.inFlight=kf;
+  return html;
+}
+function sheetClose(){ var s=document.getElementById("sheet"); if(s) s.remove(); }
+function openSheet(title,inner){
+  sheetClose();
+  var el=document.createElement("div"); el.id="sheet";
+  el.innerHTML='<div class="scrim"></div><div class="body"><div class="head">'
+    + '<span class="lbl">'+esc(title)+"</span>"
+    + '<button class="icon-btn tiny" id="sheetX" type="button" aria-label="Close">'+I.close+"</button></div>"
+    + '<div class="scroll">'+inner+"</div></div>";
+  document.body.appendChild(el);
+  el.querySelector(".scrim").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
+  el.querySelector("#sheetX").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
+}
+function roundRows(log){
+  if(!log||!log.length) return '<div class="emptylog">Nothing played yet.</div>';
+  return log.slice().reverse().map(function(e){
+    var tint=e.winner===null||e.winner===undefined?"var(--grey-dim)":phex(e.winner);
+    return '<div class="logrow" style="--pc:'+tint+'">'
+      + '<span class="rn lbl">'+e.r+"</span>"
+      + '<span class="body"><span class="t" style="color:'+tint+'">'+esc(e.t)+'</span>'
+      +   '<span class="d">'+esc(e.d)+"</span></span>"
+      + (e.cells?'<span class="mini">'+snapshotHTML(e.cells,e.board)+"</span>":"")
+      + "</div>";
+  }).join("");
+}
+function matchRows(){
+  if(!DB.history.length) return '<div class="emptylog">No finished matches yet.</div>';
+  return DB.history.map(function(m,i){
+    var g=GAMES[m.game]||{name:"Match"}, tint=m.winner===null?"var(--grey-dim)":phex(m.winner);
+    var who=m.winner===null?"Draw":esc(m.names[m.winner])+" won";
+    var last=m.rounds&&m.rounds.length?m.rounds[m.rounds.length-1]:null;
+    return '<button class="logrow" data-match="'+i+'" type="button" style="--pc:'+tint+';text-align:left;cursor:pointer;width:100%">'
+      + '<span class="body"><span class="t" style="color:'+tint+'">'+who+"</span>"
+      +   '<span class="d">'+esc(g.name)+(m.vsBot?" &middot; vs Bot":"")+" &middot; "+(m.rounds?m.rounds.length:0)+" rounds &middot; "+timeAgo(m.ts)+"</span></span>"
+      + (last&&last.cells?'<span class="mini">'+snapshotHTML(last.cells,m.board)+"</span>":"")
+      + "</button>";
+  }).join("");
+}
+function timeAgo(ts){
+  var s=Math.max(0,(Date.now()-ts)/1000);
+  if(s<90) return "just now";
+  if(s<5400) return Math.round(s/60)+" min ago";
+  if(s<172800) return Math.round(s/3600)+"h ago";
+  return Math.round(s/86400)+"d ago";
+}
+function openHistory(){
+  var inner=(G.log&&G.log.length?'<span class="lbl">This match</span>'+roundRows(G.log):"")
+    + '<span class="lbl" style="margin-top:6px">Finished matches</span>'+matchRows();
+  openSheet("History",inner);
+  wireMatchRows();
+}
+function openMatchHistory(){
+  openSheet("Finished matches",matchRows());
+  wireMatchRows();
+}
+function wireMatchRows(){
+  var s=document.getElementById("sheet"); if(!s) return;
+  s.querySelectorAll("[data-match]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var m=DB.history[+b.dataset.match]; if(!m) return;
+      sfx.tap();
+      var g=GAMES[m.game]||{name:"Match"};
+      openSheet(g.name+" \u00b7 "+(m.winner===null?"draw":m.names[m.winner]+" won"),roundRows(m.rounds));
+      var back=document.createElement("button");
+      back.className="act sm ghost"; back.type="button"; back.textContent="All matches";
+      back.style.marginTop="8px";
+      document.querySelector("#sheet .scroll").appendChild(back);
+      back.addEventListener("click",function(){ sfx.tap(); openMatchHistory(); });
+    });
+  });
+}
+
+/* ============================================================
+   Setup - pick the game, the opponent, the board
    ============================================================ */
 
 function show(html){ haltAll(); stage.innerHTML=html; }
-function enterGame(){ stage.classList.remove("scrolls"); tabbar.classList.add("hidden"); }
+function enterGame(){ stage.classList.remove("scrolls"); tabbar.classList.add("hidden"); sheetClose(); }
 
-var pickMode="timer", pickBoard="ttt";
+var pickGame="dtimer", pickBoard="ttt", pickOpp="friend", pickTap=null;
+
+function artFor(k){ return k==="ttt"?artTTT():k==="c4"?artC4():k==="number"?artNumber():artTimer(); }
 
 function screenSetup(){
   enterGame(); chromePlain(); accent(phex(DB.me));
-  pickMode=DB.lastMode; pickBoard=DB.lastBoard;
-  function card(kind,id,title,desc,art,on){
-    return '<button class="choice'+(on?" on":"")+'" data-'+kind+'="'+id+'" type="button">'
+  stage.classList.add("scrolls");
+  pickGame=DB.lastGame; pickBoard=DB.lastBoard; pickOpp=DB.lastOpp;
+  pickTap=(typeof DB.lastTap==="number")?DB.lastTap:null;
+
+  function card(kind,id,title,desc,art,on,wide){
+    return '<button class="choice'+(wide?" wide":"")+(on?" on":"")+'" data-'+kind+'="'+id+'" type="button">'
       + '<span class="tickmark">'+I.check+"</span>"
       + '<span class="art">'+art+"</span>"
-      + '<span class="t">'+title+'</span><span class="d">'+desc+"</span></button>";
+      + (wide?'<span class="txt">':"")
+      + '<span class="t">'+title+'</span><span class="d">'+desc+"</span>"
+      + (wide?"</span>":"")+"</button>";
+  }
+  function group(name){
+    return Object.keys(GAMES).filter(function(k){ return GAMES[k].group===name; })
+      .map(function(k){ var g=GAMES[k]; return card("game",k,g.name,g.desc,artFor(g.art),pickGame===k,true); }).join("");
   }
   function render(){
-    stage.innerHTML='<div class="screen setup">'
-      + '<div class="headline" style="text-align:center;align-items:center"><span class="lbl">Step 1</span><span class="big">Choose the duel</span></div>'
-      + '<div class="choices">'
-      +   card("mode","timer",MODES.timer.name,MODES.timer.desc,artTimer(),pickMode==="timer")
-      +   card("mode","number",MODES.number.name,MODES.number.desc,artNumber(),pickMode==="number")
+    var g=GAMES[pickGame], extra="";
+    if(g.kind==="duel"){
+      extra='<div class="grouplbl"><span class="lbl">Board to claim</span></div>'
+        + '<div class="choices">'
+        +   card("board","ttt",BOARDS.ttt.name,BOARDS.ttt.desc,artTTT(),pickBoard==="ttt")
+        +   card("board","c4",BOARDS.c4.name,BOARDS.c4.desc,artC4(),pickBoard==="c4")
+        + "</div>";
+    } else if(g.kind==="tap"){
+      extra='<div class="grouplbl"><span class="lbl">Target</span></div>'
+        + '<div class="opts">'
+        +   '<button class="opt'+(pickTap===null?" on":"")+'" data-tap="rnd" type="button">'
+        +     '<span class="t">Random</span><span class="d">'+fx2(TAP_MIN)+"s to "+fx2(TAP_MAX)+"s</span></button>"
+        +   '<button class="opt'+(pickTap!==null?" on":"")+'" data-tap="fix" type="button">'
+        +     '<span class="t">Your own</span><span class="d">Set the target yourself</span></button>'
+        + "</div>"
+        + (pickTap!==null
+            ? '<div class="stepper"><button class="rnd" data-step="-1" type="button" aria-label="Lower target">&minus;</button>'
+              + '<span class="v">'+fx2(pickTap)+"<small>s</small></span>"
+              + '<button class="rnd" data-step="1" type="button" aria-label="Raise target">+</button></div>'
+            : "");
+    }
+    stage.innerHTML='<div class="screen setup stack">'
+      + '<div class="headline" style="text-align:center;align-items:center"><span class="lbl">New match</span><span class="big">Pick a game</span></div>'
+      + '<div class="grouplbl"><span class="lbl">Classic</span></div>'
+      + '<div class="choices one">'+group("classic")+"</div>"
+      + '<div class="grouplbl"><span class="lbl">Duel for a board</span></div>'
+      + '<div class="choices one">'+group("duel")+"</div>"
+      + '<div class="grouplbl"><span class="lbl">Opponent</span></div>'
+      + '<div class="opts">'
+      +   '<button class="opt'+(pickOpp==="friend"?" on":"")+'" data-opp="friend" type="button">'
+      +     '<span class="t">Friend</span><span class="d">Pass and play, one device</span></button>'
+      +   '<button class="opt'+(pickOpp==="bot"?" on":"")+'" data-opp="bot" type="button">'
+      +     '<span class="t">Bot</span><span class="d">Play the machine, solo</span></button>'
       + "</div>"
-      + '<div class="headline" style="text-align:center;align-items:center"><span class="lbl">Step 2</span><span class="big">Choose the board</span></div>'
-      + '<div class="choices">'
-      +   card("board","ttt",BOARDS.ttt.name,BOARDS.ttt.desc,artTTT(),pickBoard==="ttt")
-      +   card("board","c4",BOARDS.c4.name,BOARDS.c4.desc,artC4(),pickBoard==="c4")
-      + "</div>"
-      + '<div class="foot"><button class="act hero" id="begin" type="button">Start match</button>'
+      + extra
+      + '<div class="foot"><button class="act hero" id="begin" type="button">Start</button>'
       +   '<button class="act ghost" id="back" type="button">Back to hub</button></div></div>';
-    stage.querySelectorAll("[data-mode]").forEach(function(b){
-      b.addEventListener("click",function(){ pickMode=b.dataset.mode; sfx.tap(); render(); });
+
+    stage.querySelectorAll("[data-game]").forEach(function(b){
+      b.addEventListener("click",function(){ pickGame=b.dataset.game; sfx.tap(); render(); });
     });
     stage.querySelectorAll("[data-board]").forEach(function(b){
       b.addEventListener("click",function(){ pickBoard=b.dataset.board; sfx.tap(); render(); });
     });
+    stage.querySelectorAll("[data-opp]").forEach(function(b){
+      b.addEventListener("click",function(){ pickOpp=b.dataset.opp; sfx.tap(); render(); });
+    });
+    stage.querySelectorAll("[data-tap]").forEach(function(b){
+      b.addEventListener("click",function(){
+        pickTap = b.dataset.tap==="rnd" ? null : (pickTap===null?5:pickTap);
+        sfx.tap(); render();
+      });
+    });
+    stage.querySelectorAll("[data-step]").forEach(function(b){
+      b.addEventListener("click",function(){
+        var v=(pickTap||5)+(+b.dataset.step)*0.5;
+        pickTap=Math.round(Math.min(20,Math.max(1,v))*100)/100;
+        sfx.key(); render();
+      });
+    });
     document.getElementById("begin").addEventListener("click",function(){
       sfx.warm(); sfx.tap();
-      DB.lastMode=pickMode; DB.lastBoard=pickBoard; save();
-      newMatch(pickMode,pickBoard);
+      DB.lastGame=pickGame; DB.lastBoard=pickBoard; DB.lastOpp=pickOpp; DB.lastTap=pickTap; save();
+      newMatch(pickGame,{ board:pickBoard, bot:pickOpp==="bot", tap:pickTap });
     });
     document.getElementById("back").addEventListener("click",function(){ sfx.tap(); tab="home"; showHub(); });
   }
@@ -1210,6 +1644,7 @@ function screenSetup(){
    ============================================================ */
 
 function screenPass(who,lead,then){
+  if(G.vsBot){ then(); return; }   /* solo against the bot: there is nobody to hand the phone to */
   accent(phex(who)); enterGame(); chromeGame(true);
   show('<div class="screen pass" id="passHit" role="button" tabindex="0" aria-label="Tap to continue">'
      + '<div class="glyph">'+emblem(who,true)+"</div>"
@@ -1237,9 +1672,9 @@ function timerPass(){
 }
 
 function screenTimer(){
-  var p=tActor(); accent(phex(p)); enterGame(); chromeGame(true);
+  var p=tActor(), bot=isBot(p); accent(phex(p)); enterGame(); chromeGame(true);
   show('<div class="screen timer">'
-     + '<div class="target"><span class="lbl">Target</span><span class="val">'+fx2(G.target)+"<small>s</small></span></div>"
+     + '<div class="target"><span class="lbl">'+(bot?"Bot is up \u00b7 target":"Target")+'</span><span class="val">'+fx2(G.target)+"<small>s</small></span></div>"
      + '<div class="window" id="win">'
      +   '<div class="layer"><span class="live" id="live">0.00</span></div>'
      +   '<div class="layer"><span class="ticks" id="ticks"></span></div>'
@@ -1247,17 +1682,19 @@ function screenTimer(){
      +   '<div class="shutter" id="shutter"></div>'
      +   '<div class="prehint lbl" id="prehint">Clock hides after 1.00s</div>'
      +   '<div class="blindmsg lbl" id="blind">Running blind</div></div>'
-     + '<button class="actuator" id="act" type="button"><span class="cap2"></span><span class="cap"></span><span class="txt" id="actTxt">Start</span></button></div>');
+     + '<button class="actuator" id="act" type="button"'+(bot?" disabled":"")+'><span class="cap2"></span><span class="cap"></span>'
+     +   '<span class="txt" id="actTxt">'+(bot?"Bot":"Start")+"</span></button></div>");
 
   var winEl=document.getElementById("win"), live=document.getElementById("live"), ticks=document.getElementById("ticks"),
       shut=document.getElementById("shutter"), blind=document.getElementById("blind"), pre=document.getElementById("prehint"),
       fuse=document.getElementById("fuse"), fuseBar=document.getElementById("fuseBar"),
       btn=document.getElementById("act"), btnTxt=document.getElementById("actTxt");
   var running=false, armed=false, done=false, warned=false, t0=0;
+  var botAt=bot?BOT.time(G.target):0;
 
   function begin(){
     running=true; t0=performance.now();
-    btnTxt.textContent="Stop"; btn.classList.add("running");
+    btnTxt.textContent=bot?"Running":"Stop"; btn.classList.add("running");
     topbar.classList.add("recede"); pre.style.opacity="0"; fuse.classList.add("on");
     sfx.start(); buzz(8);
     later(function(){ armed=true; },ARM_DELAY);
@@ -1277,11 +1714,12 @@ function screenTimer(){
       frame(tick);
     })(performance.now());
   }
-  function end(){
+  function end(forced){
+    if(done) return;
     running=false; done=true;
-    var elapsed=Math.round((performance.now()-t0)/10)/100;
+    var elapsed=(typeof forced==="number")?forced:Math.round((performance.now()-t0)/10)/100;
     G.times[p]=elapsed; G.devs[p]=Math.round(Math.abs(elapsed-G.target)*100)/100;
-    var st=P(p).stats;
+    var st=ST(p);
     if(st.best===null||G.devs[p]<st.best) st.best=G.devs[p];
     bump(p,"roundsPlayed");
     if(G.devs[p]<=0.10){ bump(p,"sharp"); award(p,COIN_SHARP,"Inside 0.10s"); }
@@ -1289,10 +1727,13 @@ function screenTimer(){
     sfx.stop(); buzz([16,26,12]);
     btn.disabled=true; btn.classList.remove("running"); btnTxt.textContent="Locked";
     winEl.innerHTML='<div class="layer"><div class="locked"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12.5 5.2 5.2L20 7"/></svg><span class="lbl">Time recorded</span></div></div>';
-    later(function(){ if(G.turnIdx===0){ G.turnIdx=1; timerPass(); } else screenReveal(); },760);
+    later(function(){ if(G.turnIdx===0){ G.turnIdx=1; timerPass(); } else screenReveal(); },bot?560:760);
   }
   btn.addEventListener("click",function(){ if(done) return; if(!running) begin(); else if(armed) end(); });
-  btn.focus({preventScroll:true});
+  if(bot){
+    pre.textContent="Bot is lining up its stop";
+    later(function(){ begin(); later(function(){ end(botAt); },botAt*1000); },700);
+  } else btn.focus({preventScroll:true});
 }
 
 function screenReveal(){
@@ -1333,6 +1774,8 @@ function screenReveal(){
       el.textContent=fx2(v*e);
       if(k<1) frame(roll); else { el.textContent=fx2(v); off.classList.add("on"); }
     })(t0);
+    /* frames stop in a backgrounded tab - make sure the figure still lands */
+    later(function(){ el.textContent=fx2(v); off.classList.add("on"); },460);
   }
   function tension(instant){
     if(instant) return;
@@ -1343,14 +1786,14 @@ function screenReveal(){
   function settle(){
     document.getElementById("c0").classList.remove("shiver");
     document.getElementById("c1").classList.remove("shiver");
-    var head,sub,label,tint;
+    var head,sub,label,tint,detail;
     if(G.outcome==="win"){
       var w=G.winner;
       document.getElementById("c"+w).classList.add("hero");
       document.getElementById("c"+(1-w)).classList.add("dim");
       head=pname(w)+" wins the round";
       sub="Off by "+fx2(G.devs[w])+"s versus "+fx2(G.devs[1-w])+"s.";
-      label=B().drop?"Drop your piece":"Place your "+pmark(w);
+      label=G.kind==="duel"?(B().drop?"Drop your piece":"Place your "+pmark(w)):"Next round";
       tint=phex(w); accent(phex(w)); sfx.win(); buzz([28,44,64]);
       creditRound(w);
     } else if(G.outcome==="tie"){
@@ -1359,17 +1802,24 @@ function screenReveal(){
       label="Replay round"; tint="#EDEFF5"; sfx.tie(); buzz([20,60,20]);
     } else {
       document.getElementById("c0").classList.add("dim"); document.getElementById("c1").classList.add("dim");
-      head="Round void"; sub="Both players missed by more than "+fx2(VOID_LIMIT)+"s. Nobody marks the board.";
+      head="Round void"; sub="Both players missed by more than "+fx2(VOID_LIMIT)+"s. Nobody wins it.";
       label="New target"; tint="var(--void)"; sfx.voided(); buzz([50]);
     }
+    detail="Target "+fx2(G.target)+"s \u00b7 "+pname(0)+" "+fx2(G.times[0])+"s \u00b7 "+pname(1)+" "+fx2(G.times[1])+"s";
+    logRound({ t:G.outcome==="win"?pname(G.winner)+" took the round":(G.outcome==="tie"?"Dead heat":"Void round"), d:detail,
+               winner:G.outcome==="win"?G.winner:null });
     banner.innerHTML='<div class="head" style="color:'+tint+'">'+esc(head)+'</div><div class="sub">'+esc(sub)+"</div>";
-    foot.innerHTML='<button class="act accent" id="next" type="button">'+esc(label)+"</button>";
-    document.getElementById("next").addEventListener("click",function(){
-      sfx.tap();
-      if(G.outcome==="win") screenPlace(G.winner); else startRound(G.outcome);
-    });
+    /* the result stays on screen, but the game moves on by itself */
+    var wait=G.outcome==="win"?2600:2200, fired=false;
+    foot.innerHTML='<button class="act accent" id="next" type="button">'+esc(label)+"</button>"+autoBar(wait);
+    function go(){
+      if(fired) return; fired=true; haltAll();
+      if(G.outcome==="win") afterRound(G.winner); else startRound(G.outcome);
+    }
+    document.getElementById("next").addEventListener("click",function(){ sfx.tap(); go(); });
+    later(go,wait);
   }
-  var steps=[[300,drop.bind(null,0)],[1200,drop.bind(null,1)],[2000,tension],[2800,settle]], at=0;
+  var steps=[[300,drop.bind(null,0)],[1000,drop.bind(null,1)],[1600,tension],[2300,settle]], at=0;
   steps.forEach(function(s,i){ later(function(){ if(i>=at){ at=i+1; s[1](false); } },s[0]); });
   stage.querySelector(".reveal").addEventListener("click",function(e){
     if(at>=steps.length||e.target.closest("button")) return;
@@ -1382,68 +1832,100 @@ function screenReveal(){
    ============================================================ */
 
 function nActor(){ return G.guesses.length%2===0 ? G.first : 1-G.first; }
-function guessesLeft(){ return GUESS_CAP-G.guesses.length; }
+function triesBy(i){ return G.guesses.filter(function(g){ return g.by===i; }).length; }
 
 /* what the history proves so far */
 function knownRange(){
-  var lo=NUM_MIN, hi=NUM_MAX;
+  var lo=1, hi=G.hi;
   G.guesses.forEach(function(g){
     if(g.res==="higher") lo=Math.max(lo,g.n+1);
     else if(g.res==="lower") hi=Math.min(hi,g.n-1);
   });
   return [lo,hi];
 }
-
-function numberPass(){
-  var who=nActor();
-  var lead = G.guesses.length===0
-    ? (G.replay==="void" ? "New secret number. You open." : "You open. Guess between 1 and 100.")
-    : "Hand the phone over \u2014 guess "+(G.guesses.length+1)+" of "+GUESS_CAP+".";
-  screenPass(who, lead, screenGuess);
+/* Duel rule: the nearest guess takes the square, and a shared distance goes to
+   whoever reached it first - otherwise a 1-to-10 round could run forever. */
+function closestWinner(){
+  var best=[Infinity,Infinity], at=[Infinity,Infinity];
+  G.guesses.forEach(function(g,i){
+    if(g.dist<best[g.by]){ best[g.by]=g.dist; at[g.by]=i; }
+  });
+  if(best[0]!==best[1]) return best[0]<best[1]?0:1;
+  return at[0]<at[1]?0:1;
 }
 
 function screenGuess(){
-  var p=nActor(); accent(phex(p)); enterGame(); chromeGame(true);
+  var p=nActor(), bot=isBot(p), duel=G.kind==="duel";
+  accent(phex(p)); enterGame(); chromeGame(true);
   G.entry="";
-  var rng=knownRange();
+  var rng=knownRange(), small=G.hi<=12;
 
   var chips=G.guesses.map(function(g){
     var ar=g.res==="higher"?"&uarr;":g.res==="lower"?"&darr;":"&check;";
     return '<span class="gchip'+(g.res==="hit"?" hit":"")+'" style="color:'+phex(g.by)+'">'+g.n+'<span class="ar">'+ar+"</span></span>";
   }).join("");
-
   var pins=G.guesses.map(function(g){
-    return '<span class="gp" style="color:'+phex(g.by)+";left:calc("+((g.n-NUM_MIN)/(NUM_MAX-NUM_MIN)*100)+"% - 1px)\"></span>";
+    return '<span class="gp" style="color:'+phex(g.by)+";left:calc("+((g.n-1)/(G.hi-1)*100)+"% - 1px)\"></span>";
   }).join("");
-  var bandL=(rng[0]-NUM_MIN)/(NUM_MAX-NUM_MIN)*100, bandR=100-(rng[1]-NUM_MIN)/(NUM_MAX-NUM_MIN)*100;
+  var bandL=(rng[0]-1)/(G.hi-1)*100, bandR=100-(rng[1]-1)/(G.hi-1)*100;
 
-  var keys="";
-  [1,2,3,4,5,6,7,8,9].forEach(function(n){ keys+='<button class="key" data-k="'+n+'" type="button">'+n+"</button>"; });
-  keys+='<button class="key wide" data-k="del" type="button">Del</button>';
-  keys+='<button class="key" data-k="0" type="button">0</button>';
-  keys+='<button class="key go" id="goKey" data-k="go" type="button" disabled>Guess</button>';
+  var pad;
+  if(small){
+    /* a ten-key grid guesses in one tap - no typing, no confirm */
+    var nums="";
+    for(var n=1;n<=G.hi;n++){
+      var used=G.guesses.some(function(g){ return g.n===n; });
+      nums+='<button class="key'+(used?" used":"")+'" data-n="'+n+'" type="button"'+(used?" disabled":"")+">"+n+"</button>";
+    }
+    pad='<div class="numgrid">'+nums+"</div>";
+  } else {
+    var keys="";
+    [1,2,3,4,5,6,7,8,9].forEach(function(k){ keys+='<button class="key" data-k="'+k+'" type="button">'+k+"</button>"; });
+    keys+='<button class="key wide" data-k="del" type="button">Del</button>';
+    keys+='<button class="key" data-k="0" type="button">0</button>';
+    keys+='<button class="key go" id="goKey" data-k="go" type="button" disabled>Guess</button>';
+    pad='<div class="entry" id="entry"><span class="val empty" id="entryVal">\u2014\u2014</span>'
+      + '<span class="note" id="note">Between 1 and '+G.hi+"</span></div>"
+      + '<div class="keypad">'+keys+"</div>";
+  }
+
+  var counter = duel
+    ? esc(pname(0))+" "+triesBy(0)+"/"+DUEL_TRIES+" &middot; "+esc(pname(1))+" "+triesBy(1)+"/"+DUEL_TRIES
+    : "Guess "+(G.guesses.length+1)+" of "+G.cap;
 
   show('<div class="screen guess">'
-     + '<div class="gtop"><div class="gturn"><span class="dot"></span><span class="n">'+esc(pname(p))+'</span></div>'
-     +   '<span class="lbl">Guess '+(G.guesses.length+1)+" of "+GUESS_CAP+"</span></div>"
-     + '<div class="entry" id="entry"><span class="val empty" id="entryVal">&mdash;&mdash;</span>'
-     +   '<span class="note" id="note">Between 1 and 100</span></div>'
+     + '<div class="gtop"><div class="gturn"><span class="dot"></span><span class="n">'+esc(pname(p))+"</span></div>"
+     +   '<span class="lbl">'+counter+"</span></div>"
      + '<div class="scale100"><div class="track"><div class="band" style="left:'+bandL+"%;right:"+bandR+'%"></div></div>'
-     +   pins+'<div class="ends"><span>1</span><span>100</span></div></div>'
+     +   pins+'<div class="ends"><span>1</span><span>'+G.hi+"</span></div></div>"
      + '<div class="hist">'+(chips||'<span class="lbl">No guesses yet</span>')+"</div>"
-     + '<div class="keypad">'+keys+"</div></div>");
+     + (bot?'<div class="turnflash"><div class="sub2">Bot is working it out</div><div class="dots"><i></i><i></i><i></i></div></div>':pad)
+     + "</div>");
+
+  if(bot){
+    later(function(){
+      var taken=G.guesses.map(function(g){ return g.n; });
+      submitGuess(BOT.guess(rng[0],rng[1],taken),p);
+    },850);
+    return;
+  }
+
+  if(small){
+    stage.querySelectorAll("[data-n]").forEach(function(b){
+      b.addEventListener("click",function(){ sfx.key(); buzz(6); submitGuess(+b.dataset.n,p); });
+    });
+    return;
+  }
 
   var entry=document.getElementById("entry"), val=document.getElementById("entryVal"),
       note=document.getElementById("note"), go=document.getElementById("goKey");
-
   function state(){
     var s=G.entry;
     val.textContent=s||"\u2014\u2014";
     val.classList.toggle("empty",!s);
-    var n=parseInt(s,10);
-    var ok=false, msg="Between 1 and 100";
+    var n=parseInt(s,10), ok=false, msg="Between 1 and "+G.hi;
     if(s){
-      if(!(n>=NUM_MIN&&n<=NUM_MAX)) msg="Out of range";
+      if(!(n>=1&&n<=G.hi)) msg="Out of range";
       else if(G.guesses.some(function(g){ return g.n===n; })) msg="Already guessed";
       else { ok=true; msg=""; }
     }
@@ -1458,7 +1940,7 @@ function screenGuess(){
       submitGuess(parseInt(G.entry,10),p); return;
     }
     else {
-      if(G.entry.length>=3) return;
+      if(G.entry.length>=String(G.hi).length) return;
       if(G.entry===""&&k==="0") return;
       G.entry+=k; sfx.key(); buzz(5);
     }
@@ -1470,88 +1952,101 @@ function screenGuess(){
 
 function submitGuess(n,by){
   var res = n===G.secret ? "hit" : (n<G.secret ? "higher" : "lower");
-  G.guesses.push({ n:n, by:by, res:res });
+  G.guesses.push({ n:n, by:by, res:res, dist:Math.abs(n-G.secret) });
   G.lastVerdict={ n:n, by:by, res:res };
   buzz(res==="hit"?[30,50,80]:14);
-  screenVerdict();
+  if(res==="hit") sfx.win(); else if(res==="higher") sfx.higher(); else sfx.lower();
+
+  var duel=G.kind==="duel", spent = duel ? G.guesses.length>=DUEL_TRIES*2 : G.guesses.length>=G.cap;
+  if(res==="hit"){ numberResult(by,"hit"); return; }
+  if(spent){ numberResult(duel?closestWinner():null, duel?"closest":"spent"); return; }
+  /* No hand-over screen: both players see the same clues, so flash and roll on. */
+  flashVerdict(res,n,by,screenGuess);
 }
 
-function screenVerdict(){
-  var v=G.lastVerdict, by=v.by, hit=v.res==="hit";
-  var out = hit ? "win" : (G.guesses.length>=GUESS_CAP ? "void" : "next");
-  accent(phex(by)); enterGame(); chromeGame(true);
+/* the higher/lower reply, shown in place for a beat instead of costing a tap */
+function flashVerdict(res,n,by,then){
+  var el=stage.querySelector(".screen.guess");
+  if(!el){ then(); return; }
+  var next=nActor();
+  var box=document.createElement("div");
+  box.className="turnflash"; box.style.color=phex(by);
+  box.innerHTML='<div class="big2">'+(res==="higher"?"Higher":"Lower")+"</div>"
+    + '<div class="sub2">'+n+" is too "+(res==="higher"?"low":"high")+". "+esc(pname(next))+" is up.</div>"
+    + autoBar(1150);
+  [".keypad",".entry",".numgrid"].forEach(function(sel){
+    var x=el.querySelector(sel); if(x) x.remove();
+  });
+  el.appendChild(box);
+  later(then,1150);
+}
 
-  var head,sub,icon,tint,hint;
-  if(hit){
-    head="Correct"; icon=I.bullseye; tint=phex(by);
-    sub="The number was "+G.secret+". "+pname(by)+" wins the round.";
-    hint=B().drop?"Tap to drop your piece":"Tap to place your "+pmark(by);
-    sfx.win();
-    creditRound(by);
-    var used=G.guesses.length, st=P(by).stats;
+function numberResult(w,why){
+  var head,sub,icon,tint,label;
+  if(why==="hit"){
+    head="Correct"; icon=I.bullseye; tint=phex(w);
+    sub="The number was "+G.secret+". "+pname(w)+" takes the round.";
+    var used=triesBy(w), st=ST(w);
     if(st.bestGuess===null||used<st.bestGuess) st.bestGuess=used;
-    if(used<=2) bump(by,"mind");
-    save();
-  } else if(out==="void"){
-    head="Out of guesses"; icon=I.bullseye; tint="var(--void)";
-    sub="The number was "+G.secret+". Nobody marks the board.";
-    hint="Tap for a new number"; sfx.voided();
+    if(used<=2) bump(w,"mind");
+    creditRound(w); save();
+  } else if(why==="closest"){
+    head=pname(w)+" was closest"; icon=I.bullseye; tint=phex(w);
+    var mine=Math.min.apply(null,G.guesses.filter(function(g){ return g.by===w; }).map(function(g){ return g.dist; }));
+    sub="The number was "+G.secret+". Nobody hit it \u2014 "+pname(w)+" came within "+mine+".";
+    sfx.win(); creditRound(w);
   } else {
-    head=v.res==="higher"?"Higher":"Lower";
-    icon=v.res==="higher"?I.up:I.down;
-    tint=phex(by);
-    sub="The number is "+(v.res==="higher"?"above":"below")+" "+v.n+". "+guessesLeft()+" guess"+(guessesLeft()===1?"":"es")+" left.";
-    hint="Tap to pass to "+pname(nActor());
-    v.res==="higher"?sfx.higher():sfx.lower();
+    head="Out of guesses"; icon=I.bullseye; tint="var(--void)";
+    sub="The number was "+G.secret+". Nobody takes it.";
+    sfx.voided();
   }
+  accent(w===null?null:phex(w)); enterGame(); chromeGame(true);
+  label = w===null ? "New number"
+        : G.kind==="duel" ? (B().drop?"Drop your piece":"Place your "+pmark(w)) : "Next round";
+  logRound({ t:head, d:"Secret "+G.secret+" \u00b7 guesses "+G.guesses.map(function(g){ return g.n; }).join(", "), winner:w });
 
-  show('<div class="screen verdict" id="vHit" role="button" tabindex="0" style="color:'+tint+'">'
+  var wait=(w===null?2200:2600), fired=false;
+  show('<div class="screen verdict" style="color:'+tint+'">'
      + '<div class="arrowbox">'+icon+"</div>"
      + '<div class="big">'+esc(head)+"</div>"
      + '<div class="sub" style="color:var(--grey)">'+esc(sub)+"</div>"
-     + '<div class="hint lbl">'+esc(hint)+"</div></div>");
-
-  var el=document.getElementById("vHit");
+     + '<div class="foot" style="width:100%"><button class="act accent" id="next" type="button">'+esc(label)+"</button>"
+     +   autoBar(wait)+"</div></div>");
   function go(){
-    sfx.tap();
-    if(hit) screenPlace(by);
-    else if(out==="void") startRound("void");
-    else numberPass();
+    if(fired) return; fired=true; haltAll();
+    if(w===null) startRound("void"); else afterRound(w);
   }
-  el.addEventListener("click",go);
-  el.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } });
-  el.focus({preventScroll:true});
+  document.getElementById("next").addEventListener("click",function(){ sfx.tap(); go(); });
+  later(go,wait);
 }
 
 /* ============================================================
    Placement + game over
    ============================================================ */
 
+function autoBar(ms){ return '<div class="autoline"><i style="--dur:'+(ms/1000).toFixed(2)+'s"></i></div>'; }
+function rnd2(a,b){ return Math.round((a+Math.random()*(b-a))*100)/100; }
+
 function creditRound(w){
-  P(w).stats.roundsWon++; bump(w,"roundsWon"); bump(1-w,"roundsPlayed",0);
+  ST(w).roundsWon++; bump(w,"roundsWon"); bump(1-w,"roundsPlayed",0);
   if(G.mode==="number"){ bump(0,"roundsPlayed"); bump(1,"roundsPlayed"); }
   if(G.mode==="timer"&&G.target>6) bump(w,"longWins");
   award(w,COIN_ROUND,"Round won");
   save();
 }
 
-function screenPlace(w){
-  G.winner=w; accent(phex(w)); enterGame(); chromeGame(true);
-  show('<div class="screen place">'
-     + '<div class="head"><span class="lbl">Round won by</span><span class="who">'+esc(pname(w))+"</span>"
-     +   '<span class="sub">'+B().pick+"</span></div>"
-     + '<div id="boardWrap">'+boardHTML("lg",w)+"</div></div>");
-  var wrap=document.getElementById("boardWrap");
+/* ---------- shared board wiring ---------- */
 
+function wireBoard(wrap,w,onPick){
   if(B().drop){
     var ghostCell=null;
-    function clearGhost(){ if(ghostCell){ ghostCell.innerHTML=""; ghostCell=null; } }
-    function preview(col){
+    var clearGhost=function(){ if(ghostCell){ ghostCell.innerHTML=""; ghostCell=null; } };
+    var preview=function(col){
       clearGhost();
       var r=dropRow(col); if(r<0) return;
       ghostCell=wrap.querySelector('.cell[data-i="'+idx(r,col)+'"]');
       if(ghostCell) ghostCell.innerHTML='<span class="pad"><span class="discghost" style="color:'+phex(w)+'"></span></span>';
-    }
+    };
     wrap.addEventListener("pointerdown",function(e){ var b=e.target.closest(".c4col"); if(b&&!b.disabled) preview(+b.dataset.col); });
     wrap.addEventListener("pointerover",function(e){ var b=e.target.closest(".c4col"); if(b&&!b.disabled&&e.pointerType==="mouse") preview(+b.dataset.col); });
     wrap.addEventListener("pointerleave",clearGhost);
@@ -1559,53 +2054,161 @@ function screenPlace(w){
     wrap.addEventListener("click",function(e){
       var b=e.target.closest(".c4col"); if(!b||b.disabled) return;
       var col=+b.dataset.col, r=dropRow(col); if(r<0) return;
-      clearGhost(); commit(idx(r,col),w,r);
+      clearGhost(); onPick(idx(r,col),r);
     });
   } else {
     wrap.addEventListener("click",function(e){
       var cell=e.target.closest(".cell.live"); if(!cell) return;
-      commit(parseInt(cell.dataset.i,10),w,0);
+      onPick(parseInt(cell.dataset.i,10),0);
     });
   }
 }
-
-function commit(i,w,row){
-  G.cells[i]=pmark(w); G.lastPlaced=i;
-  if(B().drop){ sfx.place(); later(function(){ sfx.landc4(); buzz(18); },260+row*45); }
-  else { sfx.place(); buzz(14); }
-  G.result=judge();
-  document.getElementById("boardWrap").innerHTML=boardHTML("lg",null);
-  chromeGame(true);
-
-  var settle=B().drop?(420+row*45):0;
-  if(G.result){
-    if(G.result.winner!==null){
-      var v=G.result.winner;
-      DB.series[v]++;
-      P(v).stats.wins++; P(v).stats.streak++;
-      if(P(v).stats.streak>P(v).stats.bestStreak) P(v).stats.bestStreak=P(v).stats.streak;
-      P(1-v).stats.streak=0;
-      bump(v,"matchesWon");
-      if(G.board==="c4") bump(v,"c4Wins");
-      later(function(){ sfx.game(); award(v,COIN_MATCH,"Match won"); },420+settle);
-    } else later(sfx.draw,320+settle);
-    P(0).stats.matches++; P(1).stats.matches++; save();
-    later(screenOver,(G.result.line?1500:900)+settle);
-  } else later(function(){ startRound(null); },860+settle);
+function moveNote(i){
+  var b=B();
+  return b.drop ? "Column "+((i%b.cols)+1)
+                : "Row "+(Math.floor(i/b.cols)+1)+", column "+((i%b.cols)+1);
 }
 
-function screenOver(){
-  var w=G.result.winner; accent(w===null?null:phex(w)); enterGame(); chromeGame(false);
+/* ---------- classic: play the board itself ---------- */
+
+function screenClassic(){
+  var p=G.turn, bot=isBot(p);
+  accent(phex(p)); enterGame(); chromeGame(true);
+  function side(i){
+    return '<span class="side'+(i===p?" on":"")+'" style="color:'+phex(i)+'">'
+      + '<span class="g">'+emblem(i,false)+"</span>"
+      + '<span class="n">'+esc(pname(i))+"</span></span>";
+  }
+  show('<div class="screen classic">'
+     + '<div class="turnstrip">'+side(0)+'<span class="mid">VS</span>'+side(1)+"</div>"
+     + '<div id="boardWrap">'+boardHTML("lg",bot?null:p)+"</div>"
+     + '<div class="statusline lbl" id="status">'+(bot?"Bot is thinking":B().pick)+"</div></div>");
+  var wrap=document.getElementById("boardWrap");
+  if(bot){
+    later(function(){
+      var pick=BOT.move(G.cells,G.board,p);
+      if(pick<0) return;
+      var i=B().drop?idx(dropRow(pick),pick):pick, row=B().drop?dropRow(pick):0;
+      commit(i,p,row);
+    },560);
+    return;
+  }
+  wireBoard(wrap,p,function(i,row){ commit(i,p,row); });
+}
+
+/* ---------- duel: the round winner claims a square ---------- */
+
+function screenPlace(w){
+  G.winner=w; accent(phex(w)); enterGame(); chromeGame(true);
+  var bot=isBot(w);
+  show('<div class="screen place">'
+     + '<div class="head"><span class="lbl">Round won by</span><span class="who">'+esc(pname(w))+"</span>"
+     +   '<span class="sub">'+(bot?"Bot is picking its square":B().pick)+"</span></div>"
+     + '<div id="boardWrap">'+boardHTML("lg",bot?null:w)+"</div></div>");
+  var wrap=document.getElementById("boardWrap");
+  if(bot){
+    later(function(){
+      var pick=BOT.move(G.cells,G.board,w);
+      if(pick<0) return;
+      var i=B().drop?idx(dropRow(pick),pick):pick, row=B().drop?dropRow(pick):0;
+      commit(i,w,row);
+    },700);
+    return;
+  }
+  wireBoard(wrap,w,function(i,row){ commit(i,w,row); });
+}
+
+function commit(i,w,row){
+  var wrap=document.getElementById("boardWrap");
+  G.cells[i]=pmark(w); G.lastPlaced=i;
+  if(G.kind==="board") logRound({ t:pname(w)+" played", d:moveNote(i), winner:w });
+  else if(G.log.length) G.log[G.log.length-1].cells=G.cells.slice();
+  sfx.place();
+  if(B().drop){
+    G.inFlight=i;
+    wrap.innerHTML=boardHTML("lg",null);
+    dropDisc(wrap,i,w,function(){ G.inFlight=-1; settleMove(w); });
+  } else {
+    buzz(14);
+    settleMove(w);
+  }
+}
+function settleMove(w){
+  var wrap=document.getElementById("boardWrap");
+  G.result=judge();
+  if(wrap) wrap.innerHTML=boardHTML("lg",null);
+  chromeGame(true);
+  if(G.result){
+    if(G.result.winner!==null){ later(sfx.game,380); later(function(){ finishMatch(G.result.winner); },1450); }
+    else { later(sfx.draw,260); later(function(){ finishMatch(null); },1000); }
+    return;
+  }
+  var status=document.getElementById("status");
+  if(G.kind==="board"){
+    G.turn=1-G.turn;
+    later(screenClassic,B().drop?260:200);
+  } else {
+    if(status) status.textContent="";
+    later(function(){ startRound(null); },620);
+  }
+}
+
+/* ---------- results ---------- */
+
+function afterRound(w){
+  if(G.kind==="duel"){ screenPlace(w); return; }
+  G.score[w]++;
+  if(G.score[w]>=(GAMES[G.game].winTo||3)) finishMatch(w);
+  else startRound(null);
+}
+
+function finishMatch(w){
+  if(w!==null){
+    if(!G.vsBot) DB.series[w]++;
+    var st=ST(w);
+    st.wins++; st.streak++;
+    if(st.streak>st.bestStreak) st.bestStreak=st.streak;
+    ST(1-w).streak=0;
+    bump(w,"matchesWon");
+    if(hasBoard()&&G.board==="c4") bump(w,"c4Wins");
+    award(w,COIN_MATCH,"Match won");
+  }
+  ST(0).matches++; ST(1).matches++;
+  save();
+  archiveMatch(w);
+  screenOver(w);
+}
+
+function screenOver(w){
+  accent(w===null?null:phex(w)); enterGame(); chromeGame(false);
+  var g=GAMES[G.game];
+  var line = w===null ? "Board full, no line. Honours even."
+    : hasBoard() ? B().need+" in a row."
+    : "First to "+(g.winTo||3)+" rounds.";
+  /* a friend match keeps a running series; against the bot only this match counts */
+  if(hasBoard()) G.score=[
+    G.cells.filter(function(v){ return v==="X"; }).length,
+    G.cells.filter(function(v){ return v==="O"; }).length
+  ];
+  var useSeries=hasBoard()&&!G.vsBot;
+  var s0=useSeries?DB.series[0]:G.score[0], s1=useSeries?DB.series[1]:G.score[1];
+  var scoreRow='<div class="series"><span class="sc" style="color:'+phex(0)+'">'+s0+"</span>"
+    + '<span class="vlabel">'+(useSeries?"Series":hasBoard()?"Squares":"Rounds")+"</span>"
+    + '<span class="sc" style="color:'+phex(1)+'">'+s1+"</span></div>";
   show('<div class="screen over">'
-     + '<div class="head"><span class="lbl">'+(w===null?"Stalemate":BOARDS[G.board].name)+"</span>"
+     + '<div class="head"><span class="lbl">'+esc(w===null?"Stalemate":g.name)+"</span>"
      +   '<span class="who">'+esc(w===null?"Draw":pname(w)+" wins")+"</span>"
-     +   '<span class="sub">'+(w===null?"Board full, no line. Honours even.":B().need+" in a row.")+"</span></div>"
-     + boardHTML("lg",null)
-     + '<div class="series"><span class="sc" style="color:'+phex(0)+'">'+DB.series[0]+"</span>"
-     +   '<span class="vlabel">Series</span><span class="sc" style="color:'+phex(1)+'">'+DB.series[1]+"</span></div>"
+     +   '<span class="sub">'+esc(line)+"</span></div>"
+     + (hasBoard()?boardHTML("lg",null):"")
+     + scoreRow
      + '<div class="foot"><button class="act hero" id="again" type="button">Play again</button>'
+     +   '<button class="act ghost" id="hist" type="button">Match history</button>'
      +   '<button class="act ghost" id="toHub" type="button">Back to hub</button></div></div>');
-  document.getElementById("again").addEventListener("click",function(){ sfx.tap(); screenSetup(); });
+  document.getElementById("again").addEventListener("click",function(){
+    sfx.tap();
+    newMatch(G.game,{ board:G.board, bot:G.vsBot, tap:G.tapTarget });
+  });
+  document.getElementById("hist").addEventListener("click",function(){ sfx.tap(); openHistory(); });
   document.getElementById("toHub").addEventListener("click",function(){ sfx.tap(); tab="home"; showHub(); });
 }
 
@@ -1613,24 +2216,35 @@ function screenOver(){
    Flow
    ============================================================ */
 
-function newMatch(mode,board){
-  G.mode=mode; G.board=board;
-  G.cells=new Array(BOARDS[board].cols*BOARDS[board].rows).fill(null);
-  G.lastPlaced=-1; G.result=null; G.winner=null;
-  G.first=Math.random()<.5?0:1;
-  startRound(null,true);
+function newMatch(id,opts){
+  var g=GAMES[id]; opts=opts||{};
+  G.game=id; G.kind=g.kind; G.mode=g.mode||null;
+  G.board=g.board||opts.board||"ttt";
+  G.vsBot=!!opts.bot; G.bot=G.vsBot?1:-1;
+  G.tapTarget=(typeof opts.tap==="number")?opts.tap:null;
+  G.log=[]; G.round=1; G.score=[0,0];
+  G.cells=hasBoard() ? new Array(BOARDS[G.board].cols*BOARDS[G.board].rows).fill(null) : [];
+  G.lastPlaced=-1; G.inFlight=-1; G.result=null; G.winner=null;
+  G.first=Math.random()<.5?0:1; G.turn=G.first;
+  if(g.kind==="board") screenClassic();
+  else startRound(null,true);
 }
+
 function startRound(reason,keepFirst){
   G.replay=reason; G.outcome=null; G.winner=null;
   if(!keepFirst) G.first=1-G.first;
-  if(G.mode==="timer"){
-    G.target=Math.round((TARGET_MIN+Math.random()*(TARGET_MAX-TARGET_MIN))*100)/100;
+  if(G.kind==="tap"||G.mode==="timer"){
+    G.target = (G.kind==="tap")
+      ? (G.tapTarget!==null ? G.tapTarget : rnd2(TAP_MIN,TAP_MAX))
+      : rnd2(TARGET_MIN,TARGET_MAX);
     G.times=[null,null]; G.devs=[null,null]; G.turnIdx=0;
     timerPass();
   } else {
-    G.secret=NUM_MIN+Math.floor(Math.random()*(NUM_MAX-NUM_MIN+1));
+    G.hi = (G.kind==="duel") ? DUEL_HI : SOLO_HI;
+    G.cap = (G.kind==="duel") ? DUEL_TRIES*2 : SOLO_CAP;
+    G.secret = 1+Math.floor(Math.random()*G.hi);
     G.guesses=[]; G.entry=""; G.lastVerdict=null;
-    numberPass();
+    screenGuess();
   }
 }
 
