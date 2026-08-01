@@ -591,6 +591,27 @@ button{ font:inherit; }
 .squp{ text-align:center; display:flex; flex-direction:column; gap:4px; flex:none; }
 .squp .n{ font-family:var(--mono); font-size:15px; font-weight:700; color:var(--pc); }
 
+/* the toss: names flick past, then one lands */
+.draw{ align-items:center; justify-content:center; text-align:center; }
+.drawslot{ font-family:var(--mono); font-size:clamp(28px,9.5vw,42px); font-weight:700; letter-spacing:-.025em;
+  line-height:1.15; margin-top:16px; min-height:1.2em; color:var(--pc); }
+.drawslot.flick{ animation:flick .09s var(--ease) both; }
+@keyframes flick{ from{ opacity:.25; transform:translateY(-5px) } }
+.drawslot.settled{ animation:pop .46s var(--ease) both; }
+.draw .goes{ margin-top:12px; opacity:0; transform:translateY(6px);
+  transition:opacity .45s var(--ease), transform .45s var(--ease); }
+.draw .goes.on{ opacity:1; transform:none; }
+.draw .glyph{ width:74px; height:74px; opacity:0; transition:opacity .4s; }
+.draw .glyph.on{ opacity:1; }
+
+/* choosing which square goes up for bid */
+.board.ttt .cell.pickable{ cursor:pointer; }
+.board.ttt .cell.pickable:hover{ border-color:var(--hair-2); background:var(--panel-2); }
+.board.ttt .cell.pickable:active{ transform:scale(.94); }
+.board.ttt .cell.pickable:focus-visible{ outline:2px solid var(--pc); outline-offset:2px; }
+.board.ttt .cell.justpicked{ animation:justPicked .5s var(--ease) both; }
+@keyframes justPicked{ 0%{ transform:scale(.86) } 60%{ transform:scale(1.05) } 100%{ transform:none } }
+
 .bidlog{ display:flex; flex-direction:column; gap:5px; max-height:21vh; overflow-y:auto;
   scrollbar-width:none; flex:none; }
 .bidlog::-webkit-scrollbar{ display:none; }
@@ -838,7 +859,7 @@ var GAMES={
   dnumber:{ id:"dnumber",kind:"duel", mode:"number", group:"duel", name:"Number Duel",
             desc:"1 to 10, three tries. Closest claims a square.", art:"number" },
   bid:    { id:"bid",    kind:"bid",  board:"ttt", group:"duel", name:"Bid-Tac-Toe",
-            desc:"Sealed bids for one square at a time. Highest bid takes it \u2014 both pay.", art:"bid" }
+            desc:"Take turns naming a square, then seal a bid. Highest takes it \u2014 both pay.", art:"bid" }
 };
 var BID_POOL=24, BID_MIN=6, BID_MAX=60;
 
@@ -1094,7 +1115,7 @@ var G={ game:"dtimer", kind:"duel", mode:"timer", board:"ttt", vsBot:false, bot:
         /* timer */ turnIdx:0, target:0, tapTarget:null, times:[null,null], devs:[null,null],
                     outcome:null, winner:null, replay:null,
         /* number */ secret:0, hi:100, cap:14, guesses:[], entry:"", lastVerdict:null,
-        /* bid */ pool:24, bal:[24,24], bids:[null,null], bidLog:[], bidSquare:-1 };
+        /* bid */ pool:24, bal:[24,24], bids:[null,null], bidLog:[], bidSquare:-1, bidChooser:-1 };
 
 function B(){ return BOARDS[G.board]; }
 function hasBoard(){ return G.kind==="board"||G.kind==="duel"||G.kind==="bid"; }
@@ -2375,28 +2396,140 @@ var SQNAMES=["Top left","Top middle","Top right","Middle left","Centre","Middle 
 
 function bidStart(pool){
   G.pool=pool; G.bal=[pool,pool]; G.bids=[null,null]; G.bidLog=[]; G.bidSquare=-1;
-  bidRound();
+  G.bidChooser=-1;
+  screenBidDraw();
 }
-/* reading order, skipping anything already claimed */
-function nextBidSquare(){
-  for(var i=0;i<9;i++) if(!G.cells[i]) return i;
-  return -1;
+
+/* the toss: names flick past, one lands, and that player names the first square */
+function screenBidDraw(){
+  var won=Math.random()<0.5?0:1;
+  accent(null); enterGame(); chromeGame(true);
+  show('<div class="screen draw">'
+     + '<span class="lbl">Drawing for first pick</span>'
+     + '<div class="drawslot" id="slot">&nbsp;</div>'
+     + '<div class="glyph" id="drawGlyph"></div>'
+     + '<div class="goes" id="goes"><span class="lbl">picks the first square</span></div></div>');
+
+  var slot=document.getElementById("slot"), goes=document.getElementById("goes"),
+      gl=document.getElementById("drawGlyph");
+
+  var N=13, gap=42, steps=[], i;
+  for(i=0;i<N;i++){ steps.push(gap); gap*=1.21; }   /* flicks fast, then drags out */
+  var flip=((won-(N-1))%2+2)%2;                     /* parity so the last frame is the winner */
+  var t=0;
+  steps.forEach(function(ms,k){
+    t+=ms;
+    later(function(){
+      var who=(k+flip)%2;
+      slot.textContent=pname(who);
+      slot.style.color=phex(who);
+      slot.classList.remove("flick"); void slot.offsetWidth; slot.classList.add("flick");
+      if(k<N-1){ sfx.key(); buzz(3); }
+    },t);
+  });
+  later(function(){
+    slot.classList.remove("flick"); slot.classList.add("settled");
+    accent(phex(won));
+    gl.innerHTML=emblem(won,true); gl.classList.add("on");
+    goes.classList.add("on");
+    sfx.win(); buzz([24,40,60]);
+  },t+100);
+  later(function(){
+    G.bidChooser=won; G.first=won;
+    logRound({ t:pname(won)+" won the toss", d:"Picks the first square", winner:won });
+    bidRound();
+  },t+1600);
 }
+
 function bidRound(){
   G.bids=[null,null];
-  /* a tie leaves the square up, so only move on once it is actually claimed */
-  if(G.bidSquare<0||G.cells[G.bidSquare]) G.bidSquare=nextBidSquare();
-  if(G.bidSquare<0){ bidEnd(); return; }
-  bidAsk(0);
+  /* a tie leaves the square up: same square, same chooser, straight back to bidding */
+  if(G.bidSquare>=0 && !G.cells[G.bidSquare]){ bidAsk(G.bidChooser); return; }
+  if(!G.cells.some(function(v){ return !v; })){ bidEnd(); return; }
+  G.bidSquare=-1;
+  bidPick();
 }
+
+/* whoever's turn it is names the square. No hand-over first: a pick is public,
+   so the lit player bar is enough, and it saves a tap. */
+function bidPick(){
+  var p=G.bidChooser;
+  if(isBot(p)){ screenBidBotPick(p); return; }
+  screenBidPick(p);
+}
+
 function bidAsk(p){
   if(isBot(p)){ G.bids[p]=botBid(p); bidAfter(p); return; }
   screenBidEntry(p);
 }
+/* either player can be first to seal now, so work it out from who is still missing */
 function bidAfter(p){
-  if(p===1){ screenBidReveal(); return; }
-  if(isBot(1)){ G.bids[1]=botBid(1); screenBidReveal(); return; }
-  screenPass(1,"Bid sealed. Hand the phone to "+pname(1)+".",function(){ bidAsk(1); });
+  var o=1-p;
+  if(G.bids[o]!==null){ screenBidReveal(); return; }
+  if(isBot(o)){ G.bids[o]=botBid(o); screenBidReveal(); return; }
+  screenPass(o,"Bid sealed. "+SQNAMES[G.bidSquare]+" is up \u2014 hand the phone to "+pname(o)+".",
+             function(){ bidAsk(o); });
+}
+
+function screenBidPick(p){
+  accent(phex(p)); enterGame(); stage.classList.add("scrolls"); chromeGame(true);
+  show('<div class="screen bidscreen">'
+     + playerBar(p,[subBig(G.bal[0]+"<small>PTS</small>"),subBig(G.bal[1]+"<small>PTS</small>")],true)
+     + '<div class="squp"><span class="lbl">'+esc(pname(p))+" picks</span>"
+     +   '<span class="n">Choose the square</span></div>'
+     + bidBoardHTML(p)
+     + '<div class="bidhint">Then you both bid on it</div>'
+     + bidLogHTML()+"</div>");
+
+  var fired=false;
+  function choose(i){
+    if(fired||G.cells[i]) return;
+    fired=true; haltAll();
+    G.bidSquare=i; sfx.place(); buzz(12);
+    bidAsk(p);
+  }
+  stage.querySelector(".board.ttt").addEventListener("click",function(e){
+    var c=e.target.closest(".cell.pickable"); if(!c) return;
+    choose(parseInt(c.dataset.i,10));
+  });
+  runTurnClock(TURN_MOVE,function(){          /* out of time: pick for them rather than stall */
+    var open=[]; for(var i=0;i<9;i++) if(!G.cells[i]) open.push(i);
+    if(open.length) choose(open[Math.floor(Math.random()*open.length)]);
+  });
+}
+
+function screenBidBotPick(p){
+  accent(phex(p)); enterGame(); stage.classList.add("scrolls"); chromeGame(true);
+  show('<div class="screen bidscreen">'
+     + playerBar(p,[subBig(G.bal[0]+"<small>PTS</small>"),subBig(G.bal[1]+"<small>PTS</small>")],false)
+     + '<div class="squp"><span class="lbl">'+esc(pname(p))+' picks</span><span class="n" id="botPick">&hellip;</span></div>'
+     + bidBoardHTML()
+     + '<div class="bidhint">Then you both bid on it</div>'
+     + bidLogHTML()+"</div>");
+  later(function(){
+    G.bidSquare=botPickSquare(p);
+    var lab=document.getElementById("botPick");
+    if(lab) lab.textContent=SQNAMES[G.bidSquare];
+    var wrap=stage.querySelector(".board.ttt");
+    if(wrap) wrap.outerHTML=bidBoardHTML();
+    var c=stage.querySelector('.cell[data-i="'+G.bidSquare+'"]');
+    if(c) c.classList.add("justpicked");
+    sfx.place(); buzz(10);
+    later(function(){ bidAsk(p); },850);
+  },700);
+}
+
+/* same shape as the bot's valuation: take the win, else deny it, else centre */
+function botPickSquare(p){
+  var me=pmark(p), you=pmark(1-p), b=BOARDS.ttt, open=[], i;
+  for(i=0;i<9;i++) if(!G.cells[i]) open.push(i);
+  function makes(i,m){ var t=G.cells.slice(); t[i]=m; var r=judgeOn(t,b); return !!(r&&r.line); }
+  for(i=0;i<open.length;i++) if(makes(open[i],me)) return open[i];
+  for(i=0;i<open.length;i++) if(makes(open[i],you)) return open[i];
+  if(open.indexOf(4)>-1) return 4;
+  var corners=open.filter(function(i){ return i===0||i===2||i===6||i===8; });
+  var pool=corners.length?corners:open;
+  return pool[Math.floor(Math.random()*pool.length)];
 }
 
 /* what a square is worth to the bot right now */
@@ -2428,14 +2561,19 @@ function bidLogHTML(){
       + '<span class="w" style="color:'+tint+'">'+(e.w===null?"tied":esc(pname(e.w)).slice(0,8))+"</span></div>";
   }).join("")+"</div>";
 }
-function bidBoardHTML(){
-  var k=G.bidSquare;
+/* pickFor = the player choosing a square; omit for a display-only board */
+function bidBoardHTML(pickFor){
+  var k=G.bidSquare, live=(pickFor===0||pickFor===1);
   var cells=G.cells.map(function(v,i){
     var col=v?phex(v==="X"?0:1):null;
-    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced)+"</span>":"";
     var isWin=G.result&&G.result.line&&G.result.line.indexOf(i)>-1;
-    return '<div class="cell'+(i===k?" bidcell":"")+(isWin?" wincell":"")+'" data-i="'+i+'">'
-      + '<span class="pad">'+inner+"</span></div>";
+    var open=!v&&live;
+    var inner=v?'<span style="color:'+col+';display:block;width:100%;height:100%">'+markSVG(v,i===G.lastPlaced)+"</span>"
+             :(open?'<span class="ghost" style="color:'+phex(pickFor)+'">'+markSVG(pmark(pickFor),false)+"</span>":"");
+    var cls="cell"+(i===k?" bidcell":"")+(isWin?" wincell":"")+(open?" pickable":"");
+    return open
+      ? '<button type="button" class="'+cls+'" data-i="'+i+'" aria-label="Put '+SQNAMES[i]+' up for bid"><span class="pad">'+inner+"</span></button>"
+      : '<div class="'+cls+'" data-i="'+i+'"><span class="pad">'+inner+"</span></div>";
   }).join("");
   return '<div class="board ttt md t-'+DB.shared.theme+'">'+cells+winLineSVG()+"</div>";
 }
@@ -2570,6 +2708,7 @@ function settleBids(w,b0,b1){
     G.cells[sq]=pmark(w); G.lastPlaced=sq;
     sfx.place(); creditRound(w);
     G.result=judge();
+    G.bidChooser=1-G.bidChooser;   /* the pick alternates, but only once a square actually settles */
   }
   logRound({
     t: w===null ? "Tied at "+b0+" on "+SQNAMES[sq] : pname(w)+" took "+SQNAMES[sq].toLowerCase(),
@@ -2582,7 +2721,7 @@ function settleBids(w,b0,b1){
   var done = G.result || broke;
   var wait=done?1500:2000, fired=false;
   var foot=document.getElementById("foot");
-  var label = done ? "See the result" : (w===null?"Bid again":"Next square");
+  var label = done ? "See the result" : (w===null?"Bid again":pname(G.bidChooser)+" picks next");
   foot.innerHTML='<button class="act accent" id="next" type="button">'+label+"</button>"+autoBar(wait);
   var wrap=stage.querySelector(".board.ttt.md");
   if(wrap) wrap.outerHTML=bidBoardHTML();
