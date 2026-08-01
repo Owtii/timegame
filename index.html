@@ -814,6 +814,35 @@ button{ font:inherit; }
   text-transform:uppercase; color:var(--grey-dim); font-weight:600; }
 .key.ruled{ opacity:.22; }
 
+/* ---------- sequence race ---------- */
+.seqscreen{ gap:14px; justify-content:flex-start; }
+.seqrow{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex:none; }
+.seqslot{ appearance:none; border:1px solid var(--hair); border-radius:17px; background:var(--panel);
+  aspect-ratio:1/1; display:grid; place-items:center; padding:15%; cursor:pointer;
+  transition:transform .13s var(--ease), border-color .18s, background .18s, box-shadow .18s; }
+.seqslot:active{ transform:scale(.93); }
+.seqslot.sel{ border-color:currentColor; background:var(--panel-3);
+  transform:translateY(-7px) scale(1.05); box-shadow:0 10px 22px rgba(0,0,0,.5); }
+.seqslot:focus-visible{ outline:2px solid var(--pc); outline-offset:2px; }
+.seqslot.swap{ animation:seqSwap .34s var(--ease) both; }
+@keyframes seqSwap{ 0%{ transform:scale(.82) } 60%{ transform:scale(1.08) } 100%{ transform:none } }
+.seqshape{ display:block; width:100%; height:100%; filter:drop-shadow(0 2px 4px rgba(0,0,0,.45)); }
+.seqpos{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex:none; }
+.seqpos span{ text-align:center; font-family:var(--mono); font-size:9px; letter-spacing:.14em; color:var(--grey-dim); }
+.seqstats{ display:grid; grid-template-columns:1fr 1fr; gap:9px; flex:none; }
+.seqstat{ border:1px solid var(--hair); border-radius:13px; background:var(--panel-2); padding:9px 10px;
+  display:flex; flex-direction:column; gap:3px; }
+.seqstat .k{ font-family:var(--mono); font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey-dim); }
+.seqstat .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:16px; font-weight:700; }
+.seqhint{ text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--grey-dim); flex:none; }
+.seqbig{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:clamp(46px,15vw,64px);
+  font-weight:700; line-height:1; letter-spacing:-.04em; animation:seqPop .34s var(--ease) both; }
+@keyframes seqPop{ 0%{ transform:scale(.6); opacity:0 } 62%{ transform:scale(1.14) } 100%{ transform:none; opacity:1 } }
+.seqreveal{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.seqreveal .cell{ border:1px solid var(--hair); border-radius:12px; background:var(--panel-2);
+  aspect-ratio:1/1; display:grid; place-items:center; padding:16%; }
+
 /* a correct guess is checked before it is celebrated */
 .hitcheck{ display:flex; flex-direction:column; align-items:center; gap:13px; }
 .hitstack{ position:relative; display:grid; place-items:center; }
@@ -914,10 +943,22 @@ var GAMES={
             desc:"Closest to the target claims a square.", art:"timer" },
   dnumber:{ id:"dnumber",kind:"duel", mode:"number", group:"duel", name:"Number Duel",
             desc:"1 to 10, three tries. Closest claims a square.", art:"number" },
+  seq:    { id:"seq",    kind:"duel", mode:"seq",   group:"duel", name:"Sequence Race",
+            desc:"Crack the hidden order of four before they do.", art:"seq" },
   bid:    { id:"bid",    kind:"bid",  board:"ttt", group:"duel", name:"Bid-Tac-Toe",
             desc:"Take turns naming a square, then seal a bid. Highest takes it \u2014 both pay.", art:"bid" }
 };
 var BID_POOL=24, BID_MIN=6, BID_MAX=60;
+
+/* Sequence Race: four pieces told apart by shape *and* colour, so neither
+   colour blindness nor a glance at speed can confuse them. */
+var SEQ_ITEMS=[
+  {id:"a",name:"Sun",  hex:"#FFB020",shape:"circle"},
+  {id:"b",name:"Sea",  hex:"#4CC9F0",shape:"square"},
+  {id:"c",name:"Rose", hex:"#FF5FA2",shape:"triangle"},
+  {id:"d",name:"Leaf", hex:"#B4E33D",shape:"diamond"}
+];
+var SEQ_N=4, TURN_SEQ=48;
 
 var COLORS=[
   {id:"flare",name:"Flare",hex:"#FF6154",price:0},   {id:"arc",name:"Arc",hex:"#8B7BFF",price:0},
@@ -2099,7 +2140,18 @@ function enterGame(){ stage.classList.remove("scrolls"); tabbar.classList.add("h
 
 var pickGame="dtimer", pickBoard="ttt", pickOpp="friend", pickTap=null, pickPool=BID_POOL;
 
-function artFor(k){ return k==="ttt"?artTTT():k==="c4"?artC4():k==="number"?artNumber():k==="bid"?artBid():artTimer(); }
+function artSeq(){
+  var s="",x=[9,25,41,57];
+  SEQ_ITEMS.forEach(function(it,i){
+    var g=it.shape==="circle"?'<circle cx="'+(x[i]+7)+'" cy="23" r="7"/>'
+        :it.shape==="square"?'<rect x="'+x[i]+'" y="16" width="14" height="14" rx="3"/>'
+        :it.shape==="triangle"?'<path d="M'+(x[i]+7)+' 15 L'+(x[i]+14)+' 30 L'+x[i]+' 30 Z"/>'
+        :'<path d="M'+(x[i]+7)+' 14 L'+(x[i]+14)+' 23 L'+(x[i]+7)+' 32 L'+x[i]+' 23 Z"/>';
+    s+='<g fill="currentColor" opacity="'+(0.45+i*0.18)+'">'+g+"</g>";
+  });
+  return '<svg viewBox="0 0 74 46" width="100%" height="100%">'+s+"</svg>";
+}
+function artFor(k){ return k==="ttt"?artTTT():k==="c4"?artC4():k==="number"?artNumber():k==="bid"?artBid():k==="seq"?artSeq():artTimer(); }
 function needsThird(id){ var g=GAMES[id]; return g.kind==="duel"||g.kind==="tap"||g.kind==="bid"; }
 function oppName(o){ return o==="bot"?"Bot":"a friend"; }
 /* the one-liner under a heading: what you have chosen so far */
@@ -2628,6 +2680,164 @@ function submitGuess(n,by){
   if(spent){ numberResult(duel?closestWinner():null, duel?"closest":"spent"); return; }
   /* No hand-over screen: both players see the same clues, so flash and roll on. */
   flashVerdict(res,n,by,screenGuess);
+}
+
+/* ============================================================
+   Sequence Race - crack the hidden order of four
+   ============================================================ */
+
+function seqShape(id){
+  var it=SEQ_ITEMS.filter(function(x){ return x.id===id; })[0]||SEQ_ITEMS[0], s;
+  if(it.shape==="circle")        s='<circle cx="50" cy="50" r="35"/>';
+  else if(it.shape==="square")   s='<rect x="17" y="17" width="66" height="66" rx="11"/>';
+  else if(it.shape==="triangle") s='<path d="M50 13 L89 83 L11 83 Z"/>';
+  else                           s='<path d="M50 9 L91 50 L50 91 L9 50 Z"/>';
+  return '<svg class="seqshape" viewBox="0 0 100 100" style="color:'+it.hex+'" role="img" aria-label="'+it.name+'">'
+       + '<g fill="currentColor">'+s+"</g></svg>";
+}
+function seqShuffle(a){
+  a=a.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function seqExact(arr,against){
+  var n=0; for(var i=0;i<arr.length;i++) if(arr[i]===against[i]) n++;
+  return n;
+}
+function seqPerms(list){
+  if(list.length<=1) return [list];
+  var out=[];
+  list.forEach(function(v,i){
+    var rest=list.slice(0,i).concat(list.slice(i+1));
+    seqPerms(rest).forEach(function(p){ out.push([v].concat(p)); });
+  });
+  return out;
+}
+/* the bot only ever plays an order still consistent with everything it has
+   been told, which is exactly what a sharp human would do */
+function botSeq(p){
+  var all=seqPerms(SEQ_ITEMS.map(function(x){ return x.id; }));
+  var hist=G.seqHist[p];
+  var ok=all.filter(function(cand){
+    return hist.every(function(h){ return seqExact(h.arr,cand)===h.score; });
+  });
+  var pool=ok.length?ok:all;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function seqStart(){
+  var ids=SEQ_ITEMS.map(function(x){ return x.id; });
+  G.seqSecret=seqShuffle(ids);
+  G.seqArr=[seqShuffle(ids),seqShuffle(ids)];
+  G.seqBest=[0,0]; G.seqTries=[0,0]; G.seqHist=[[],[]];
+  G.seqTurn=G.first; G.seqSel=-1;
+  seqTurnStart();
+}
+function seqTurnStart(){
+  var p=G.seqTurn;
+  if(isBot(p)){
+    accent(phex(p)); enterGame(); chromeGame(true);
+    show('<div class="screen seqscreen">'+playerBar(p,seqSubs(),false)
+       + '<div class="turnflash"><div class="sub2">Bot is working the order out</div>'
+       + '<div class="dots"><i></i><i></i><i></i></div></div></div>');
+    later(function(){ G.seqArr[p]=botSeq(p); seqSubmit(p); },900);
+    return;
+  }
+  screenSeq();
+}
+function seqSubs(){
+  return [ sub(G.seqBest[0]+"/"+SEQ_N+" best"), sub(G.seqBest[1]+"/"+SEQ_N+" best") ];
+}
+
+function screenSeq(){
+  var p=G.seqTurn, o=1-p;
+  accent(phex(p)); enterGame(); chromeGame(true);
+  G.seqSel=-1;
+
+  var slots=G.seqArr[p].map(function(id,i){
+    return '<button type="button" class="seqslot" data-s="'+i+'" style="color:'+phex(p)+'" aria-label="Position '+(i+1)+'">'
+         + seqShape(id)+"</button>";
+  }).join("");
+
+  show('<div class="screen seqscreen">'
+     + playerBar(p,seqSubs(),true)
+     + '<div class="statusline lbl">Put the four in the right order</div>'
+     + '<div class="seqrow" id="seqRow">'+slots+"</div>"
+     + '<div class="seqpos"><span>1st</span><span>2nd</span><span>3rd</span><span>4th</span></div>'
+     + '<div class="seqstats">'
+     +   '<div class="seqstat"><span class="k">Your best</span><span class="v" style="color:'+phex(p)+'">'+G.seqBest[p]+"/"+SEQ_N+" &middot; "+G.seqTries[p]+" tries</span></div>"
+     +   '<div class="seqstat"><span class="k">'+esc(pname(o))+"'s best</span><span class=\"v\" style=\"color:"+phex(o)+'">'+G.seqBest[o]+"/"+SEQ_N+" &middot; "+G.seqTries[o]+" tries</span></div>"
+     + "</div>"
+     + '<div class="seqhint">Tap two to swap them</div>'
+     + '<div class="foot"><button class="act hero" id="seqGo" type="button">Submit order</button></div></div>');
+
+  var row=document.getElementById("seqRow");
+  row.addEventListener("click",function(e){
+    var b=e.target.closest(".seqslot"); if(!b) return;
+    var i=+b.dataset.s;
+    if(G.seqSel<0){ G.seqSel=i; b.classList.add("sel"); sfx.key(); buzz(6); return; }
+    if(G.seqSel===i){ G.seqSel=-1; b.classList.remove("sel"); sfx.key(); return; }
+    var a=row.querySelector('.seqslot[data-s="'+G.seqSel+'"]');
+    var arr=G.seqArr[p], t=arr[G.seqSel]; arr[G.seqSel]=arr[i]; arr[i]=t;
+    a.classList.remove("sel");
+    a.innerHTML=seqShape(arr[G.seqSel]); b.innerHTML=seqShape(arr[i]);
+    [a,b].forEach(function(el){ el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); });
+    G.seqSel=-1; sfx.place(); buzz(10);
+  });
+  document.getElementById("seqGo").addEventListener("click",function(){ haltAll(); seqSubmit(p); });
+  runTurnClock(TURN_SEQ,function(){ seqSubmit(p); });   /* out of time submits what is on screen */
+}
+
+function seqSubmit(p){
+  var score=seqExact(G.seqArr[p],G.seqSecret);
+  G.seqTries[p]++;
+  G.seqHist[p].push({ arr:G.seqArr[p].slice(), score:score });
+  if(score>G.seqBest[p]) G.seqBest[p]=score;
+  var won=(score===SEQ_N);
+  buzz(won?[30,50,80]:12);
+  if(!won){ if(score>0) sfx.ping(score>2?1:0); else sfx.lower(); }
+
+  /* punchy, not a pause: they will be submitting fast */
+  var el=stage.querySelector(".screen.seqscreen");
+  if(el){
+    [".seqrow",".seqpos",".seqstats",".seqhint",".foot",".turnflash",".statusline"].forEach(function(s){
+      var x=el.querySelector(s); if(x) x.remove();
+    });
+    var box=document.createElement("div");
+    box.className="turnflash"; box.style.color=won?phex(p):"var(--text)";
+    box.innerHTML='<div class="seqbig">'+score+"/"+SEQ_N+"</div>"
+      + '<div class="sub2">'+(won?"That is the order":"in the right place")+"</div>";
+    el.appendChild(box);
+  }
+  later(function(){
+    if(won){ seqResult(p); return; }
+    G.seqTurn=1-p; seqTurnStart();
+  }, won?900:820);
+}
+
+function seqResult(w){
+  accent(phex(w)); enterGame(); chromeGame(true);
+  creditRound(w); save();
+  logRound({ t:pname(w)+" cracked the order",
+             d:"Order "+G.seqSecret.map(function(id){ return SEQ_ITEMS.filter(function(x){return x.id===id;})[0].name; }).join(" ")
+               + " · "+G.seqTries[0]+" v "+G.seqTries[1]+" tries", winner:w });
+  var wait=3200, fired=false;
+  var cells=G.seqSecret.map(function(id){ return '<div class="cell">'+seqShape(id)+"</div>"; }).join("");
+  show('<div class="screen verdict" style="color:'+phex(w)+'">'
+     + '<div class="big">'+esc(pname(w))+" wins the round</div>"
+     + '<div class="sub" style="color:var(--grey);margin-bottom:14px">Cracked it in '+G.seqTries[w]+" attempt"+(G.seqTries[w]===1?"":"s")+".</div>"
+     + '<div style="width:100%;max-width:300px"><div class="lbl" style="text-align:center;margin-bottom:8px">The order was</div>'
+     +   '<div class="seqreveal">'+cells+"</div></div>"
+     + '<div class="seqstats" style="width:100%;max-width:300px;margin-top:14px">'
+     +   '<div class="seqstat"><span class="k">'+esc(pname(0))+'</span><span class="v" style="color:'+phex(0)+'">'+G.seqBest[0]+"/"+SEQ_N+" &middot; "+G.seqTries[0]+" tries</span></div>"
+     +   '<div class="seqstat"><span class="k">'+esc(pname(1))+'</span><span class="v" style="color:'+phex(1)+'">'+G.seqBest[1]+"/"+SEQ_N+" &middot; "+G.seqTries[1]+" tries</span></div>"
+     + "</div>"
+     + '<div class="foot" style="width:100%"><button class="act accent" id="next" type="button">'
+     +   (B().drop?"Drop your piece":"Place your "+pmark(w))+"</button>"+autoBar(wait)+"</div></div>");
+  sfx.win();
+  function go(){ if(fired) return; fired=true; haltAll(); afterRound(w); }
+  document.getElementById("next").addEventListener("click",function(){ sfx.tap(); go(); });
+  later(go,wait);
 }
 
 /* A hit lands in two beats: the number is checked, then it is confirmed. Cutting
@@ -3322,7 +3532,8 @@ function newMatch(id,opts){
 function startRound(reason,keepFirst){
   G.replay=reason; G.outcome=null; G.winner=null;
   if(!keepFirst) G.first=1-G.first;
-  if(G.kind==="tap"||G.mode==="timer"){
+  if(G.mode==="seq"){ seqStart(); }
+  else if(G.kind==="tap"||G.mode==="timer"){
     G.target = (G.kind==="tap")
       ? (G.tapTarget!==null ? G.tapTarget : rnd2(TAP_MIN,TAP_MAX))
       : rnd2(TARGET_MIN,TARGET_MAX);
