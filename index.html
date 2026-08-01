@@ -197,7 +197,8 @@ button{ font:inherit; }
 
 /* tic-tac-toe */
 .board.ttt{ grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); aspect-ratio:1/1; }
-.board.ttt.lg{ width:100%; max-width:min(78vw,320px); gap:9px; margin-inline:auto; }
+/* px caps only - a vw cap ignores the app's own padding and overflows narrow screens */
+.board.ttt.lg{ width:100%; max-width:368px; gap:10px; margin-inline:auto; }
 .board.ttt.sm{ width:54px; gap:3px; }
 .board.ttt .cell{ background:var(--panel); border:1px solid var(--hair); border-radius:14px; }
 .board.ttt.sm .cell{ border-radius:4px; border-color:rgba(255,255,255,.07); }
@@ -229,7 +230,7 @@ button{ font:inherit; }
 @keyframes draw{ to{ stroke-dashoffset:0; } }
 
 /* connect 4 */
-.c4wrap{ position:relative; width:100%; max-width:min(92vw,360px); margin-inline:auto; }
+.c4wrap{ position:relative; width:100%; max-width:424px; margin-inline:auto; }
 .board.c4{
   grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
   gap:clamp(3px,1.4vw,6px); aspect-ratio:var(--cols)/var(--rows); padding:clamp(4px,1.6vw,7px);
@@ -467,11 +468,10 @@ button{ font:inherit; }
 
 /* ---------- number duel ---------- */
 
-.guess{ justify-content:space-between; gap:10px; padding-top:2px; }
-.gtop{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.gturn{ display:flex; align-items:center; gap:8px; min-width:0; }
-.gturn .dot{ width:10px; height:10px; border-radius:50%; background:var(--pc); flex:none; box-shadow:0 0 9px -1px var(--pc); }
-.gturn .n{ font-family:var(--mono); font-size:14px; font-weight:700; color:var(--pc); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* clues group at the top, the input sits under your thumb */
+.guess{ justify-content:flex-start; gap:14px; padding-top:2px; }
+.guess .entry, .guess .numgrid{ margin-top:auto; }
+.guess .entry+.keypad{ margin-top:0; }
 
 .entry{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:6px 0 2px; }
 .entry .val{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:clamp(46px,15vw,60px); font-weight:700;
@@ -548,25 +548,46 @@ button{ font:inherit; }
 /* ---------- bid-tac-toe ---------- */
 
 .bidscreen{ gap:12px; justify-content:flex-start; }
-.balrow{ display:grid; grid-template-columns:1fr 1fr; gap:9px; flex:none; }
-.bal{ border:1px solid var(--hair); border-radius:14px; background:var(--panel); padding:9px 11px 10px;
-  display:flex; flex-direction:column; gap:7px; opacity:.5;
-  transition:opacity .25s var(--ease), border-color .25s, background .25s; }
-.bal.on{ opacity:1; border-color:var(--pc); background:var(--panel-2); }
-.bal .top{ display:flex; align-items:center; gap:7px; min-width:0; }
-.bal .mk{ width:13px; height:13px; flex:none; color:var(--pc); }
-.bal .nm{ font-family:var(--mono); font-size:10.5px; font-weight:700; flex:1 1 auto; min-width:0;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.bal .pts{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:20px; font-weight:700;
-  line-height:1; letter-spacing:-.02em; color:var(--pc); }
-.bal .pts small{ font-size:.44em; font-weight:600; color:var(--grey-dim); margin-left:4px; letter-spacing:.1em; }
-.bal .bar{ height:3px; }
 
-.board.ttt.md{ width:100%; max-width:min(46vw,168px); gap:6px; margin-inline:auto; }
-.board.ttt.md .cell{ border-radius:10px; }
-.cell.bidcell{ border-color:var(--pc); background:color-mix(in srgb, var(--pc) 13%, var(--panel));
+/* the bid dial: drag for the ballpark, step for the exact number */
+.bidctl{ display:flex; flex-direction:column; gap:12px; flex:none; }
+.bidval{ display:flex; align-items:center; justify-content:center; gap:16px; }
+.bidval .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:clamp(42px,14vw,56px);
+  font-weight:700; letter-spacing:-.045em; line-height:1; color:var(--pc); min-width:2.4ch; text-align:center; }
+.bidval .rnd{ appearance:none; width:46px; height:46px; border-radius:14px; border:1px solid var(--hair);
+  background:var(--panel-2); color:var(--text); font-family:var(--mono); font-size:22px; cursor:pointer;
+  display:grid; place-items:center; transition:transform .1s, border-color .2s, background .2s; }
+.bidval .rnd:active{ transform:scale(.92); border-color:var(--pc); background:var(--panel-3); }
+.bidval .rnd[disabled]{ opacity:.3; cursor:default; }
+.slider{ -webkit-appearance:none; appearance:none; width:100%; height:30px; background:transparent;
+  cursor:pointer; display:block; margin:0; }
+.slider:focus{ outline:none; }
+.slider::-webkit-slider-runnable-track{ height:7px; border-radius:7px;
+  background:linear-gradient(90deg, var(--pc) var(--f,0%), rgba(255,255,255,.10) var(--f,0%)); }
+.slider::-webkit-slider-thumb{ -webkit-appearance:none; width:28px; height:28px; margin-top:-10.5px;
+  border-radius:50%; background:var(--pc); border:4px solid var(--ink); box-shadow:0 3px 10px rgba(0,0,0,.55); }
+.slider::-moz-range-track{ height:7px; border-radius:7px; background:rgba(255,255,255,.10); }
+.slider::-moz-range-progress{ height:7px; border-radius:7px; background:var(--pc); }
+.slider::-moz-range-thumb{ width:22px; height:22px; border-radius:50%; background:var(--pc);
+  border:4px solid var(--ink); box-shadow:0 3px 10px rgba(0,0,0,.55); }
+.chips{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.chip{ appearance:none; border:1px solid var(--hair); border-radius:12px; background:var(--panel-2);
+  color:var(--grey); font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.11em;
+  text-transform:uppercase; padding:11px 4px; cursor:pointer;
+  transition:transform .1s, border-color .2s, color .2s; }
+.chip:hover{ color:var(--text); }
+.chip:active{ transform:scale(.95); border-color:var(--pc); color:var(--pc); }
+.bidhint{ text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--grey-dim); min-height:12px; }
+
+.board.ttt.md{ width:100%; max-width:248px; gap:8px; margin-inline:auto; }
+.board.ttt.md .cell{ border-radius:12px; }
+/* needs to out-rank `.board.ttt .cell`, hence the long selector */
+.board.ttt .cell.bidcell{ border-color:var(--pc); background:color-mix(in srgb, var(--pc) 16%, var(--panel));
   animation:bidPulse 1.9s ease-in-out infinite; }
-@keyframes bidPulse{ 50%{ box-shadow:0 0 0 3px color-mix(in srgb, var(--pc) 22%, transparent); } }
+@keyframes bidPulse{
+  0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--pc) 30%, transparent); }
+  50%{ box-shadow:0 0 0 5px color-mix(in srgb, var(--pc) 0%, transparent); } }
 .squp{ text-align:center; display:flex; flex-direction:column; gap:4px; flex:none; }
 .squp .n{ font-family:var(--mono); font-size:15px; font-weight:700; color:var(--pc); }
 
@@ -597,25 +618,49 @@ button{ font:inherit; }
   animation:autorun var(--dur,1.6s) linear forwards; }
 @keyframes autorun{ from{ transform:scaleX(1) } to{ transform:scaleX(0) } }
 
+/* ---------- player bar: who is up, and how long they have ---------- */
+
+.pbar{ display:grid; grid-template-columns:1fr 1fr; gap:8px; flex:none; }
+.pchip{ position:relative; overflow:hidden; display:flex; align-items:center; gap:9px;
+  border:1px solid var(--hair); border-radius:14px; background:var(--panel); padding:9px 11px 11px;
+  opacity:.45; transition:opacity .25s var(--ease), border-color .25s, background .25s; }
+.pchip.on{ opacity:1; border-color:var(--pc); background:var(--panel-2); }
+.pchip .mk{ width:15px; height:15px; flex:none; color:var(--pc); display:block; }
+.pchip .col{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 1 auto; }
+.pchip .nm{ font-family:var(--mono); font-size:11px; font-weight:700; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+.pchip .sub{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--grey-dim);
+  font-variant-numeric:tabular-nums; }
+.pchip .big{ font-family:var(--mono); font-size:20px; font-weight:700; line-height:1; color:var(--pc);
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
+.pchip .big small{ font-size:.44em; font-weight:600; color:var(--grey-dim); margin-left:3px; letter-spacing:.1em; }
+.pchip .secs{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--void);
+  font-variant-numeric:tabular-nums; opacity:0; transition:opacity .25s; flex:none; }
+.pchip .secs.show{ opacity:1; }
+.tk{ position:absolute; left:0; right:0; bottom:0; height:3px; background:rgba(255,255,255,.08); }
+.tk i{ display:block; height:100%; width:100%; background:var(--pc); transform-origin:left center; }
+.tk.warn i{ background:var(--void); }
+.tk.hot i{ background:#FF5A4E; }
+
 /* ---------- classic board play ---------- */
 
 .classic{ justify-content:center; gap:16px; }
-.turnstrip{ display:flex; align-items:center; justify-content:center; gap:9px; flex:none; }
-.turnstrip .side{ display:flex; align-items:center; gap:7px; padding:6px 12px 6px 9px; border:1px solid var(--hair);
-  border-radius:999px; opacity:.38; transition:opacity .25s var(--ease), border-color .25s, transform .25s var(--ease); }
-.turnstrip .side.on{ opacity:1; border-color:currentColor; transform:scale(1.04); }
-.turnstrip .side .g{ width:16px; height:16px; display:block; }
-.turnstrip .side .n{ font-family:var(--mono); font-size:11.5px; font-weight:700; max-width:11ch;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.turnstrip .mid{ font-family:var(--mono); font-size:9px; letter-spacing:.16em; color:var(--grey-dim); }
 .statusline{ min-height:16px; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; }
 .statusline .dots i{ width:4px; height:4px; }
 
 /* ---------- connect 4 drop layer ---------- */
 
-.c4fall{ position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:14px; z-index:2; }
-.c4fall .fdisc{ position:absolute; border-radius:50%; background:currentColor; will-change:transform;
-  box-shadow:inset 0 2px 3px rgba(255,255,255,.28), inset 0 -3px 6px rgba(0,0,0,.4), 0 0 12px -5px currentColor; }
+.disc.thud{ transform-origin:50% 100%; animation:thud .32s var(--ease) both; }
+@keyframes thud{
+  0%{   transform:translateY(-30%) scale(.93,1.1); }
+  44%{  transform:translateY(0) scale(1.14,.79); }
+  70%{  transform:translateY(-9%) scale(.97,1.06); }
+  88%{  transform:translateY(0) scale(1.05,.95); }
+  100%{ transform:translateY(0) scale(1,1); } }
+.board.c4 .cell.landed{ animation:landFlash .55s var(--ease); }
+@keyframes landFlash{
+  0%{ box-shadow:inset 0 0 0 2px currentColor, inset 0 2px 5px rgba(0,0,0,.6); }
+  100%{ box-shadow:inset 0 0 0 0 transparent, inset 0 2px 5px rgba(0,0,0,.6); } }
 
 /* ---------- sheet (history) ---------- */
 
@@ -713,8 +758,14 @@ button{ font:inherit; }
   .window{ height:84px } .live{ font-size:40px } .fuse{ bottom:14px }
   .target .val{ font-size:clamp(38px,11.5vw,48px) }
   .timer{ gap:8px } .actuator{ width:min(50vw,180px) }
-  .board.ttt.lg{ max-width:min(70vw,268px) }
-  .c4wrap{ max-width:min(84vw,300px) }
+  .board.ttt.lg{ max-width:286px }
+  .board.ttt.md{ max-width:196px }
+  .c4wrap{ max-width:330px }
+  .pchip{ padding:7px 9px 9px }
+  .pchip .big{ font-size:17px }
+  .bidval .rnd{ width:40px; height:40px }
+  .bidctl{ gap:9px }
+  .chip{ padding:9px 4px }
   .msgs{ max-height:26vh }
   .key{ padding:10px 0; font-size:19px }
   .keypad{ gap:7px }
@@ -1116,39 +1167,81 @@ function c4HTML(size,live){
     }
   }
   var inner='<div class="board c4 '+size+" t-"+DB.shared.theme+'" style="--cols:'+b.cols+";--rows:"+b.rows+'" role="group" aria-label="Board">'+cells+winLineSVG()+"</div>"
-          + (size==="sm"?"":'<div class="c4fall" id="c4fall"></div>')
           + (playable?'<div class="c4cols" style="--cols:'+b.cols+'">'+cols+"</div>":"");
   return size==="sm" ? inner : '<div class="c4wrap">'+inner+"</div>";
 }
 
-/* Drop a disc down the column and land it in `i`. The animated disc sits in an
-   overlay clipped to the board, so it is visible the whole way down. */
+/* Drop a disc down column `i`. The piece is drawn inside the holes it passes
+   through, one row at a time, so it reads as falling *into* the board rather
+   than sliding across the front of it. Steps are spaced on sqrt(row), which is
+   what constant acceleration actually looks like. */
 function dropDisc(wrap,i,who,done){
-  var fall=wrap.querySelector("#c4fall"), cell=wrap.querySelector('.cell[data-i="'+i+'"]');
+  var b=B(), col=i%b.cols, target=Math.floor(i/b.cols), tint=phex(who);
   var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-  if(!fall||!cell||!cell.getBoundingClientRect||reduced){ done(); return; }
-  var wr=wrap.getBoundingClientRect(), cr=cell.getBoundingClientRect(), size=cr.width;
-  if(!size){ done(); return; }
-  var pad=size*0.09, left=cr.left-wr.left+pad, top=cr.top-wr.top+pad, d=size-pad*2;
-  var start=-(top+d+size*0.2), travel=Math.abs(start);
-  var disc=document.createElement("span");
-  disc.className="fdisc";
-  disc.style.cssText="left:"+left+"px;top:"+top+"px;width:"+d+"px;height:"+d+"px;color:"+phex(who);
-  fall.appendChild(disc);
-  var dur=Math.min(700,220+travel*1.15);
-  var anim=disc.animate([
-    { transform:"translateY("+start+"px)", offset:0,   easing:"cubic-bezier(.45,0,.9,.45)" },
-    { transform:"translateY(0)",           offset:.70, easing:"cubic-bezier(.2,.7,.4,1)" },
-    { transform:"translateY("+(-d*0.17)+"px)", offset:.84, easing:"cubic-bezier(.5,0,.9,.5)" },
-    { transform:"translateY(0)",           offset:.94 },
-    { transform:"translateY("+(-d*0.05)+"px)", offset:.97 },
-    { transform:"translateY(0)",           offset:1 }
-  ],{ duration:dur, fill:"forwards" });
-  later(function(){ sfx.landc4(); buzz(18); },dur*0.70);
-  var ended=false;
-  function finish(){ if(ended) return; ended=true; disc.remove(); done(); }
-  anim.onfinish=finish;
-  later(finish,dur+80);
+  function cellAt(r){ return wrap.querySelector('.cell[data-i="'+(r*b.cols+col)+'"]'); }
+  function fill(r,cls){
+    var c=cellAt(r); if(!c) return null;
+    c.innerHTML='<span class="pad"><span class="disc'+(cls?" "+cls:"")+'" style="color:'+tint+'"></span></span>';
+    return c;
+  }
+  function clear(r){ var c=cellAt(r); if(c) c.innerHTML=""; }
+  function land(){
+    var c=fill(target,reduced?"":"thud");
+    if(c&&!reduced){ c.style.color=tint; c.classList.add("landed"); }
+    sfx.landc4(); buzz(18);
+    later(done,reduced?40:190);
+  }
+  if(reduced||target<=0){ land(); return; }
+
+  var total=Math.min(600,190+target*85);
+  for(var r=0;r<target;r++){
+    (function(row){
+      later(function(){ if(row) clear(row-1); fill(row); }, total*Math.sqrt(row/target));
+    })(r);
+  }
+  later(function(){ clear(target-1); land(); },total);
+}
+
+/* ---------- player bar + turn clock ----------
+   Every screen where somebody has to act carries the same header: both players,
+   the active one lit, and a bar draining under them. Long enough to think,
+   short enough that nobody sits on the phone. */
+
+var TURN_MOVE=30, TURN_BID=45, TURN_GUESS=30;
+
+function playerBar(active,subs,clock){
+  return '<div class="pbar">'+[0,1].map(function(i){
+    var live=i===active, on=live||active<0, s=subs&&subs[i];
+    return '<div class="pchip'+(on?" on":"")+'" style="--pc:'+phex(i)+'">'
+      + '<span class="mk">'+markSVG(pmark(i))+"</span>"
+      + '<span class="col"><span class="nm">'+esc(pname(i))+"</span>"
+      +   (s?'<span class="'+(s.big?"big":"sub")+'">'+s.text+"</span>":"")+"</span>"
+      + (live&&clock?'<span class="secs" id="turnsecs"></span><span class="tk" id="turnclock"><i></i></span>':"")
+      + "</div>";
+  }).join("")+"</div>";
+}
+function sub(text){ return { text:text, big:false }; }
+function subBig(text){ return { text:text, big:true }; }
+
+/* frame-driven, so it dies with the screen and pauses with the tab */
+function runTurnClock(sec,onEnd){
+  var el=document.getElementById("turnclock"); if(!el) return;
+  var bar=el.querySelector("i"), secs=document.getElementById("turnsecs");
+  var t0=performance.now(), warned=false, fired=false, lastShown=-1;
+  (function tick(now){
+    var k=Math.min(1,(now-t0)/(sec*1000)), left=sec*(1-k);
+    bar.style.transform="scaleX("+(1-k).toFixed(4)+")";
+    el.classList.toggle("warn",left<=10);
+    el.classList.toggle("hot",left<=5);
+    if(secs){
+      var s=Math.ceil(left);
+      secs.classList.toggle("show",left<=10);
+      if(left<=10&&s!==lastShown){ lastShown=s; secs.textContent=s; if(s<=5) sfx.key(); }
+    }
+    if(!warned&&left<=10){ warned=true; sfx.warn(); }
+    if(k>=1){ if(!fired){ fired=true; sfx.nope(); buzz([40,60]); onEnd(); } return; }
+    frame(tick);
+  })(performance.now());
 }
 
 /* topbar board glance - the 7x6 grid is unreadable at 44px, so show a tally instead */
@@ -2131,13 +2224,13 @@ function screenGuess(){
       + '<div class="keypad">'+keys+"</div>";
   }
 
-  var counter = duel
-    ? esc(pname(0))+" "+triesBy(0)+"/"+DUEL_TRIES+" &middot; "+esc(pname(1))+" "+triesBy(1)+"/"+DUEL_TRIES
-    : "Guess "+(G.guesses.length+1)+" of "+G.cap;
+  var subs = duel
+    ? [sub(triesBy(0)+" of "+DUEL_TRIES),sub(triesBy(1)+" of "+DUEL_TRIES)]
+    : [sub("1 to "+G.hi),sub("1 to "+G.hi)];
 
   show('<div class="screen guess">'
-     + '<div class="gtop"><div class="gturn"><span class="dot"></span><span class="n">'+esc(pname(p))+"</span></div>"
-     +   '<span class="lbl">'+counter+"</span></div>"
+     + playerBar(p,subs,!bot)
+     + '<div class="statusline lbl">'+(duel?"Closest guess takes the square":"Guess "+(G.guesses.length+1)+" of "+G.cap)+"</div>"
      + '<div class="scale100"><div class="track"><div class="band" style="left:'+bandL+"%;right:"+bandR+'%"></div></div>'
      +   pins+'<div class="ends"><span>1</span><span>'+G.hi+"</span></div></div>"
      + '<div class="hist">'+(chips||'<span class="lbl">No guesses yet</span>')+"</div>"
@@ -2152,10 +2245,19 @@ function screenGuess(){
     return;
   }
 
+  /* out of time: the app guesses somewhere still in play rather than stalling */
+  function autoGuess(){
+    var taken=G.guesses.map(function(g){ return g.n; }), pool=[];
+    for(var n=rng[0];n<=rng[1];n++) if(taken.indexOf(n)===-1) pool.push(n);
+    if(!pool.length) for(var m=1;m<=G.hi;m++) if(taken.indexOf(m)===-1) pool.push(m);
+    submitGuess(pool.length?pool[Math.floor(Math.random()*pool.length)]:1,p);
+  }
+
   if(small){
     stage.querySelectorAll("[data-n]").forEach(function(b){
       b.addEventListener("click",function(){ sfx.key(); buzz(6); submitGuess(+b.dataset.n,p); });
     });
+    runTurnClock(TURN_GUESS,autoGuess);
     return;
   }
 
@@ -2190,6 +2292,7 @@ function screenGuess(){
   }
   stage.querySelectorAll(".key").forEach(function(b){ b.addEventListener("click",function(){ press(b.dataset.k); }); });
   state();
+  runTurnClock(TURN_GUESS,autoGuess);
 }
 
 function submitGuess(n,by){
@@ -2310,16 +2413,9 @@ function botBid(p){
   return Math.max(0,Math.min(bal,bid));
 }
 
-/* active<0 lights both sides - used where nobody is on the clock */
-function balRow(active){
-  return '<div class="balrow">'+[0,1].map(function(i){
-    var pct=G.pool?Math.round(G.bal[i]/G.pool*100):0;
-    return '<div class="bal'+(i===active||active<0?" on":"")+'" style="--pc:'+phex(i)+'">'
-      + '<span class="top"><span class="mk">'+markSVG(pmark(i))+"</span>"
-      +   '<span class="nm">'+esc(pname(i))+"</span></span>"
-      + '<span class="pts">'+G.bal[i]+"<small>PTS</small></span>"
-      + '<span class="bar"><i style="width:'+pct+'%"></i></span></div>';
-  }).join("")+"</div>";
+/* both pools, nobody on the clock */
+function bidBar(){
+  return playerBar(-1,[subBig(G.bal[0]+"<small>PTS</small>"),subBig(G.bal[1]+"<small>PTS</small>")],false);
 }
 function bidLogHTML(){
   if(!G.bidLog.length) return "";
@@ -2346,56 +2442,61 @@ function bidBoardHTML(){
 
 function screenBidEntry(p){
   accent(phex(p)); enterGame(); stage.classList.add("scrolls"); chromeGame(true);
-  G.entry="0";   /* passing on a square is a real move, so start on a sealable bid */
-  var bal=G.bal[p], digits=String(bal).length;
-  var keys="";
-  [1,2,3,4,5,6,7,8,9].forEach(function(k){ keys+='<button class="key" data-k="'+k+'" type="button">'+k+"</button>"; });
-  keys+='<button class="key wide" data-k="del" type="button">Del</button>';
-  keys+='<button class="key" data-k="0" type="button">0</button>';
-  keys+='<button class="key go" id="lockKey" data-k="go" type="button" disabled>Seal</button>';
+  var bal=G.bal[p], val=0;
 
   show('<div class="screen bidscreen">'
-     + balRow(p)
+     + playerBar(p,[subBig(G.bal[0]+"<small>PTS</small>"),subBig(G.bal[1]+"<small>PTS</small>")],true)
      + '<div class="squp"><span class="lbl">Up for bid</span><span class="n">'+SQNAMES[G.bidSquare]+"</span></div>"
      + bidBoardHTML()
-     + '<div class="entry" id="entry"><span class="val" id="entryVal">0</span>'
-     +   '<span class="note" id="note">'+esc(pname(p))+", bid 0 to "+bal+"</span></div>"
-     + '<div class="keypad">'+keys+"</div>"
+     + '<div class="bidctl">'
+     +   '<div class="bidval">'
+     +     '<button class="rnd" id="bidDown" type="button" aria-label="Bid one less">&minus;</button>'
+     +     '<span class="v" id="bidV">0</span>'
+     +     '<button class="rnd" id="bidUp" type="button" aria-label="Bid one more">+</button></div>'
+     +   '<input class="slider" id="bidSlide" type="range" min="0" max="'+bal+'" value="0" step="1" aria-label="Your bid">'
+     +   '<div class="chips">'
+     +     '<button class="chip" data-set="0" type="button">Pass &middot; 0</button>'
+     +     '<button class="chip" data-set="half" type="button">Half &middot; '+Math.floor(bal/2)+"</button>"
+     +     '<button class="chip" data-set="all" type="button">All in &middot; '+bal+"</button></div>"
+     +   '<div class="bidhint" id="bidHint">&nbsp;</div>'
+     +   '<button class="act hero" id="sealBtn" type="button">Seal 0</button></div>'
      + bidLogHTML()+"</div>");
 
-  var entry=document.getElementById("entry"), val=document.getElementById("entryVal"),
-      note=document.getElementById("note"), lock=document.getElementById("lockKey");
-  function state(){
-    var s=G.entry, n=parseInt(s,10), ok=false, msg=pname(p)+", bid 0 to "+bal;
-    val.textContent=s||"\u2014";
-    val.classList.toggle("empty",!s);
-    if(s){
-      if(!(n>=0&&n<=bal)) msg="You only have "+bal;
-      else { ok=true; msg="Seal "+n+" \u00b7 "+(bal-n)+" would be left"; }
-    }
-    note.textContent=msg; note.classList.toggle("bad",!!s&&!ok);
-    lock.disabled=!ok;
-    lock.textContent=ok?("Seal "+n):"Seal";
-    return ok;
+  var vEl=document.getElementById("bidV"), slide=document.getElementById("bidSlide"),
+      hint=document.getElementById("bidHint"), seal=document.getElementById("sealBtn");
+
+  function paint(){
+    vEl.textContent=val;
+    slide.value=val;
+    slide.style.setProperty("--f",(bal?val/bal*100:0)+"%");
+    hint.innerHTML = val===0 ? "Passing &middot; costs you nothing"
+      : (bal-val)+" would be left of "+bal;
+    seal.textContent="Seal "+val;
   }
-  function press(k){
-    if(k==="del"){ G.entry=G.entry.slice(0,-1); sfx.key(); buzz(5); }
-    else if(k==="go"){
-      if(!state()){ entry.classList.add("shake"); sfx.nope(); buzz(30);
-        setTimeout(function(){ entry.classList.remove("shake"); },320); return; }
-      var n=parseInt(G.entry,10);
-      sfx.seal(); buzz([10,20,10]);
-      G.bids[p]=n; bidAfter(p); return;
-    }
-    else {
-      if(G.entry.length>=digits) return;
-      if(G.entry==="0") G.entry="";
-      G.entry+=k; sfx.key(); buzz(5);
-    }
-    state();
+  function set(n,quiet){
+    var next=Math.max(0,Math.min(bal,Math.round(n)));
+    if(next===val){ paint(); return; }
+    val=next; if(!quiet) sfx.key();
+    paint();
   }
-  stage.querySelectorAll(".key").forEach(function(b){ b.addEventListener("click",function(){ press(b.dataset.k); }); });
-  state();
+  document.getElementById("bidDown").addEventListener("click",function(){ set(val-1); buzz(4); });
+  document.getElementById("bidUp").addEventListener("click",function(){ set(val+1); buzz(4); });
+  slide.addEventListener("input",function(){ set(+slide.value,true); });
+  slide.addEventListener("change",function(){ sfx.key(); buzz(5); });
+  stage.querySelectorAll("[data-set]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var d=b.dataset.set;
+      set(d==="all"?bal:d==="half"?Math.floor(bal/2):0);
+      buzz(6);
+    });
+  });
+  function lockIn(){
+    sfx.seal(); buzz([10,20,10]);
+    G.bids[p]=val; bidAfter(p);
+  }
+  seal.addEventListener("click",lockIn);
+  paint();
+  runTurnClock(TURN_BID,lockIn);   /* time up seals whatever is on the dial */
 }
 
 /* the reveal: a held breath, then both numbers at once */
@@ -2408,7 +2509,7 @@ function screenBidReveal(){
       + '<span class="off" id="bo'+i+'">&mdash;</span></div>';
   }
   show('<div class="screen reveal">'
-     + balRow(-1)
+     + bidBar()
      + '<div class="rev-head"><span class="lbl">Sealed bids for</span><span class="t">'+SQNAMES[G.bidSquare]+"</span></div>"
      + '<div class="cards">'+card(0)+'<div class="vs"><span>VS</span></div>'+card(1)+"</div>"
      + bidBoardHTML()
@@ -2445,7 +2546,8 @@ function flipBids(b0,b1){
       tint=phex(w); accent(phex(w));
       head=pname(w)+" takes it"+(close?" by one":"");
       sub=(decisive?"Blown away by "+diff+". ":close?"The narrowest of margins. ":"")
-        + pname(1-w)+" still pays "+G.bids[1-w]+".";
+        + (G.bids[1-w]===0 ? pname(1-w)+" passed."
+                           : pname(1-w)+" still pays "+G.bids[1-w]+".");
       if(decisive||close){ c.classList.add("burstfx"); sfx.burst(); buzz([30,40,80]); }
       else { sfx.win(); buzz([26,40,60]); }
     }
@@ -2484,8 +2586,8 @@ function settleBids(w,b0,b1){
   foot.innerHTML='<button class="act accent" id="next" type="button">'+label+"</button>"+autoBar(wait);
   var wrap=stage.querySelector(".board.ttt.md");
   if(wrap) wrap.outerHTML=bidBoardHTML();
-  var br=stage.querySelector(".balrow");
-  if(br) br.outerHTML=balRow(-1);
+  var br=stage.querySelector(".pbar");
+  if(br) br.outerHTML=bidBar();
   function go(){
     if(fired) return; fired=true; haltAll();
     if(done) bidEnd(); else bidRound();
@@ -2552,26 +2654,35 @@ function moveNote(i){
 function screenClassic(){
   var p=G.turn, bot=isBot(p);
   accent(phex(p)); enterGame(); chromeGame(true);
-  function side(i){
-    return '<span class="side'+(i===p?" on":"")+'" style="color:'+phex(i)+'">'
-      + '<span class="g">'+emblem(i,false)+"</span>"
-      + '<span class="n">'+esc(pname(i))+"</span></span>";
-  }
+  var counts=[
+    G.cells.filter(function(v){ return v==="X"; }).length,
+    G.cells.filter(function(v){ return v==="O"; }).length
+  ];
   show('<div class="screen classic">'
-     + '<div class="turnstrip">'+side(0)+'<span class="mid">VS</span>'+side(1)+"</div>"
+     + playerBar(p,[sub(counts[0]+" placed"),sub(counts[1]+" placed")],!bot)
      + '<div id="boardWrap">'+boardHTML("lg",bot?null:p)+"</div>"
      + '<div class="statusline lbl" id="status">'+(bot?"Bot is thinking":B().pick)+"</div></div>");
   var wrap=document.getElementById("boardWrap");
   if(bot){
-    later(function(){
-      var pick=BOT.move(G.cells,G.board,p);
-      if(pick<0) return;
-      var i=B().drop?idx(dropRow(pick),pick):pick, row=B().drop?dropRow(pick):0;
-      commit(i,p,row);
-    },560);
+    later(function(){ playFor(p,BOT.move(G.cells,G.board,p)); },560);
     return;
   }
   wireBoard(wrap,p,function(i,row){ commit(i,p,row); });
+  runTurnClock(TURN_MOVE,function(){ playFor(p,randomPick()); });
+}
+
+/* pick = a cell index on tic-tac-toe, a column on connect 4 */
+function playFor(p,pick){
+  if(pick<0||pick===undefined) return;
+  var i=B().drop?idx(dropRow(pick),pick):pick, row=B().drop?dropRow(pick):0;
+  if(i<0) return;
+  commit(i,p,row);
+}
+function randomPick(){
+  var open=[];
+  if(B().drop){ for(var c=0;c<B().cols;c++) if(dropRow(c)>=0) open.push(c); }
+  else G.cells.forEach(function(v,i){ if(!v) open.push(i); });
+  return open.length?open[Math.floor(Math.random()*open.length)]:-1;
 }
 
 /* ---------- duel: the round winner claims a square ---------- */
@@ -2580,20 +2691,16 @@ function screenPlace(w){
   G.winner=w; accent(phex(w)); enterGame(); chromeGame(true);
   var bot=isBot(w);
   show('<div class="screen place">'
-     + '<div class="head"><span class="lbl">Round won by</span><span class="who">'+esc(pname(w))+"</span>"
-     +   '<span class="sub">'+(bot?"Bot is picking its square":B().pick)+"</span></div>"
-     + '<div id="boardWrap">'+boardHTML("lg",bot?null:w)+"</div></div>");
+     + playerBar(w,[sub(w===0?"Round won":"\u2014"),sub(w===1?"Round won":"\u2014")],!bot)
+     + '<div id="boardWrap">'+boardHTML("lg",bot?null:w)+"</div>"
+     + '<div class="statusline lbl" id="status">'+(bot?"Bot is picking its square":B().pick)+"</div></div>");
   var wrap=document.getElementById("boardWrap");
   if(bot){
-    later(function(){
-      var pick=BOT.move(G.cells,G.board,w);
-      if(pick<0) return;
-      var i=B().drop?idx(dropRow(pick),pick):pick, row=B().drop?dropRow(pick):0;
-      commit(i,w,row);
-    },700);
+    later(function(){ playFor(w,BOT.move(G.cells,G.board,w)); },700);
     return;
   }
   wireBoard(wrap,w,function(i,row){ commit(i,w,row); });
+  runTurnClock(TURN_MOVE,function(){ playFor(w,randomPick()); });
 }
 
 function commit(i,w,row){
@@ -2614,7 +2721,8 @@ function commit(i,w,row){
 function settleMove(w){
   var wrap=document.getElementById("boardWrap");
   G.result=judge();
-  if(wrap) wrap.innerHTML=boardHTML("lg",null);
+  /* a dropped disc already put itself in its cell; only redraw when a line needs drawing */
+  if(wrap&&(G.result||!B().drop)) wrap.innerHTML=boardHTML("lg",null);
   chromeGame(true);
   if(G.result){
     if(G.result.winner!==null){ later(sfx.game,380); later(function(){ finishMatch(G.result.winner); },1450); }

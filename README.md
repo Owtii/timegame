@@ -35,7 +35,8 @@ into whatever you played last.
 ### Bid-Tac-Toe in detail
 
 Squares come up in reading order, skipping any already claimed. Each round both
-players seal a bid in private — enter it, hit **Seal**, hand the phone over —
+players seal a bid in private — drag the slider or tap Pass / Half / All in, hit
+**Seal**, hand the phone over —
 and the two numbers flip up together after a held beat. A tie means nobody takes
 the square, **both still pay**, and the same square comes straight back up. A
 running log under the board shows every settled square with both bids and who
@@ -63,6 +64,19 @@ over a window-count evaluation, halves the range in the number games, and stops
 the clock with a human-shaped error around the target.
 
 Against the bot there is no hand-over screen — the game runs straight through.
+
+## In a match
+
+Every screen where somebody has to act carries the same header: both players
+side by side, the active one lit, and a bar draining underneath them. **30
+seconds** for a board move or a guess, **45** for a bid — long enough to think,
+short enough that nobody sits on the phone. The last ten seconds count down in
+figures; run out and the app plays a legal move for you rather than stalling
+the match. The clock only runs while the app is on screen, and never in the
+clock games, where the timing *is* the game.
+
+Everything else gives way to the board: it is the largest thing on screen in
+every game that has one.
 
 ## Boards
 
@@ -117,10 +131,13 @@ greyed out in the shop, so you always stay distinguishable.
   hand-over screen that keeps a blind stop secret from your opponent.
 - **The number games never hand the phone over.** Both players see the same
   clues, so the Higher/Lower reply flashes in place and the turn just moves on.
-- **A dropping Connect 4 piece lives in an overlay, not in its cell.** Cells clip
-  their contents, so a piece animated inside its final cell is invisible until it
-  has already arrived. The overlay is clipped to the board instead, so the piece
-  enters at the top edge, accelerates like gravity, and bounces on landing.
+- **A dropping Connect 4 piece is drawn in the holes it passes through**, one row
+  at a time, rather than animated as a single element over the board. A piece
+  animated inside its final cell is invisible until it arrives (cells clip their
+  contents); one animated over the board slides across the front of the frame
+  instead of falling into it. Stepping through the holes is the only version that
+  reads as a drop. Steps are spaced on the square root of the row, which is what
+  constant acceleration looks like, and the piece squashes when it lands.
 - **Timing precision matches display precision.** Elapsed times are quantised to
   centiseconds, the same 2 decimals shown on screen. Comparing at millisecond
   resolution would let two visible `4.28`s resolve to a winner, which reads as
@@ -135,6 +152,13 @@ greyed out in the shop, so you always stay distinguishable.
   Higher/Lower narrowing, waiting for an exact hit would stall; nearest-wins
   ends every round in at most six guesses.
 - **Who acts first alternates every round**, including replays.
+- **Board widths are capped in pixels, never in `vw`.** A `vw` cap does not know
+  about the app's own padding, so `max-width:96vw` overflowed the right edge of
+  a phone screen and cut the last column off.
+- **A bid is a dial, not a typed number.** Bidding is a judgement about a
+  fraction of your pool, so the slider plus Pass / Half / All in gets you there
+  in one gesture, and the +/- keys settle the exact figure. It also costs half
+  the height of a keypad, which the board takes instead.
 - **The board sets `grid-template-rows`, not just columns.** With `auto` rows a
   row holding a mark sizes to its content and grows — squares come out visibly
   unequal (measured 96px against 55px).
