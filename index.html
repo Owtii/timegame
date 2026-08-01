@@ -328,6 +328,21 @@ button{ font:inherit; }
 .sw .alsoworn{ position:absolute; top:3px; right:4px; font-family:var(--mono); font-size:7.5px;
   letter-spacing:.06em; color:var(--grey-dim); text-transform:uppercase; }
 .twinnote{ margin:0; font-size:11px; line-height:1.45; color:var(--void); }
+
+/* ---------- confirm ---------- */
+.scrim{ position:fixed; inset:0; z-index:60; background:rgba(4,5,8,.74); display:grid; place-items:center;
+  padding:24px; animation:scrimIn .16s ease both; }
+@keyframes scrimIn{ from{ opacity:0 } }
+.dlg{ width:100%; max-width:330px; border:1px solid var(--hair-2); border-radius:18px; background:var(--panel);
+  padding:20px 20px 16px; display:flex; flex-direction:column; gap:9px; box-shadow:0 24px 60px rgba(0,0,0,.62);
+  animation:dlgIn .24s var(--ease) both; }
+@keyframes dlgIn{ from{ opacity:0; transform:translateY(14px) scale(.96) } }
+.dlg h3{ margin:0; font-family:var(--mono); font-size:16px; font-weight:700; letter-spacing:-.01em; }
+.dlg p{ margin:0; font-size:13px; line-height:1.5; color:var(--grey); }
+.dlg .row{ display:flex; gap:9px; margin-top:8px; }
+.dlg .row .act{ flex:1 1 0; width:auto; padding:14px 10px; }
+.act.warn{ background:var(--void); border-color:var(--void); color:#0A0C11; font-weight:700; }
+.act.warn:hover{ filter:brightness(1.07); background:var(--void); }
 .sw.taken{ opacity:.32; cursor:not-allowed; }
 .sw.locked .chip{ opacity:.35; }
 
@@ -1420,21 +1435,57 @@ function wireSound(){
     b.setAttribute("aria-label",(m?"Unmute":"Mute")+" sound");
   });
 }
+/* One warning, used anywhere leaving costs something. */
+function confirmAsk(o){
+  var scrim=document.createElement("div");
+  scrim.className="scrim";
+  scrim.innerHTML='<div class="dlg" role="dialog" aria-modal="true"><h3>'+esc(o.title)+"</h3>"
+    + "<p>"+esc(o.body)+"</p><div class=\"row\">"
+    + '<button class="act ghost" id="dlgNo" type="button">'+esc(o.cancel||"Stay")+"</button>"
+    + '<button class="act warn" id="dlgYes" type="button">'+esc(o.ok||"Leave")+"</button></div></div>";
+  document.body.appendChild(scrim);
+  function shut(){ scrim.remove(); document.removeEventListener("keydown",key); }
+  function no(){ sfx.tap(); shut(); if(o.onCancel) o.onCancel(); }
+  function yes(){ sfx.tap(); shut(); o.onConfirm(); }
+  function key(e){ if(e.key==="Escape"){ e.preventDefault(); no(); } }
+  scrim.addEventListener("click",function(e){ if(e.target===scrim) no(); });
+  scrim.querySelector("#dlgNo").addEventListener("click",no);
+  scrim.querySelector("#dlgYes").addEventListener("click",yes);
+  document.addEventListener("keydown",key);
+  scrim.querySelector("#dlgNo").focus({preventScroll:true});
+  sfx.nope(); buzz(18);
+}
+/* a match in progress is the only thing you can actually lose by leaving */
+function leaveMatch(){
+  if(G.result||!G.game){ tab="home"; showHub(); return; }
+  confirmAsk({
+    title:"Leave the match?",
+    body:"This one is still running. Leaving ends it here, and nothing from it is counted.",
+    ok:"Leave", cancel:"Keep playing",
+    onConfirm:function(){ haltAll(); tab="home"; showHub(); }
+  });
+}
+
 function chromeHub(){
   topbar.classList.remove("recede");
-  topbar.innerHTML='<div class="slot"><button class="whoami" id="swapMe" type="button" aria-label="Switch active profile">'
+  var home=(tab==="home");
+  topbar.innerHTML='<div class="slot">'
+    + (home?"":'<button class="icon-btn tiny" id="hubBack" type="button" aria-label="Back to home">'+I.back+"</button>")
+    + '<button class="whoami" id="swapMe" type="button" aria-label="Switch active profile">'
     + '<span class="dot"></span><span class="nm">'+esc(pname(DB.me))+'</span><span class="sw">'+I.swap+"</span></button></div>"
     + '<div class="slot right">'+coinTag(P(DB.me).coins)+soundBtn()+"</div>";
   document.getElementById("swapMe").addEventListener("click",function(){
     DB.me=1-DB.me; save(); sfx.tap(); accent(phex(DB.me)); renderHub();
   });
+  var hb=document.getElementById("hubBack");
+  if(hb) hb.addEventListener("click",function(){ sfx.tap(); tab="home"; renderHub(); });
   wireSound();
 }
 function chromeGame(show){
   topbar.classList.toggle("recede",!show);
   var rn=hasBoard()?(marksOn()+1):G.round;
   topbar.innerHTML='<div class="slot">'
-    + '<button class="icon-btn tiny" id="quitBtn" type="button" aria-label="Quit match">'+I.close+"</button>"
+    + '<button class="icon-btn tiny" id="quitBtn" type="button" aria-label="Leave match">'+I.back+"</button>"
     + '<span class="lbl" id="roundLbl">Round '+rn+"</span></div>"
     + '<div class="slot mid" id="mini"></div><div class="slot right">'
     + '<button class="icon-btn tiny" id="histBtn" type="button" aria-label="Match history">'+I.hist+"</button>"
@@ -1445,20 +1496,7 @@ function chromeGame(show){
   document.getElementById("histBtn").addEventListener("click",function(){ sfx.tap(); openHistory(); });
   wireSound();
   // Connect 4 matches run long - leaving one shouldn't mean finishing it.
-  var q=document.getElementById("quitBtn"), lbl=document.getElementById("roundLbl");
-  q.addEventListener("click",function(){
-    if(q.dataset.armed){ sfx.tap(); tab="home"; showHub(); return; }
-    q.dataset.armed="1"; q.classList.add("armed");
-    q.setAttribute("aria-label","Tap again to quit the match");
-    lbl.textContent="Quit match?"; lbl.style.color="var(--void)";
-    sfx.nope();
-    setTimeout(function(){
-      if(!q.isConnected) return;
-      delete q.dataset.armed; q.classList.remove("armed");
-      q.setAttribute("aria-label","Quit match");
-      lbl.textContent="Round "+(marksOn()+1); lbl.style.color="";
-    },2800);
-  });
+  document.getElementById("quitBtn").addEventListener("click",function(){ sfx.tap(); leaveMatch(); });
 }
 
 var TABS=[
@@ -1718,10 +1756,13 @@ function viewProfile(){
     p.name=input.value.trim().slice(0,18)||("Player "+(me+1)); save(); sfx.tap(); renderHub();
   });
   document.getElementById("wipe").addEventListener("click",function(){
-    var b=document.getElementById("wipe");
-    if(b.dataset.armed){ DB=freshDB(); save(); sfx.buy(); tab="home"; renderHub(); return; }
-    b.dataset.armed="1"; b.textContent="Tap again to erase everything"; sfx.nope();
-    setTimeout(function(){ if(b.isConnected){ delete b.dataset.armed; b.textContent="Reset all progress"; } },3200);
+    sfx.tap();
+    confirmAsk({
+      title:"Erase everything?",
+      body:"Both profiles, every coin, all cosmetics you own and the whole match history. This cannot be undone.",
+      ok:"Erase it all", cancel:"Keep it",
+      onConfirm:function(){ DB=freshDB(); save(); sfx.buy(); tab="home"; renderHub(); }
+    });
   });
 }
 
