@@ -30,7 +30,7 @@ into whatever you played last.
 | --- | --- |
 | Timer Duel | Target between **3.00s** and **8.00s**. Closest stop claims a square. |
 | Number Duel | Secret number **1–10**, **three tries each**. An exact hit ends it; otherwise the closest guess claims the square, and a shared distance goes to whoever reached it first. |
-| Bid-Tac-Toe | **24 points each** (configurable). A toss decides who names the first square; from there you take turns naming one. Both then seal a bid on it — highest takes it, and **both** players pay what they bid. |
+| Bid-Tac-Toe | **24 points each** (configurable). A toss decides who names the first square; from there you take turns naming one. Both then seal a bid on it — highest takes it, and **both** players pay what they bid. Bidding **0 banks you +1** instead of costing anything. |
 
 ### Bid-Tac-Toe in detail
 
@@ -53,9 +53,17 @@ track how much of the other pool is gone.
 Run the 30-second move clock out on the pick and the app names a square for you
 rather than stalling the match.
 
-Bidding 0 is always legal, so an empty pool can still pass on squares. If both
-pools are empty and the bids tie at 0 there is nothing left to decide anything
-with, so the match ends there on the board as it stands.
+### Passing pays
+
+Bidding **0 banks you +1** rather than costing nothing. An emptied pool can
+always climb back, so there is no longer any way to be priced out of the rest of
+the match — which also means the old "both pools are empty, end it here" rule is
+gone. The only endings now are a line or a full board.
+
+That does leave one hole: if both players pass, both gain, and the square comes
+back — forever. So the **third double-pass in a row on the same square hands it
+to whoever named it**. Passing is a real choice rather than a way to stall, and
+nobody can freeze a match by refusing to bid.
 
 Both clock games hide the digits after the first second — from there you're
 running blind against a tick scale.

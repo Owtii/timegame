@@ -1115,7 +1115,7 @@ var G={ game:"dtimer", kind:"duel", mode:"timer", board:"ttt", vsBot:false, bot:
         /* timer */ turnIdx:0, target:0, tapTarget:null, times:[null,null], devs:[null,null],
                     outcome:null, winner:null, replay:null,
         /* number */ secret:0, hi:100, cap:14, guesses:[], entry:"", lastVerdict:null,
-        /* bid */ pool:24, bal:[24,24], bids:[null,null], bidLog:[], bidSquare:-1, bidChooser:-1 };
+        /* bid */ pool:24, bal:[24,24], bids:[null,null], bidLog:[], bidSquare:-1, bidChooser:-1, passRun:0 };
 
 function B(){ return BOARDS[G.board]; }
 function hasBoard(){ return G.kind==="board"||G.kind==="duel"||G.kind==="bid"; }
@@ -2394,11 +2394,17 @@ function numberResult(w,why){
 var SQNAMES=["Top left","Top middle","Top right","Middle left","Centre","Middle right",
              "Bottom left","Bottom middle","Bottom right"];
 
+var PASS_BANK=1;      /* passing banks a point, so an empty pool can always climb back */
+var PASS_LIMIT=3;     /* ...but three double-passes running would loop forever, so it resolves */
+
 function bidStart(pool){
   G.pool=pool; G.bal=[pool,pool]; G.bids=[null,null]; G.bidLog=[]; G.bidSquare=-1;
-  G.bidChooser=-1;
+  G.bidChooser=-1; G.passRun=0;
   screenBidDraw();
 }
+
+/* a pass is worth points rather than costing them */
+function bidCost(b){ return b===0 ? -PASS_BANK : b; }
 
 /* the toss: names flick past, one lands, and that player names the first square */
 function screenBidDraw(){
@@ -2540,6 +2546,8 @@ function botBid(p){
   var mine=judgeOn(t,b), win=mine&&mine.winner===p;
   t[i]=you;
   var theirs=judgeOn(t,b), block=theirs&&theirs.winner===(1-p);
+  /* a square it doesn't need is worth more as a banked point when it's short */
+  if(!win && !block && i!==4 && bal < G.bal[1-p]*0.6 && Math.random()<0.55) return 0;
   var weight = win?1 : block?0.9 : (i===4?0.45 : (i%2===0?0.32:0.22));
   var bid=Math.round(bal*weight*(0.55+Math.random()*0.5));
   if(win||block) bid=Math.max(bid,Math.ceil(bal*(win?0.7:0.5)));
@@ -2593,7 +2601,7 @@ function screenBidEntry(p){
      +     '<button class="rnd" id="bidUp" type="button" aria-label="Bid one more">+</button></div>'
      +   '<input class="slider" id="bidSlide" type="range" min="0" max="'+bal+'" value="0" step="1" aria-label="Your bid">'
      +   '<div class="chips">'
-     +     '<button class="chip" data-set="0" type="button">Pass &middot; 0</button>'
+     +     '<button class="chip" data-set="0" type="button">Pass &middot; +'+PASS_BANK+"</button>"
      +     '<button class="chip" data-set="half" type="button">Half &middot; '+Math.floor(bal/2)+"</button>"
      +     '<button class="chip" data-set="all" type="button">All in &middot; '+bal+"</button></div>"
      +   '<div class="bidhint" id="bidHint">&nbsp;</div>'
@@ -2607,7 +2615,7 @@ function screenBidEntry(p){
     vEl.textContent=val;
     slide.value=val;
     slide.style.setProperty("--f",(bal?val/bal*100:0)+"%");
-    hint.innerHTML = val===0 ? "Passing &middot; costs you nothing"
+    hint.innerHTML = val===0 ? "Passing &middot; banks +"+PASS_BANK+" &rarr; "+(bal+PASS_BANK)
       : (bal-val)+" would be left of "+bal;
     seal.textContent="Seal "+val;
   }
@@ -2659,9 +2667,15 @@ function screenBidReveal(){
 
 function flipBids(b0,b1){
   var w = b0>b1 ? 0 : (b1>b0 ? 1 : null);
+  /* both passing pays both of them, so it can repeat forever; after a few in a
+     row the square goes to whoever named it rather than coming back again */
+  var bothPassed = (b0===0 && b1===0);
+  G.passRun = (w===null && bothPassed) ? (G.passRun||0)+1 : 0;
+  var forced = (w===null && G.passRun>=PASS_LIMIT);
+  if(forced){ w=G.bidChooser; G.passRun=0; }
   var diff=Math.abs(b0-b1), pool=G.pool||24;
-  var decisive = w!==null && diff>=Math.max(3,Math.round(pool*0.25));
-  var close = w!==null && diff<=1;
+  var decisive = w!==null && !forced && diff>=Math.max(3,Math.round(pool*0.25));
+  var close = w!==null && !forced && diff<=1;
   [0,1].forEach(function(i){
     var v=document.getElementById("bv"+i), c=document.getElementById("bc"+i);
     v.textContent=(i?b1:b0); v.classList.remove("masked");
@@ -2674,9 +2688,18 @@ function flipBids(b0,b1){
     if(w===null){
       document.getElementById("bc0").classList.add("hero");
       document.getElementById("bc1").classList.add("hero");
-      head="Tied at "+b0; tint="var(--void)";
-      sub="Both pay "+b0+". "+SQNAMES[G.bidSquare]+" stays up for bid.";
+      head=bothPassed?"Both passed":"Tied at "+b0; tint="var(--void)";
+      sub=(bothPassed ? "Both bank +"+PASS_BANK+". " : "Both pay "+b0+". ")
+        + SQNAMES[G.bidSquare]+" stays up for bid.";
       sfx.tie(); buzz([20,60,20]);
+    } else if(forced){
+      var fc=document.getElementById("bc"+w);
+      fc.classList.add("hero");
+      document.getElementById("bc"+(1-w)).classList.add("dim");
+      tint=phex(w); accent(phex(w));
+      head=pname(w)+" takes it by default";
+      sub="Passed "+PASS_LIMIT+" times over. It goes to whoever named it \u2014 both still bank +"+PASS_BANK+".";
+      sfx.win(); buzz([26,40,60]);
     } else {
       var c=document.getElementById("bc"+w);
       c.classList.add("hero");
@@ -2684,14 +2707,14 @@ function flipBids(b0,b1){
       tint=phex(w); accent(phex(w));
       head=pname(w)+" takes it"+(close?" by one":"");
       sub=(decisive?"Blown away by "+diff+". ":close?"The narrowest of margins. ":"")
-        + (G.bids[1-w]===0 ? pname(1-w)+" passed."
+        + (G.bids[1-w]===0 ? pname(1-w)+" passed and banks +"+PASS_BANK+"."
                            : pname(1-w)+" still pays "+G.bids[1-w]+".");
       if(decisive||close){ c.classList.add("burstfx"); sfx.burst(); buzz([30,40,80]); }
       else { sfx.win(); buzz([26,40,60]); }
     }
     [0,1].forEach(function(i){
-      var o=document.getElementById("bo"+i);
-      o.textContent=(G.bal[i]-G.bids[i])+" left";
+      var o=document.getElementById("bo"+i), after=G.bal[i]-bidCost(G.bids[i]);
+      o.textContent=(G.bids[i]===0?"+"+PASS_BANK+" banked \u00b7 ":"")+after+" left";
       o.classList.add("on");
     });
     document.getElementById("banner").innerHTML='<div class="head" style="color:'+tint+'">'+esc(head)+"</div>"
@@ -2702,7 +2725,7 @@ function flipBids(b0,b1){
 
 function settleBids(w,b0,b1){
   var sq=G.bidSquare;
-  G.bal[0]-=b0; G.bal[1]-=b1;
+  G.bal[0]-=bidCost(b0); G.bal[1]-=bidCost(b1);
   G.bidLog.push({ sq:sq, b0:b0, b1:b1, w:w });
   if(w!==null){
     G.cells[sq]=pmark(w); G.lastPlaced=sq;
@@ -2711,14 +2734,15 @@ function settleBids(w,b0,b1){
     G.bidChooser=1-G.bidChooser;   /* the pick alternates, but only once a square actually settles */
   }
   logRound({
-    t: w===null ? "Tied at "+b0+" on "+SQNAMES[sq] : pname(w)+" took "+SQNAMES[sq].toLowerCase(),
+    t: w===null ? ((b0===0&&b1===0) ? "Both passed on "+SQNAMES[sq] : "Tied at "+b0+" on "+SQNAMES[sq])
+                : pname(w)+" took "+SQNAMES[sq].toLowerCase(),
     d: pname(0)+" bid "+b0+" \u00b7 "+pname(1)+" bid "+b1+" \u00b7 "+G.bal[0]+" and "+G.bal[1]+" left",
     winner: w
   });
   chromeGame(true);
 
-  var broke = w===null && G.bal[0]===0 && G.bal[1]===0;   /* nothing left to outbid with */
-  var done = G.result || broke;
+  /* a pool can always climb back now, so the only ends are a line or a full board */
+  var done = !!G.result;
   var wait=done?1500:2000, fired=false;
   var foot=document.getElementById("foot");
   var label = done ? "See the result" : (w===null?"Bid again":pname(G.bidChooser)+" picks next");
