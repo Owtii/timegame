@@ -814,7 +814,30 @@ button{ font:inherit; }
   text-transform:uppercase; color:var(--grey-dim); font-weight:600; }
 .key.ruled{ opacity:.22; }
 
-/* ---------- sequence race ---------- */
+/* ---------- sequence race ----------
+   A real race needs both players working at once, and one phone only allows
+   that if they each own half of it. The far half is turned to face whoever is
+   sitting opposite. */
+.seqrace{ justify-content:space-between; gap:9px; }
+.seqpane{ position:relative; display:flex; flex-direction:column; gap:8px; padding:11px 12px;
+  border:1px solid var(--hair); border-radius:18px; background:var(--panel); }
+.seqpane.flip{ transform:rotate(180deg); }
+.seqpane.lead{ border-color:var(--pc); }
+.seqpane .phead{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.seqpane .pnm{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--pc);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.seqpane .pst{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:var(--grey); flex:none; }
+.seqpane .seqrow{ gap:8px; }
+.seqpane .seqslot{ border-radius:13px; padding:13%; }
+.seqpane .act{ padding:11px 14px; font-size:10.5px; border-radius:12px; }
+.seqflash{ position:absolute; inset:0; z-index:3; display:grid; place-items:center; gap:2px;
+  background:rgba(10,12,17,.88); border-radius:18px; animation:seqPop .26s var(--ease) both; }
+.seqflash .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:40px; font-weight:700; line-height:1; }
+.seqflash .t{ font-family:var(--mono); font-size:9px; letter-spacing:.13em; text-transform:uppercase; color:var(--grey); }
+.seqmid{ display:flex; align-items:center; justify-content:center; gap:12px; flex:none;
+  font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--grey-dim); }
+.seqmid .el{ font-variant-numeric:tabular-nums; letter-spacing:.06em; color:var(--grey); }
+
 .seqscreen{ gap:14px; justify-content:flex-start; }
 .seqrow{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex:none; }
 .seqslot{ appearance:none; border:1px solid var(--hair); border-radius:17px; background:var(--panel);
@@ -958,7 +981,7 @@ var SEQ_ITEMS=[
   {id:"c",name:"Rose", hex:"#FF5FA2",shape:"triangle"},
   {id:"d",name:"Leaf", hex:"#B4E33D",shape:"diamond"}
 ];
-var SEQ_N=4, TURN_SEQ=48;
+var SEQ_N=4;
 
 var COLORS=[
   {id:"flare",name:"Flare",hex:"#FF6154",price:0},   {id:"arc",name:"Arc",hex:"#8B7BFF",price:0},
@@ -2730,65 +2753,83 @@ function seqStart(){
   G.seqSecret=seqShuffle(ids);
   G.seqArr=[seqShuffle(ids),seqShuffle(ids)];
   G.seqBest=[0,0]; G.seqTries=[0,0]; G.seqHist=[[],[]];
-  G.seqTurn=G.first; G.seqSel=-1;
-  seqTurnStart();
-}
-function seqTurnStart(){
-  var p=G.seqTurn;
-  if(isBot(p)){
-    accent(phex(p)); enterGame(); chromeGame(true);
-    show('<div class="screen seqscreen">'+playerBar(p,seqSubs(),false)
-       + '<div class="turnflash"><div class="sub2">Bot is working the order out</div>'
-       + '<div class="dots"><i></i><i></i><i></i></div></div></div>');
-    later(function(){ G.seqArr[p]=botSeq(p); seqSubmit(p); },900);
-    return;
-  }
-  screenSeq();
-}
-function seqSubs(){
-  return [ sub(G.seqBest[0]+"/"+SEQ_N+" best"), sub(G.seqBest[1]+"/"+SEQ_N+" best") ];
+  G.seqSel=[-1,-1]; G.seqOver=false; G.seqT0=Date.now();
+  screenSeqRace();
 }
 
-function screenSeq(){
-  var p=G.seqTurn, o=1-p;
-  accent(phex(p)); enterGame(); chromeGame(true);
-  G.seqSel=-1;
+function seqStatText(p){ return G.seqBest[p]+"/"+SEQ_N+" best \u00b7 "+G.seqTries[p]+" tries"; }
 
+function seqPaneHTML(p,flip){
   var slots=G.seqArr[p].map(function(id,i){
-    return '<button type="button" class="seqslot" data-s="'+i+'" style="color:'+phex(p)+'" aria-label="Position '+(i+1)+'">'
-         + seqShape(id)+"</button>";
+    return '<button type="button" class="seqslot" data-p="'+p+'" data-s="'+i+'" style="color:'+phex(p)
+         + '" aria-label="Position '+(i+1)+'">'+seqShape(id)+"</button>";
   }).join("");
-
-  show('<div class="screen seqscreen">'
-     + playerBar(p,seqSubs(),true)
-     + '<div class="statusline lbl">Put the four in the right order</div>'
-     + '<div class="seqrow" id="seqRow">'+slots+"</div>"
-     + '<div class="seqpos"><span>1st</span><span>2nd</span><span>3rd</span><span>4th</span></div>'
-     + '<div class="seqstats">'
-     +   '<div class="seqstat"><span class="k">Your best</span><span class="v" style="color:'+phex(p)+'">'+G.seqBest[p]+"/"+SEQ_N+" &middot; "+G.seqTries[p]+" tries</span></div>"
-     +   '<div class="seqstat"><span class="k">'+esc(pname(o))+"'s best</span><span class=\"v\" style=\"color:"+phex(o)+'">'+G.seqBest[o]+"/"+SEQ_N+" &middot; "+G.seqTries[o]+" tries</span></div>"
-     + "</div>"
-     + '<div class="seqhint">Tap two to swap them</div>'
-     + '<div class="foot"><button class="act hero" id="seqGo" type="button">Submit order</button></div></div>');
-
-  var row=document.getElementById("seqRow");
-  row.addEventListener("click",function(e){
-    var b=e.target.closest(".seqslot"); if(!b) return;
-    var i=+b.dataset.s;
-    if(G.seqSel<0){ G.seqSel=i; b.classList.add("sel"); sfx.key(); buzz(6); return; }
-    if(G.seqSel===i){ G.seqSel=-1; b.classList.remove("sel"); sfx.key(); return; }
-    var a=row.querySelector('.seqslot[data-s="'+G.seqSel+'"]');
-    var arr=G.seqArr[p], t=arr[G.seqSel]; arr[G.seqSel]=arr[i]; arr[i]=t;
-    a.classList.remove("sel");
-    a.innerHTML=seqShape(arr[G.seqSel]); b.innerHTML=seqShape(arr[i]);
-    [a,b].forEach(function(el){ el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); });
-    G.seqSel=-1; sfx.place(); buzz(10);
-  });
-  document.getElementById("seqGo").addEventListener("click",function(){ haltAll(); seqSubmit(p); });
-  runTurnClock(TURN_SEQ,function(){ seqSubmit(p); });   /* out of time submits what is on screen */
+  return '<div class="seqpane'+(flip?" flip":"")+'" id="pane'+p+'" style="--pc:'+phex(p)+'">'
+    + '<div class="phead"><span class="pnm">'+esc(pname(p))+"</span>"
+    +   '<span class="pst" id="st'+p+'">'+seqStatText(p)+"</span></div>"
+    + '<div class="seqrow">'+slots+"</div>"
+    + '<button class="act hero" data-go="'+p+'" type="button">Submit</button></div>';
 }
 
-function seqSubmit(p){
+function screenSeqRace(){
+  accent(phex(0)); enterGame(); chromeGame(true);
+  var bot=G.vsBot;
+  show('<div class="screen seqrace">'
+     + (bot?"":seqPaneHTML(1,true))
+     + '<div class="seqmid"><span>Race</span><span class="el" id="seqEl">0.0s</span>'
+     +   (bot?'<span id="botLine">Bot 0/'+SEQ_N+' \u00b7 0 tries</span>':"<span>First to 4 of 4</span>")+"</div>"
+     + seqPaneHTML(0,false)
+     + "</div>");
+
+  /* both halves are live at once, so a submit never re-renders the screen -
+     that would yank the other player's half-finished swap out from under them */
+  stage.querySelector(".seqrace").addEventListener("click",function(e){
+    if(G.seqOver) return;
+    var go=e.target.closest("[data-go]");
+    if(go){ raceSubmit(+go.dataset.go); return; }
+    var b=e.target.closest(".seqslot"); if(!b) return;
+    var p=+b.dataset.p, i=+b.dataset.s;
+    if(isBot(p)) return;
+    var pane=document.getElementById("pane"+p), sel=G.seqSel[p];
+    if(sel<0){ G.seqSel[p]=i; b.classList.add("sel"); sfx.key(); buzz(6); return; }
+    if(sel===i){ G.seqSel[p]=-1; b.classList.remove("sel"); sfx.key(); return; }
+    var a=pane.querySelector('.seqslot[data-s="'+sel+'"]');
+    var arr=G.seqArr[p], t=arr[sel]; arr[sel]=arr[i]; arr[i]=t;
+    a.classList.remove("sel");
+    a.innerHTML=seqShape(arr[sel]); b.innerHTML=seqShape(arr[i]);
+    [a,b].forEach(function(el){ el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); });
+    G.seqSel[p]=-1; sfx.place(); buzz(10);
+  });
+
+  tickSeq();
+  if(bot) botRace();
+}
+
+function tickSeq(){
+  var el=document.getElementById("seqEl");
+  if(!el||G.seqOver) return;
+  el.textContent=((Date.now()-G.seqT0)/1000).toFixed(1)+"s";
+  later(tickSeq,100);
+}
+function paintSeqStats(){
+  [0,1].forEach(function(i){
+    var el=document.getElementById("st"+i); if(el) el.textContent=seqStatText(i);
+    var pane=document.getElementById("pane"+i);
+    if(pane) pane.classList.toggle("lead",G.seqBest[i]>G.seqBest[1-i]);
+  });
+  var bl=document.getElementById("botLine");
+  if(bl) bl.textContent="Bot "+G.seqBest[1]+"/"+SEQ_N+" \u00b7 "+G.seqTries[1]+" tries";
+}
+function flashPane(p,score,won){
+  var pane=document.getElementById("pane"+p); if(!pane) return;
+  var f=document.createElement("div");
+  f.className="seqflash"; f.style.color=won?phex(p):"var(--text)";
+  f.innerHTML='<span class="n">'+score+"/"+SEQ_N+'</span><span class="t">'+(won?"cracked it":"in place")+"</span>";
+  pane.appendChild(f);
+  setTimeout(function(){ if(f.parentNode) f.remove(); },won?700:520);
+}
+function raceSubmit(p){
+  if(G.seqOver) return;
   var score=seqExact(G.seqArr[p],G.seqSecret);
   G.seqTries[p]++;
   G.seqHist[p].push({ arr:G.seqArr[p].slice(), score:score });
@@ -2796,25 +2837,19 @@ function seqSubmit(p){
   var won=(score===SEQ_N);
   buzz(won?[30,50,80]:12);
   if(!won){ if(score>0) sfx.ping(score>2?1:0); else sfx.lower(); }
-
-  /* punchy, not a pause: they will be submitting fast */
-  var el=stage.querySelector(".screen.seqscreen");
-  if(el){
-    [".seqrow",".seqpos",".seqstats",".seqhint",".foot",".turnflash",".statusline"].forEach(function(s){
-      var x=el.querySelector(s); if(x) x.remove();
-    });
-    var box=document.createElement("div");
-    box.className="turnflash"; box.style.color=won?phex(p):"var(--text)";
-    box.innerHTML='<div class="seqbig">'+score+"/"+SEQ_N+"</div>"
-      + '<div class="sub2">'+(won?"That is the order":"in the right place")+"</div>";
-    el.appendChild(box);
-  }
-  later(function(){
-    if(won){ seqResult(p); return; }
-    G.seqTurn=1-p; seqTurnStart();
-  }, won?900:820);
+  paintSeqStats();
+  flashPane(p,score,won);
+  if(won){ G.seqOver=true; haltAll(); later(function(){ seqResult(p); },780); }
 }
-
+function botRace(){
+  if(G.seqOver) return;
+  later(function(){
+    if(G.seqOver) return;
+    G.seqArr[1]=botSeq(1);
+    raceSubmit(1);
+    botRace();
+  },2300+Math.random()*1700);
+}
 function seqResult(w){
   accent(phex(w)); enterGame(); chromeGame(true);
   creditRound(w); save();
