@@ -818,49 +818,54 @@ button{ font:inherit; }
    A real race needs both players working at once, and one phone only allows
    that if they each own half of it. The far half is turned to face whoever is
    sitting opposite. */
-.seqrace{ justify-content:space-between; gap:9px; }
-.seqpane{ position:relative; display:flex; flex-direction:column; gap:8px; padding:11px 12px;
-  border:1px solid var(--hair); border-radius:18px; background:var(--panel); }
-.seqpane.flip{ transform:rotate(180deg); }
+/* Side by side rather than stacked: eight rows of four will not fit twice over
+   on a phone, and columns fill the middle the old layout left empty. */
+.seqrace{ gap:9px; justify-content:flex-start; }
+.seqcols{ display:grid; gap:9px; flex:1 1 auto; min-height:0; align-content:start; }
+.seqcols.two{ grid-template-columns:1fr 1fr; }
+.seqcols.one{ grid-template-columns:1fr; max-width:300px; margin-inline:auto; }
+.seqpane{ position:relative; display:flex; flex-direction:column; gap:5px; padding:9px;
+  border:1px solid var(--hair); border-radius:16px; background:var(--panel); min-width:0; }
 .seqpane.lead{ border-color:var(--pc); }
-.seqpane .phead{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
-.seqpane .pnm{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--pc);
+.seqpane.out{ opacity:.55; }
+.seqpane .phead{ display:flex; align-items:baseline; justify-content:space-between; gap:6px; margin-bottom:2px; }
+.seqpane .pnm{ font-family:var(--mono); font-size:11.5px; font-weight:700; color:var(--pc);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.seqpane .pst{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:var(--grey); flex:none; }
-.seqpane .seqrow{ gap:8px; }
-.seqpane .seqslot{ border-radius:13px; padding:13%; }
-.seqpane .act{ padding:11px 14px; font-size:10.5px; border-radius:12px; }
-.seqflash{ position:absolute; inset:0; z-index:3; display:grid; place-items:center; gap:2px;
-  background:rgba(10,12,17,.88); border-radius:18px; animation:seqPop .26s var(--ease) both; }
-.seqflash .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:40px; font-weight:700; line-height:1; }
-.seqflash .t{ font-family:var(--mono); font-size:9px; letter-spacing:.13em; text-transform:uppercase; color:var(--grey); }
-.seqmid{ display:flex; align-items:center; justify-content:center; gap:12px; flex:none;
-  font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--grey-dim); }
-.seqmid .el{ font-variant-numeric:tabular-nums; letter-spacing:.06em; color:var(--grey); }
+.seqpane .pst{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:10px; color:var(--grey-dim); flex:none; }
 
-.seqscreen{ gap:14px; justify-content:flex-start; }
-.seqrow{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex:none; }
-.seqslot{ appearance:none; border:1px solid var(--hair); border-radius:17px; background:var(--panel);
-  aspect-ratio:1/1; display:grid; place-items:center; padding:15%; cursor:pointer;
-  transition:transform .13s var(--ease), border-color .18s, background .18s, box-shadow .18s; }
-.seqslot:active{ transform:scale(.93); }
-.seqslot.sel{ border-color:currentColor; background:var(--panel-3);
-  transform:translateY(-7px) scale(1.05); box-shadow:0 10px 22px rgba(0,0,0,.5); }
-.seqslot:focus-visible{ outline:2px solid var(--pc); outline-offset:2px; }
-.seqslot.swap{ animation:seqSwap .34s var(--ease) both; }
-@keyframes seqSwap{ 0%{ transform:scale(.82) } 60%{ transform:scale(1.08) } 100%{ transform:none } }
-.seqshape{ display:block; width:100%; height:100%; filter:drop-shadow(0 2px 4px rgba(0,0,0,.45)); }
-.seqpos{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex:none; }
-.seqpos span{ text-align:center; font-family:var(--mono); font-size:9px; letter-spacing:.14em; color:var(--grey-dim); }
+.seqline{ display:grid; grid-template-columns:repeat(4,1fr) 19px; gap:4px; align-items:center; }
+.seqcell{ aspect-ratio:1/1; border-radius:7px; background:var(--panel-2); border:1px solid transparent;
+  display:grid; place-items:center; padding:11%; min-width:0; }
+.seqline.done .seqcell{ background:transparent; }
+.seqline.idle .seqcell{ background:var(--panel-2); opacity:.4; }
+.seqline.now{ padding:4px; margin:1px -4px; border-radius:11px; background:color-mix(in srgb,var(--pc) 11%,transparent); }
+.seqline.now .seqcell{ background:var(--panel-3); border-color:var(--hair); cursor:pointer;
+  transition:transform .12s var(--ease), border-color .15s; }
+.seqline.now .seqcell:active{ transform:scale(.9); }
+.seqline.now .seqcell.sel{ border-color:currentColor; transform:translateY(-3px) scale(1.06);
+  box-shadow:0 5px 12px rgba(0,0,0,.5); }
+.seqbadge{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; font-weight:700;
+  text-align:center; color:var(--grey-dim); }
+.seqbadge.hi{ color:var(--good); }
+.seqline.done.win .seqbadge{ color:var(--pc); }
+.seqpane .act{ padding:10px 8px; font-size:10px; border-radius:11px; margin-top:4px; }
+
+.seqflash{ position:absolute; inset:0; z-index:3; display:grid; place-items:center; align-content:center; gap:2px;
+  background:rgba(10,12,17,.9); border-radius:16px; animation:seqPop .24s var(--ease) both; }
+.seqflash .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:34px; font-weight:700; line-height:1; }
+.seqflash .t{ font-family:var(--mono); font-size:8.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--grey); }
+.seqtop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex:none;
+  font-family:var(--mono); font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--grey-dim); }
+.seqtop .el{ font-variant-numeric:tabular-nums; letter-spacing:.05em; color:var(--grey); font-size:11px; }
+.seqkey{ display:flex; align-items:center; justify-content:center; gap:9px; flex:none; padding-top:2px; }
+.seqkey i{ width:13px; height:13px; display:block; }
+
+.seqshape{ display:block; width:100%; height:100%; filter:drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
 .seqstats{ display:grid; grid-template-columns:1fr 1fr; gap:9px; flex:none; }
 .seqstat{ border:1px solid var(--hair); border-radius:13px; background:var(--panel-2); padding:9px 10px;
   display:flex; flex-direction:column; gap:3px; }
 .seqstat .k{ font-family:var(--mono); font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey-dim); }
 .seqstat .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:16px; font-weight:700; }
-.seqhint{ text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.11em;
-  text-transform:uppercase; color:var(--grey-dim); flex:none; }
-.seqbig{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:clamp(46px,15vw,64px);
-  font-weight:700; line-height:1; letter-spacing:-.04em; animation:seqPop .34s var(--ease) both; }
 @keyframes seqPop{ 0%{ transform:scale(.6); opacity:0 } 62%{ transform:scale(1.14) } 100%{ transform:none; opacity:1 } }
 .seqreveal{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
 .seqreveal .cell{ border:1px solid var(--hair); border-radius:12px; background:var(--panel-2);
@@ -966,8 +971,10 @@ var GAMES={
             desc:"Closest to the target claims a square.", art:"timer" },
   dnumber:{ id:"dnumber",kind:"duel", mode:"number", group:"duel", name:"Number Duel",
             desc:"1 to 10, three tries. Closest claims a square.", art:"number" },
-  seq:    { id:"seq",    kind:"duel", mode:"seq",   group:"duel", name:"Sequence Race",
-            desc:"Crack the hidden order of four before they do.", art:"seq" },
+  seqc:   { id:"seqc",   kind:"seq",  mode:"seq",   group:"classic", name:"Sequence Race",
+            desc:"Crack the hidden order of four in eight tries.", art:"seq", winTo:2 },
+  seq:    { id:"seq",    kind:"duel", mode:"seq",   group:"duel", name:"Sequence Duel",
+            desc:"Same race, and the winner claims a square.", art:"seq" },
   bid:    { id:"bid",    kind:"bid",  board:"ttt", group:"duel", name:"Bid-Tac-Toe",
             desc:"Take turns naming a square, then seal a bid. Highest takes it \u2014 both pay.", art:"bid" }
 };
@@ -981,7 +988,7 @@ var SEQ_ITEMS=[
   {id:"c",name:"Rose", hex:"#FF5FA2",shape:"triangle"},
   {id:"d",name:"Leaf", hex:"#B4E33D",shape:"diamond"}
 ];
-var SEQ_N=4;
+var SEQ_N=4, SEQ_MAX=8;
 
 var COLORS=[
   {id:"flare",name:"Flare",hex:"#FF6154",price:0},   {id:"arc",name:"Arc",hex:"#8B7BFF",price:0},
@@ -2757,28 +2764,55 @@ function seqStart(){
   screenSeqRace();
 }
 
-function seqStatText(p){ return G.seqBest[p]+"/"+SEQ_N+" best \u00b7 "+G.seqTries[p]+" tries"; }
+function seqStatText(p){ return G.seqTries[p]+"/"+SEQ_MAX; }
+function seqDone(p){ return G.seqTries[p]>=SEQ_MAX; }
 
-function seqPaneHTML(p,flip){
-  var slots=G.seqArr[p].map(function(id,i){
-    return '<button type="button" class="seqslot" data-p="'+p+'" data-s="'+i+'" style="color:'+phex(p)
-         + '" aria-label="Position '+(i+1)+'">'+seqShape(id)+"</button>";
-  }).join("");
-  return '<div class="seqpane'+(flip?" flip":"")+'" id="pane'+p+'" style="--pc:'+phex(p)+'">'
+/* A column of eight: what you have tried, then the row you are working on,
+   then the tries you have left. The whole state of your race in one glance. */
+function seqPaneHTML(p){
+  var rows="";
+  for(var r=0;r<SEQ_MAX;r++){
+    var h=G.seqHist[p][r];
+    if(h){
+      var win=h.score===SEQ_N;
+      rows+='<div class="seqline done'+(win?" win":"")+'">'
+        + h.arr.map(function(id){ return '<span class="seqcell">'+seqShape(id)+"</span>"; }).join("")
+        + '<span class="seqbadge'+(h.score>=SEQ_N-1?" hi":"")+'">'+h.score+"</span></div>";
+    } else if(r===G.seqTries[p] && !G.seqOver){
+      rows+='<div class="seqline now" data-p="'+p+'" style="color:'+phex(p)+'">'
+        + G.seqArr[p].map(function(id,i){
+            return '<span class="seqcell" data-p="'+p+'" data-s="'+i+'" role="button" tabindex="0" aria-label="Position '+(i+1)+'">'+seqShape(id)+"</span>";
+          }).join("")
+        + '<span class="seqbadge">?</span></div>';
+    } else {
+      rows+='<div class="seqline idle">'
+        + '<span class="seqcell"></span><span class="seqcell"></span><span class="seqcell"></span><span class="seqcell"></span>'
+        + '<span class="seqbadge"></span></div>';
+    }
+  }
+  var out=seqDone(p);
+  return '<div class="seqpane'+(out?" out":"")+'" id="pane'+p+'" style="--pc:'+phex(p)+'">'
     + '<div class="phead"><span class="pnm">'+esc(pname(p))+"</span>"
     +   '<span class="pst" id="st'+p+'">'+seqStatText(p)+"</span></div>"
-    + '<div class="seqrow">'+slots+"</div>"
-    + '<button class="act hero" data-go="'+p+'" type="button">Submit</button></div>';
+    + rows
+    + (out||isBot(p) ? "" : '<button class="act hero" data-go="'+p+'" type="button">Submit</button>')
+    + "</div>";
+}
+function seqColsHTML(){
+  var bot=G.vsBot;
+  return '<div class="seqcols '+(bot?"one":"two")+'" id="seqCols">'
+    + seqPaneHTML(0) + (bot?"":seqPaneHTML(1)) + "</div>";
 }
 
 function screenSeqRace(){
   accent(phex(0)); enterGame(); chromeGame(true);
   var bot=G.vsBot;
   show('<div class="screen seqrace">'
-     + (bot?"":seqPaneHTML(1,true))
-     + '<div class="seqmid"><span>Race</span><span class="el" id="seqEl">0.0s</span>'
-     +   (bot?'<span id="botLine">Bot 0/'+SEQ_N+' \u00b7 0 tries</span>':"<span>First to 4 of 4</span>")+"</div>"
-     + seqPaneHTML(0,false)
+     + '<div class="seqtop"><span>'+SEQ_MAX+' tries each</span><span class="el" id="seqEl">0.0s</span>'
+     +   (bot?'<span id="botLine">Bot 0/'+SEQ_MAX+"</span>":"<span>First to 4 of 4</span>")+"</div>"
+     + seqColsHTML()
+     + '<div class="seqkey">'+SEQ_ITEMS.map(function(it){ return "<i>"+seqShape(it.id)+"</i>"; }).join("")
+     +   '<span class="lbl">tap two to swap</span></div>'
      + "</div>");
 
   /* both halves are live at once, so a submit never re-renders the screen -
@@ -2787,17 +2821,16 @@ function screenSeqRace(){
     if(G.seqOver) return;
     var go=e.target.closest("[data-go]");
     if(go){ raceSubmit(+go.dataset.go); return; }
-    var b=e.target.closest(".seqslot"); if(!b) return;
+    var b=e.target.closest(".seqline.now .seqcell"); if(!b) return;
     var p=+b.dataset.p, i=+b.dataset.s;
-    if(isBot(p)) return;
-    var pane=document.getElementById("pane"+p), sel=G.seqSel[p];
+    if(isBot(p)||seqDone(p)) return;
+    var row=b.parentNode, sel=G.seqSel[p];
     if(sel<0){ G.seqSel[p]=i; b.classList.add("sel"); sfx.key(); buzz(6); return; }
     if(sel===i){ G.seqSel[p]=-1; b.classList.remove("sel"); sfx.key(); return; }
-    var a=pane.querySelector('.seqslot[data-s="'+sel+'"]');
+    var a=row.querySelector('.seqcell[data-s="'+sel+'"]');
     var arr=G.seqArr[p], t=arr[sel]; arr[sel]=arr[i]; arr[i]=t;
     a.classList.remove("sel");
     a.innerHTML=seqShape(arr[sel]); b.innerHTML=seqShape(arr[i]);
-    [a,b].forEach(function(el){ el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); });
     G.seqSel[p]=-1; sfx.place(); buzz(10);
   });
 
@@ -2811,14 +2844,16 @@ function tickSeq(){
   el.textContent=((Date.now()-G.seqT0)/1000).toFixed(1)+"s";
   later(tickSeq,100);
 }
-function paintSeqStats(){
-  [0,1].forEach(function(i){
-    var el=document.getElementById("st"+i); if(el) el.textContent=seqStatText(i);
-    var pane=document.getElementById("pane"+i);
-    if(pane) pane.classList.toggle("lead",G.seqBest[i]>G.seqBest[1-i]);
-  });
+/* only the submitting column is redrawn - the other player may be mid-swap */
+function repaintPane(p){
+  var old=document.getElementById("pane"+p); if(!old) return;
+  var tmp=document.createElement("div");
+  tmp.innerHTML=seqPaneHTML(p);
+  old.replaceWith(tmp.firstChild);
+  var pane=document.getElementById("pane"+p);
+  if(pane) pane.classList.toggle("lead",G.seqBest[p]>G.seqBest[1-p]);
   var bl=document.getElementById("botLine");
-  if(bl) bl.textContent="Bot "+G.seqBest[1]+"/"+SEQ_N+" \u00b7 "+G.seqTries[1]+" tries";
+  if(bl) bl.textContent="Bot "+G.seqTries[1]+"/"+SEQ_MAX;
 }
 function flashPane(p,score,won){
   var pane=document.getElementById("pane"+p); if(!pane) return;
@@ -2829,22 +2864,45 @@ function flashPane(p,score,won){
   setTimeout(function(){ if(f.parentNode) f.remove(); },won?700:520);
 }
 function raceSubmit(p){
-  if(G.seqOver) return;
+  if(G.seqOver||seqDone(p)) return;
   var score=seqExact(G.seqArr[p],G.seqSecret);
   G.seqTries[p]++;
   G.seqHist[p].push({ arr:G.seqArr[p].slice(), score:score });
   if(score>G.seqBest[p]) G.seqBest[p]=score;
+  G.seqSel[p]=-1;
   var won=(score===SEQ_N);
   buzz(won?[30,50,80]:12);
   if(!won){ if(score>0) sfx.ping(score>2?1:0); else sfx.lower(); }
-  paintSeqStats();
+  repaintPane(p);
   flashPane(p,score,won);
-  if(won){ G.seqOver=true; haltAll(); later(function(){ seqResult(p); },780); }
+  if(won){ G.seqOver=true; haltAll(); later(function(){ seqResult(p); },780); return; }
+  /* eight each and nobody cracked it: the round decides nothing, so run it again */
+  if(seqDone(0)&&seqDone(1)){
+    G.seqOver=true; haltAll(); later(seqBurned,900);
+  }
+}
+function seqBurned(){
+  accent(null); enterGame(); chromeGame(true);
+  var cells=G.seqSecret.map(function(id){ return '<div class="cell">'+seqShape(id)+"</div>"; }).join("");
+  logRound({ t:"Nobody cracked it", d:"Both used all "+SEQ_MAX+" tries", winner:null });
+  sfx.voided(); buzz([50]);
+  var wait=3000, fired=false;
+  show('<div class="screen verdict" style="color:var(--void)">'
+     + '<div class="big">Both out of tries</div>'
+     + '<div class="sub" style="color:var(--grey);margin-bottom:14px">'+SEQ_MAX
+     +   " each and neither of you found it. Nobody wins this one.</div>"
+     + '<div style="width:100%;max-width:300px"><div class="lbl" style="text-align:center;margin-bottom:8px">It was</div>'
+     +   '<div class="seqreveal">'+cells+"</div></div>"
+     + '<div class="foot" style="width:100%"><button class="act accent" id="next" type="button">New order</button>'
+     +   autoBar(wait)+"</div></div>");
+  function go(){ if(fired) return; fired=true; haltAll(); startRound("void"); }
+  document.getElementById("next").addEventListener("click",function(){ sfx.tap(); go(); });
+  later(go,wait);
 }
 function botRace(){
-  if(G.seqOver) return;
+  if(G.seqOver||seqDone(1)) return;
   later(function(){
-    if(G.seqOver) return;
+    if(G.seqOver||seqDone(1)) return;
     G.seqArr[1]=botSeq(1);
     raceSubmit(1);
     botRace();
