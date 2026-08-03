@@ -353,6 +353,14 @@ button{ font:inherit; }
 .gbtn{ display:flex; align-items:center; justify-content:center; gap:9px; }
 .gbtn svg{ width:16px; height:16px; }
 
+.pcard .av2{ width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
+  font-family:var(--mono); font-size:14px; font-weight:700; color:var(--ink); background:var(--pc); }
+.tagcard{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 13px;
+  border:1px solid var(--pc); border-radius:13px; background:color-mix(in srgb,var(--pc) 11%,transparent); }
+.tagcard .tg{ font-family:var(--mono); font-size:17px; font-weight:700; letter-spacing:-.01em; color:var(--pc);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#plres, #plfr, #plrec{ display:flex; flex-direction:column; gap:8px; }
+
 .handlebox{ display:flex; align-items:center; gap:2px; background:var(--panel-2); border:1px solid var(--hair);
   border-radius:14px; padding:0 14px; transition:border-color .2s; }
 .handlebox:focus-within{ border-color:var(--pc); }
@@ -1115,6 +1123,58 @@ var NET=(function(){
           .then(function(r){ return !r.data; }).catch(function(){ return null; });
       });
     },
+    /* Two queries instead of a join: the relationship name a join needs is
+       generated, and guessing it wrong fails at runtime rather than here. */
+    people:function(ids){
+      return boot().then(function(){
+        if(!client||!ids.length) return [];
+        return client.from("profiles").select("id,handle,name,colour,wins,losses,rounds_won,coins").in("id",ids)
+          .then(function(r){ return r.data||[]; }).catch(function(){ return []; });
+      });
+    },
+    search:function(q){
+      return boot().then(function(){
+        if(!client||!q) return [];
+        return client.from("profiles").select("id,handle,name,colour,wins,losses,rounds_won")
+          .ilike("handle",q+"%").limit(12)
+          .then(function(r){ return (r.data||[]).filter(function(x){ return !user||x.id!==user.id; }); })
+          .catch(function(){ return []; });
+      });
+    },
+    friendIds:function(){
+      return boot().then(function(){
+        if(!client||!user) return [];
+        return client.from("friends").select("friend_id").eq("user_id",user.id)
+          .then(function(r){ return (r.data||[]).map(function(x){ return x.friend_id; }); })
+          .catch(function(){ return []; });
+      });
+    },
+    addFriend:function(id){
+      return boot().then(function(){
+        if(!client||!user) return false;
+        /* insert, not upsert: upsert needs an update policy this table has no
+           use for, and adding the same person twice is already a no-op */
+        return client.from("friends").insert({ user_id:user.id, friend_id:id })
+          .then(function(r){ return !r.error || r.error.code==="23505"; })
+          .catch(function(){ return false; });
+      });
+    },
+    dropFriend:function(id){
+      return boot().then(function(){
+        if(!client||!user) return false;
+        return client.from("friends").delete().eq("user_id",user.id).eq("friend_id",id)
+          .then(function(r){ return !r.error; }).catch(function(){ return false; });
+      });
+    },
+    recent:function(){
+      return boot().then(function(){
+        if(!client||!user) return [];
+        return client.from("recent_opponents").select("opponent,game,i_won,created_at")
+          .order("created_at",{ascending:false}).limit(20)
+          .then(function(r){ return r.data||[]; }).catch(function(){ return []; });
+      });
+    },
+
     /* push the local profile up; the row is keyed to the signed-in user, so the
        database refuses anything written on somebody else's behalf */
     claim:function(h,me){
@@ -2112,6 +2172,129 @@ function themePreview(id){
 }
 function flash(el){ el.animate([{transform:"translateX(0)"},{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:240}); }
 
+/* ---------- online players ---------- */
+
+function prow(pr,right){
+  var hex=(COLORS.filter(function(c){return c.id===pr.colour;})[0]||COLORS[0]).hex;
+  var played=(pr.wins||0)+(pr.losses||0);
+  return '<div class="pcard" style="--pc:'+hex+'">'
+    + '<span class="av2">'+esc((pr.handle||"?").slice(0,1).toUpperCase())+"</span>"
+    + '<span class="body"><span class="n">@'+esc(pr.handle)+"</span>"
+    +   '<span class="s">'+(played?((pr.wins||0)+" of "+played+" matches"):"no matches yet")
+    +     " &middot; "+(pr.rounds_won||0)+" rounds</span></span>"
+    + right + "</div>";
+}
+
+function renderOnlinePlayers(){
+  var box=document.getElementById("onlineBlock");
+  if(!box) return;
+  var me=NET.profile();
+
+  if(!NET.signedIn()||!me){
+    box.innerHTML='<div class="panel"><div class="panel-h"><span class="lbl">Play people</span></div>'
+      + '<p style="margin:0;color:var(--grey);font-size:13px;line-height:1.5">Sign in to get a tag. Then people can find you by it, and you can add anyone you have played.</p>'
+      + '<button class="act sm accent" id="plSign" type="button" style="align-self:flex-start">'
+      +   (NET.signedIn()?"Pick your tag":"Sign in")+"</button></div>";
+    document.getElementById("plSign").addEventListener("click",function(){
+      sfx.tap();
+      if(NET.signedIn()) screenHandle(false); else screenSignIn();
+    });
+    return;
+  }
+
+  box.innerHTML='<div class="panel"><div class="panel-h"><span class="lbl">Your tag</span></div>'
+    +   '<div class="tagcard"><span class="tg">@'+esc(me.handle)+"</span>"
+    +     '<button class="act sm" id="tagCopy" type="button">Copy</button></div>'
+    +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">Send this and they can add you.</p></div>'
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Find someone</span></div>'
+    +   '<div class="composer"><input id="plq" type="text" placeholder="Search a tag" autocomplete="off" autocapitalize="none" spellcheck="false"></div>'
+    +   '<div id="plres"></div></div>'
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Added</span></div><div id="plfr"><span class="qmeta">Loading...</span></div></div>'
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Recently played</span></div><div id="plrec"><span class="qmeta">Loading...</span></div></div>';
+
+  document.getElementById("tagCopy").addEventListener("click",function(){
+    var t="@"+me.handle;
+    if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){});
+    sfx.tap(); buzz(10);
+    this.textContent="Copied";
+    var b=this; setTimeout(function(){ if(b.isConnected) b.textContent="Copy"; },1400);
+  });
+
+  var known=[];
+  function paintFriends(){
+    NET.friendIds().then(function(ids){
+      known=ids;
+      var el=document.getElementById("plfr"); if(!el) return;
+      if(!ids.length){ el.innerHTML='<span class="qmeta">Nobody yet. Search a tag above.</span>'; return; }
+      NET.people(ids).then(function(list){
+        el.innerHTML=list.map(function(pr){
+          return prow(pr,'<button class="act sm" data-drop="'+pr.id+'" type="button">Remove</button>');
+        }).join("")||'<span class="qmeta">Nobody yet.</span>';
+        el.querySelectorAll("[data-drop]").forEach(function(b){
+          b.addEventListener("click",function(){
+            b.disabled=true; sfx.tap();
+            NET.dropFriend(b.dataset.drop).then(function(){ paintFriends(); });
+          });
+        });
+      });
+    });
+  }
+  function paintRecent(){
+    NET.recent().then(function(rows){
+      var el=document.getElementById("plrec"); if(!el) return;
+      var ids=[], seen={};
+      rows.forEach(function(r){ if(r.opponent&&!seen[r.opponent]){ seen[r.opponent]=1; ids.push(r.opponent); } });
+      if(!ids.length){ el.innerHTML='<span class="qmeta">No online matches yet. The bot does not count.</span>'; return; }
+      NET.people(ids.slice(0,10)).then(function(list){
+        el.innerHTML=list.map(function(pr){
+          var added=known.indexOf(pr.id)>-1;
+          return prow(pr, added?'<span class="qmeta done">Added</span>'
+                            :'<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
+        }).join("");
+        wireAdd(el);
+      });
+    });
+  }
+  function wireAdd(el){
+    el.querySelectorAll("[data-add]").forEach(function(b){
+      b.addEventListener("click",function(){
+        b.disabled=true; b.textContent="Adding..."; sfx.tap();
+        NET.addFriend(b.dataset.add).then(function(ok){
+          b.textContent=ok?"Added":"Failed";
+          if(ok){ buzz(12); paintFriends(); }
+        });
+      });
+    });
+  }
+
+  var q=document.getElementById("plq"), timer=null, asked="";
+  q.addEventListener("input",function(){
+    var v=q.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+    if(v!==q.value) q.value=v;
+    var el=document.getElementById("plres");
+    clearTimeout(timer);
+    if(v.length<2){ el.innerHTML='<span class="qmeta">Type at least two characters.</span>'; return; }
+    el.innerHTML='<span class="qmeta">Searching...</span>';
+    timer=setTimeout(function(){
+      asked=v;
+      NET.search(v).then(function(list){
+        if(q.value!==asked) return;            /* they kept typing */
+        var el2=document.getElementById("plres"); if(!el2) return;
+        if(!list.length){ el2.innerHTML='<span class="qmeta">Nobody with a tag like that.</span>'; return; }
+        el2.innerHTML=list.map(function(pr){
+          var added=known.indexOf(pr.id)>-1;
+          return prow(pr, added?'<span class="qmeta done">Added</span>'
+                            :'<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
+        }).join("");
+        wireAdd(el2);
+      });
+    },380);
+  });
+
+  paintFriends();
+  paintRecent();
+}
+
 function viewPlayers(){
   var msgs=DB.chat.length
     ? DB.chat.map(function(m){
@@ -2120,7 +2303,9 @@ function viewPlayers(){
       }).join("")
     : '<div class="emptychat">No messages yet. Talk trash before the next match.</div>';
   stage.innerHTML='<div class="view">'
-    + '<div class="headline"><span class="lbl">Both profiles on this device</span><span class="big">Players</span></div>'
+    + '<div class="headline"><span class="lbl">People</span><span class="big">Players</span></div>'
+    + '<div id="onlineBlock"></div>'
+    + '<div class="headline"><span class="lbl">On this device</span></div>'
     + [0,1].map(function(i){
         var s=P(i).stats;
         return '<div class="pcard" style="--pc:'+phex(i)+'"><span class="g"><span style="color:'+phex(i)+';display:block">'+markSVG(pmark(i))+"</span></span>"
@@ -2132,6 +2317,7 @@ function viewPlayers(){
     +   '<div class="chat"><div class="msgs" id="msgs">'+msgs+"</div>"
     +   '<div class="composer"><input id="chatIn" type="text" maxlength="240" placeholder="Message as '+esc(pname(DB.me))+'" autocomplete="off">'
     +     '<button class="send" id="chatSend" type="button" aria-label="Send" disabled>'+I.send+"</button></div></div></div></div>";
+  renderOnlinePlayers();
   stage.querySelectorAll("[data-be]").forEach(function(b){
     b.addEventListener("click",function(){ DB.me=+b.dataset.be; save(); sfx.tap(); accent(phex(DB.me)); renderHub(); });
   });
