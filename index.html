@@ -369,6 +369,46 @@ button{ font:inherit; }
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #plres, #plfr, #plrec{ display:flex; flex-direction:column; gap:8px; }
 
+/* ---------- game shelf ----------
+   A shelf, not a list: each card answers what the game is, what it asks of you
+   and how long it takes, so the choice is made before you tap. */
+.shelf{ gap:12px; justify-content:flex-start; }
+.shelfbar{ display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; flex:none; padding-bottom:2px; margin-inline:-2px; }
+.shelfbar::-webkit-scrollbar{ display:none; }
+.chip2{ appearance:none; flex:none; border:1px solid var(--hair); background:var(--panel); color:var(--grey);
+  border-radius:999px; padding:9px 15px; cursor:pointer; font-family:var(--mono); font-size:10.5px;
+  font-weight:600; letter-spacing:.11em; text-transform:uppercase; transition:color .2s, border-color .2s, background .2s; }
+.chip2:active{ transform:scale(.96); }
+.chip2.on{ color:var(--ink); background:var(--pc); border-color:var(--pc); }
+
+.gfeat{ appearance:none; display:flex; align-items:center; gap:13px; text-align:left; cursor:pointer; flex:none;
+  border:1px solid var(--pc); border-radius:18px; padding:13px 15px;
+  background:color-mix(in srgb,var(--pc) 12%,var(--panel)); color:var(--text); transition:transform .12s var(--ease); }
+.gfeat:active{ transform:scale(.985); }
+.gfeat .art{ width:52px; height:40px; flex:none; color:var(--pc); }
+.gfeat .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.gfeat .nm{ font-family:var(--mono); font-size:15px; font-weight:700; letter-spacing:-.01em; }
+.gfeat .how{ font-size:11.5px; color:var(--grey); }
+.gfeat .go{ flex:none; width:34px; height:34px; border-radius:50%; background:var(--pc); color:var(--ink);
+  display:grid; place-items:center; }
+.gfeat .go svg{ width:15px; height:15px; }
+
+.gshelf{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-content:start; }
+.gcard{ appearance:none; position:relative; display:flex; flex-direction:column; gap:3px; text-align:left;
+  cursor:pointer; border:1px solid var(--hair); border-radius:17px; background:var(--panel); color:var(--text);
+  padding:13px 13px 11px; transition:transform .12s var(--ease), border-color .2s, background .2s; }
+.gcard:active{ transform:scale(.96); }
+.gcard:hover{ border-color:var(--hair-2); background:var(--panel-2); }
+.gcard:focus-visible{ outline:2px solid var(--pc); outline-offset:2px; }
+.gcard .art{ height:46px; color:var(--grey); margin-bottom:5px; transition:color .2s; }
+.gcard:hover .art{ color:var(--pc); }
+.gcard .nm{ font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:-.01em; }
+.gcard .how{ font-size:11px; color:var(--grey-dim); line-height:1.35; }
+.gcard .len{ font-family:var(--mono); font-size:9px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--grey-dim); margin-top:4px; }
+.gcard .flag{ position:absolute; top:11px; right:11px; font-family:var(--mono); font-size:8px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--pc); border:1px solid currentColor; border-radius:999px; padding:2px 6px; }
+
 .handlebox{ display:flex; align-items:center; gap:2px; background:var(--panel-2); border:1px solid var(--hair);
   border-radius:14px; padding:0 14px; transition:border-color .2s; }
 .handlebox:focus-within{ border-color:var(--pc); }
@@ -2807,20 +2847,65 @@ function chromeSetup(back,label){
   wireSound();
 }
 
+/* What each game actually asks of you, so the shelf answers "what am I in for"
+   rather than just naming things. */
+var GAMEMETA={
+  ttt:    { len:"1 min",  how:"Take turns on the board" },
+  c4:     { len:"3 min",  how:"Drop a piece down a column" },
+  guess:  { len:"3 min",  how:"Higher or lower, 1 to 100" },
+  tap:    { len:"2 min",  how:"Stop a blind clock on target" },
+  seqc:   { len:"3 min",  how:"Crack an order, eight tries" },
+  dtimer: { len:"6 min",  how:"Win the clock, claim a square" },
+  dnumber:{ len:"6 min",  how:"Win the guess, claim a square" },
+  seq:    { len:"7 min",  how:"Win the race, claim a square" },
+  bid:    { len:"8 min",  how:"Sealed bids for one square" }
+};
+var SHELVES=[
+  { id:"all",   name:"All" },
+  { id:"quick", name:"Quick",   pick:function(k){ return parseInt(GAMEMETA[k].len,10)<=3; } },
+  { id:"classic",name:"Straight up", pick:function(k){ return GAMES[k].group==="classic"; } },
+  { id:"duel",  name:"For a board", pick:function(k){ return GAMES[k].group==="duel"; } }
+];
+var shelf="all";
+
 function setupGame(){
   chromeSetup(null,"New match");
-  function row(group){
-    return Object.keys(GAMES).filter(function(k){ return GAMES[k].group===group; })
-      .map(function(k){ var g=GAMES[k]; return tile("game",k,g.name,"",artFor(g.art)); }).join("");
+  var last=DB.lastGame&&GAMES[DB.lastGame]?DB.lastGame:null;
+
+  function cards(){
+    var s=SHELVES.filter(function(x){ return x.id===shelf; })[0];
+    return Object.keys(GAMES).filter(function(k){ return !s.pick||s.pick(k); }).map(function(k){
+      var g=GAMES[k], m=GAMEMETA[k]||{len:"",how:""};
+      return '<button class="gcard" data-game="'+k+'" type="button">'
+        + '<span class="art">'+artFor(g.art)+"</span>"
+        + '<span class="nm">'+esc(g.name)+"</span>"
+        + '<span class="how">'+esc(m.how)+"</span>"
+        + '<span class="len">'+esc(m.len)+"</span>"
+        + (g.group==="duel"?'<span class="flag">board</span>':"")+"</button>";
+    }).join("");
   }
-  show('<div class="screen setup stack">'
-     + '<div class="headline mid"><span class="lbl">Step 1 of 2</span><span class="big">Pick a game</span></div>'
-     + '<div class="tiles">'+row("classic")+"</div>"
-     + '<div class="grouplbl"><span class="lbl">Or duel for a board</span></div>'
-     + '<div class="tiles">'+row("duel")+"</div></div>");
-  stage.querySelectorAll("[data-game]").forEach(function(b){
-    b.addEventListener("click",function(){ pickGame=b.dataset.game; sfx.tap(); screenSetup(1); });
-  });
+  function paint(){
+    show('<div class="screen setup shelf">'
+       + '<div class="shelfbar">'+SHELVES.map(function(x){
+           return '<button class="chip2'+(x.id===shelf?" on":"")+'" data-shelf="'+x.id+'" type="button">'+esc(x.name)+"</button>";
+         }).join("")+"</div>"
+       + (last&&shelf==="all"
+          ? '<button class="gfeat" data-game="'+last+'" type="button"><span class="art">'+artFor(GAMES[last].art)+"</span>"
+            + '<span class="txt"><span class="lbl">Pick up where you left off</span>'
+            +   '<span class="nm">'+esc(GAMES[last].name)+"</span>"
+            +   '<span class="how">'+esc((GAMEMETA[last]||{}).how||"")+"</span></span>"
+            + '<span class="go">'+I.play+"</span></button>"
+          : "")
+       + '<div class="gshelf">'+cards()+"</div></div>");
+
+    stage.querySelectorAll("[data-shelf]").forEach(function(b){
+      b.addEventListener("click",function(){ shelf=b.dataset.shelf; sfx.tap(); paint(); });
+    });
+    stage.querySelectorAll("[data-game]").forEach(function(b){
+      b.addEventListener("click",function(){ pickGame=b.dataset.game; sfx.tap(); screenSetup(1); });
+    });
+  }
+  paint();
 }
 
 function setupOpponent(){
