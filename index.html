@@ -353,6 +353,27 @@ button{ font:inherit; }
 .gbtn{ display:flex; align-items:center; justify-content:center; gap:9px; }
 .gbtn svg{ width:16px; height:16px; }
 
+.setrow{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0;
+  border-bottom:1px solid var(--hair); cursor:pointer; }
+.setrow:last-of-type{ border-bottom:0; padding-bottom:2px; }
+.setrow .s1{ display:flex; flex-direction:column; gap:2px; font-size:13.5px; font-weight:600; }
+.setrow .s2{ font-size:11px; color:var(--grey-dim); font-weight:400; }
+.setrow input{ appearance:none; width:42px; height:25px; border-radius:999px; background:var(--panel-3);
+  border:1px solid var(--hair); position:relative; flex:none; cursor:pointer; transition:background .2s, border-color .2s; }
+.setrow input::after{ content:''; position:absolute; top:3px; left:3px; width:17px; height:17px; border-radius:50%;
+  background:var(--grey); transition:transform .18s var(--ease), background .18s; }
+.setrow input:checked{ background:color-mix(in srgb,var(--pc) 34%,transparent); border-color:var(--pc); }
+.setrow input:checked::after{ transform:translateX(17px); background:var(--pc); }
+
+/* the nudge after a match - offered, never in the way */
+.nudge{ display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid var(--pc);
+  border-radius:15px; background:color-mix(in srgb,var(--pc) 10%,transparent); flex:none;
+  animation:screenIn .4s .3s var(--ease) both; }
+.nudge .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.nudge .t1{ font-family:var(--mono); font-size:12px; font-weight:700; }
+.nudge .t2{ font-size:11px; color:var(--grey); }
+.nudge .act{ width:auto; flex:none; padding:9px 13px; font-size:10px; border-radius:11px; }
+
 /* ---------- confirm ---------- */
 .scrim{ position:fixed; inset:0; z-index:60; background:rgba(4,5,8,.74); display:grid; place-items:center;
   padding:24px; animation:scrimIn .16s ease both; }
@@ -1106,6 +1127,22 @@ var NET=(function(){
   };
 })();
 
+/* Things a guest may not do. Playing is never one of them - every game stays
+   open. What an account buys you is a name, a shop and a record that lasts. */
+function locked(){ return !NET.signedIn() && !DB.dev; }
+function REDEEM(code){
+  if(String(code).trim().toUpperCase()!=="OWTII-DEV") return false;
+  DB.dev=true;
+  DB.players.forEach(function(p){
+    p.coins=999999;
+    p.owned=COLORS.map(function(c){ return c.id; });
+    p.ownedPat=PATTERNS.map(function(x){ return x.id; });
+    p.ownedTer=TERRAINS.map(function(x){ return x.id; });
+  });
+  save();
+  return true;
+}
+
 function guestLeft(){ return Math.max(0,GUEST_LIMIT-(DB.guestGames||0)); }
 /* an invite always gets you in, account or not - a guest should never be the
    reason a friend cannot start the game they were invited to */
@@ -1209,6 +1246,7 @@ function load(){
   }
   if(DB.lastHome!==0&&DB.lastHome!==1) DB.lastHome=0;
   if(typeof DB.guestGames!=="number"||!isFinite(DB.guestGames)) DB.guestGames=0;
+  DB.dev=!!DB.dev;
   if(!Array.isArray(DB.chat)) DB.chat=[];
   if(!Array.isArray(DB.series)) DB.series=[0,0];
   if(!Array.isArray(DB.history)) DB.history=[];
@@ -1343,7 +1381,7 @@ var sfx=(function(){
       [660,990,1320].forEach(function(f,i){ osc({f:f,at:.05+i*.05,d:.26,v:.11,type:"triangle"}); }); }
   };
 })();
-function buzz(p){ if(navigator.vibrate){ try{ navigator.vibrate(p); }catch(e){} } }
+function buzz(p){ if(DB&&DB.noBuzz) return; if(navigator.vibrate){ try{ navigator.vibrate(p); }catch(e){} } }
 
 /* ============================================================
    Icons
@@ -1803,17 +1841,18 @@ function acctStripHTML(){
 
 var G_ICON='<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.6z"/><path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.6 14.7a7.2 7.2 0 0 1 0-4.6v-3H1.8a12 12 0 0 0 0 10.6l3.8-3z"/><path fill="#EA4335" d="M12 4.8c1.7 0 3.2.6 4.4 1.7l3.3-3.3A12 12 0 0 0 1.8 7.1l3.8 3C6.5 7.4 9 4.8 12 4.8z"/></svg>';
 
-function screenSignIn(){
+function screenSignIn(why){
   enterGame(); stage.classList.add("scrolls"); accent(phex(DB.me));
   chromePlain("Account");
   var out=guestLeft()<=0, signed=NET.signedIn(), p=NET.profile();
 
   show('<div class="screen signin">'
      + '<div class="hero2">'+I.user+"</div>"
-     + "<h2>"+(signed?"@"+esc(p?p.handle:"you"):out?"Free matches used up":"Keep your progress")+"</h2>"
+     + "<h2>"+(signed?"@"+esc(p?p.handle:"you"):why?"An account is needed":out?"Free matches used up":"Keep your progress")+"</h2>"
      + "<p>"+(signed
          ? "Your coins, cosmetics and record follow you to any device you sign in on."
-         : out
+         : why ? esc(why)
+           : out
            ? "You have played your "+GUEST_LIMIT+" guest matches. An account keeps everything you have earned and unlocks playing against people who are not in the room."
            : "You can keep playing as a guest. An account saves your coins and cosmetics, and lets you play people who are not sitting next to you.")
      + "</p>"
@@ -1957,6 +1996,8 @@ function viewShop(){
 
   function buy(cost,ownList,id,btn){
     if(ownList.indexOf(id)>-1){ sfx.tap(); return true; }
+    /* wearing what you already have is free; owning something new is not */
+    if(locked()){ sfx.nope(); buzz(30); screenSignIn("The shop needs an account so what you buy is still yours on the next device."); return false; }
     if(p.coins<cost){ sfx.nope(); buzz(40); flash(btn); return false; }
     p.coins-=cost; ownList.push(id); sfx.buy(); buzz([12,30,12]); return true;
   }
@@ -2055,22 +2096,44 @@ function viewProfile(){
     +     '<div class="stat"><span class="v">'+(s.best===null?"&mdash;":fx2(s.best)+"s")+'</span><span class="k">Best miss</span></div>'
     +     '<div class="stat"><span class="v">'+(s.bestGuess===null?"&mdash;":s.bestGuess)+'</span><span class="k">Fewest guesses</span></div>'
     +     '<div class="stat"><span class="v">'+s.bestStreak+'</span><span class="k">Best run</span></div></div></div>'
-    + '<div class="panel"><div class="field"><span class="lbl">Display name</span>'
-    +   '<input id="nameIn" type="text" maxlength="18" value="'+esc(pname(me))+'" autocomplete="off"></div>'
-    +   '<button class="act sm" id="saveName" type="button" style="align-self:flex-start">Save name</button></div>'
-    + '<button class="act" id="wipe" type="button">Reset all progress</button></div>';
-  var input=document.getElementById("nameIn");
-  document.getElementById("saveName").addEventListener("click",function(){
+    + acctStripHTML()
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Display name</span>'
+    +   (locked()?'<span class="qmeta">needs an account</span>':"")+"</div>"
+    +   '<div class="field"><input id="nameIn" type="text" maxlength="18" value="'+esc(pname(me))+'" autocomplete="off"'
+    +     (locked()?" disabled":"")+"></div>"
+    +   (locked()
+        ? '<button class="act sm accent" id="nameLock" type="button" style="align-self:flex-start">Sign in to rename</button>'
+        : '<button class="act sm" id="saveName" type="button" style="align-self:flex-start">Save name</button>')+"</div>"
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Settings</span></div>'
+    +   '<label class="setrow"><span class="s1">Sound<span class="s2">Taps, ticks and the reveal</span></span>'
+    +     '<input type="checkbox" id="setSnd"'+(sfx.isMuted()?"":" checked")+"></label>"
+    +   '<label class="setrow"><span class="s1">Vibration<span class="s2">Where the phone supports it</span></span>'
+    +     '<input type="checkbox" id="setBuzz"'+(DB.noBuzz?"":" checked")+"></label>"
+    +   '<label class="setrow"><span class="s1">Skip results faster<span class="s2">Shorter pause on reveal screens</span></span>'
+    +     '<input type="checkbox" id="setFast"'+(DB.fast?" checked":"")+"></label></div>"
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Redeem a code</span></div>'
+    +   '<div class="field"><input id="codeIn" type="text" placeholder="Enter a code" autocomplete="off"></div>'
+    +   '<button class="act sm" id="codeGo" type="button" style="align-self:flex-start">Redeem</button>'
+    +   '<span class="qmeta" id="codeMsg"></span></div>'
+    + "</div>";
+
+  var ab=document.getElementById("acctBtn");
+  if(ab) ab.addEventListener("click",function(){ sfx.tap(); screenSignIn(); });
+  var nl=document.getElementById("nameLock");
+  if(nl) nl.addEventListener("click",function(){ sfx.tap(); screenSignIn("A display name is tied to an account, so nobody else can turn up wearing it."); });
+  var input=document.getElementById("nameIn"), sv=document.getElementById("saveName");
+  if(sv) sv.addEventListener("click",function(){
     p.name=input.value.trim().slice(0,18)||("Player "+(me+1)); save(); sfx.tap(); renderHub();
   });
-  document.getElementById("wipe").addEventListener("click",function(){
-    sfx.tap();
-    confirmAsk({
-      title:"Erase everything?",
-      body:"Both profiles, every coin, all cosmetics you own and the whole match history. This cannot be undone.",
-      ok:"Erase it all", cancel:"Keep it",
-      onConfirm:function(){ DB=freshDB(); save(); sfx.buy(); tab="home"; renderHub(); }
-    });
+  document.getElementById("setSnd").addEventListener("change",function(){
+    if(this.checked===sfx.isMuted()) sfx.toggle();
+  });
+  document.getElementById("setBuzz").addEventListener("change",function(){ DB.noBuzz=!this.checked; save(); });
+  document.getElementById("setFast").addEventListener("change",function(){ DB.fast=this.checked; save(); });
+  document.getElementById("codeGo").addEventListener("click",function(){
+    var v=document.getElementById("codeIn").value, msg=document.getElementById("codeMsg");
+    if(REDEEM(v)){ sfx.buy(); buzz([14,30,14]); msg.textContent="Unlocked."; msg.className="qmeta done"; later(renderHub,700); }
+    else { sfx.nope(); buzz(30); msg.textContent="That code does not work."; msg.className="qmeta"; }
   });
 }
 
@@ -3790,14 +3853,25 @@ function screenOver(w){
      +   '<span class="sub">'+esc(line)+"</span></div>"
      + (hasBoard()?boardHTML("lg",null):"")
      + scoreRow
+     /* the moment a guest is most likely to care: they just earned something */
+     + (locked()
+        ? '<div class="nudge" style="--pc:'+phex(DB.me)+'"><span class="txt">'
+          + '<span class="t1">Keep what you just won</span>'
+          + '<span class="t2">Sign in and your coins, cosmetics and record stay yours. '
+          +   (guestLeft()?guestLeft()+" free "+(guestLeft()===1?"match":"matches")+" left.":"Free matches are used up.")+"</span></span>"
+          + '<button class="act hero" id="nudgeBtn" type="button">Sign in</button></div>'
+        : "")
      /* one clear primary action, and the two ways out side by side under it */
      + '<div class="foot"><button class="act hero" id="again" type="button">Play again</button>'
      +   '<div class="footrow">'
      +     '<button class="act" id="toHub" type="button">'+I.home+"Home</button>"
      +     '<button class="act" id="hist" type="button">'+I.hist+"History</button>"
      +   "</div></div></div>");
+  var nb=document.getElementById("nudgeBtn");
+  if(nb) nb.addEventListener("click",function(){ sfx.tap(); haltAll(); screenSignIn(); });
   document.getElementById("again").addEventListener("click",function(){
     sfx.tap();
+    if(needsAccount()){ screenSignIn(); return; }
     newMatch(G.game,{ board:G.board, bot:G.vsBot, tap:G.tapTarget });
   });
   document.getElementById("hist").addEventListener("click",function(){ sfx.tap(); openHistory(); });
