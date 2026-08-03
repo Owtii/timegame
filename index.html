@@ -1905,7 +1905,7 @@ function chromeGame(show){
     : '<span class="tally"><i style="background:'+phex(0)+'"></i>'+G.score[0]
       + '<span class="sep">/</span>'+G.score[1]+'<i style="background:'+phex(1)+'"></i></span>';
   document.getElementById("histBtn").addEventListener("click",function(){ sfx.tap(); openHistory(); });
-  document.getElementById("chatBtn").addEventListener("click",function(){ sfx.tap(); chatWho=null; openChat(); });
+  document.getElementById("chatBtn").addEventListener("click",function(){ sfx.tap(); openChat(); });
   wireSound();
   // Connect 4 matches run long - leaving one shouldn't mean finishing it.
   document.getElementById("quitBtn").addEventListener("click",function(){ sfx.tap(); leaveMatch(); });
@@ -2370,9 +2370,9 @@ function viewPlayers(){
     + '<div class="headline"><span class="lbl">On this device</span></div>'
     + [0,1].map(function(i){
         var s=P(i).stats;
-        return '<div class="pcard" style="--pc:'+phex(i)+'"><span class="g"><span style="color:'+phex(i)+';display:block">'+markSVG(pmark(i))+"</span></span>"
+        return '<div class="pcard" style="--pc:'+phex(i)+'"><span class="g"><span style="color:'+phex(i)+';display:block">'+markSVG(pmark(i),false,i)+"</span></span>"
           + '<span class="body"><span class="n">'+esc(pname(i))+'</span><span class="s">'+s.wins+" of "+s.matches+" matches &middot; "+s.roundsWon+" squares</span></span>"
-          + (i===DB.me?'<span class="me">You</span>':'<button class="act sm" data-be="'+i+'" type="button">Switch</button>')+"</div>";
+          + '<span class="me">'+pmark(i)+"</span></div>";
       }).join("")
     + '<div class="panel"><div class="panel-h"><span class="lbl">Chat</span>'
     +   (DB.chat.length?'<button class="act sm" id="clearChat" type="button">Clear</button>':"")+"</div>"
@@ -2380,7 +2380,7 @@ function viewPlayers(){
     +   '<div class="composer"><input id="chatIn" type="text" maxlength="240" placeholder="Message as '+esc(pname(DB.me))+'" autocomplete="off">'
     +     '<button class="send" id="chatSend" type="button" aria-label="Send" disabled>'+I.send+"</button></div></div></div></div>";
   renderOnlinePlayers();
-  stage.querySelectorAll("[data-be]").forEach(function(b){
+  stage.querySelectorAll("[data-be-removed]").forEach(function(b){
     b.addEventListener("click",function(){ DB.me=+b.dataset.be; save(); sfx.tap(); accent(phex(DB.me)); renderHub(); });
   });
   var cc=document.getElementById("clearChat");
@@ -2388,19 +2388,30 @@ function viewPlayers(){
   var box=document.getElementById("msgs"); box.scrollTop=box.scrollHeight;
   var input=document.getElementById("chatIn"), send=document.getElementById("chatSend");
   function sync(){ send.disabled=!input.value.trim(); }
+  /* append rather than re-render: rebuilding the tab threw away the caret,
+     the keyboard and the scroll position on every single message */
   function post(){
     var t=input.value.trim(); if(!t) return;
-    DB.chat.push({from:DB.me,text:t.slice(0,240),ts:Date.now()});
+    var m={ from:DB.me, text:t.slice(0,240), ts:Date.now() };
+    DB.chat.push(m);
     if(DB.chat.length>200) DB.chat=DB.chat.slice(-200);
-    save(); sfx.msg(); buzz(8); input.value=""; sync(); renderHub();
-    var b2=document.getElementById("msgs"); if(b2) b2.scrollTop=b2.scrollHeight;
-    var i2=document.getElementById("chatIn"); if(i2) i2.focus({preventScroll:true});
+    save(); sfx.msg(); buzz(8);
+    var empty=box.querySelector(".emptychat"); if(empty) empty.remove();
+    box.insertAdjacentHTML("beforeend",chatBubble(m,DB.me));
+    box.scrollTop=box.scrollHeight;
+    input.value=""; sync(); input.focus({preventScroll:true});
   }
   input.addEventListener("input",sync);
   input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); post(); } });
   send.addEventListener("click",post);
 }
 function timeOf(ts){ var d=new Date(ts),h=d.getHours(),m=d.getMinutes(); return (h<10?"0":"")+h+":"+(m<10?"0":"")+m; }
+/* one bubble, drawn the same way wherever the chat appears */
+function chatBubble(m,mine){
+  return '<div class="msg '+(m.from===mine?"b":"a")+'" style="--pc:'+phex(m.from)+'">'
+    + '<span class="who">'+esc(pname(m.from))+'<span class="tm">'+timeOf(m.ts)+"</span></span>"
+    + esc(m.text)+"</div>";
+}
 
 function viewProfile(){
   var me=DB.me, p=P(me), s=p.stats;
@@ -2687,12 +2698,14 @@ function openHistory(){
 }
 function openMatchHistory(){ sheetView={ mode:"past", index:-1 }; renderSheet(); }
 
-/* Chat without leaving the match. The sender defaults to whoever is on the
-   clock, since that is who is holding the phone. */
-var chatWho=null;
+/* Chat without leaving the match. Whoever is on the clock is holding the phone,
+   so that is who the message is from - there is nothing to choose. */
+function chatSender(){
+  var w=(typeof G.turn==="number"&&G.game)?G.turn:DB.me;
+  return isBot(w)?1-w:w;
+}
 function openChat(){
-  if(chatWho===null) chatWho = (typeof G.turn==="number"&&G.game) ? G.turn : DB.me;
-  if(isBot(chatWho)) chatWho=1-chatWho;
+  var chatWho=chatSender();
   var el=document.getElementById("sheet");
   if(!el){
     el=document.createElement("div"); el.id="sheet";
@@ -2701,16 +2714,11 @@ function openChat(){
     el.querySelector(".scrim").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
   }
   var msgs=DB.chat.length
-    ? DB.chat.map(function(m){
-        return '<div class="msg '+(m.from===chatWho?"b":"a")+'" style="--pc:'+phex(m.from)+'">'
-          + '<span class="who">'+esc(pname(m.from))+'<span class="tm">'+timeOf(m.ts)+"</span></span>"+esc(m.text)+"</div>";
-      }).join("")
+    ? DB.chat.map(function(m){ return chatBubble(m,chatWho); }).join("")
     : emptyNote("Nothing said yet","Say something between moves.");
   el.querySelector(".body").innerHTML=
       '<div class="head"><span class="txt"><span class="ttl">Chat</span>'
-    +   '<span class="sub">Both of you, on this phone</span></span>'
-    +   '<button class="whoami" id="chatWho" type="button" style="--pc:'+phex(chatWho)+'">'
-    +     '<span class="dot"></span><span class="nm">'+esc(pname(chatWho))+'</span><span class="sw">'+I.swap+"</span></button>"
+    +   '<span class="sub">Writing as '+esc(pname(chatWho))+"</span></span>"
     +   '<button class="icon-btn tiny" id="chatX" type="button" aria-label="Close">'+I.close+"</button></div>"
     + '<div class="scroll" id="cmsgs">'+msgs+"</div>"
     + '<div class="composer" style="margin-top:11px;flex:none">'
@@ -2720,21 +2728,22 @@ function openChat(){
   var box=document.getElementById("cmsgs"); box.scrollTop=box.scrollHeight;
   var input=document.getElementById("cIn"), send=document.getElementById("cSend");
   function sync(){ send.disabled=!input.value.trim(); }
+  /* append, never rebuild: rebuilding the sheet closed the keyboard mid-sentence */
   function post(){
     var t=input.value.trim(); if(!t) return;
-    DB.chat.push({ from:chatWho, text:t.slice(0,240), ts:Date.now() });
+    var m={ from:chatWho, text:t.slice(0,240), ts:Date.now() };
+    DB.chat.push(m);
     if(DB.chat.length>200) DB.chat=DB.chat.slice(-200);
-    save(); sfx.msg(); buzz(8); input.value=""; openChat();
-    var i2=document.getElementById("cIn"); if(i2) i2.focus({preventScroll:true});
+    save(); sfx.msg(); buzz(8);
+    var empty=box.querySelector(".emptylog"); if(empty) empty.remove();
+    box.insertAdjacentHTML("beforeend",chatBubble(m,chatWho));
+    box.scrollTop=box.scrollHeight;
+    input.value=""; sync(); input.focus({preventScroll:true});
   }
   input.addEventListener("input",sync);
   input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); post(); } });
   send.addEventListener("click",post);
   document.getElementById("chatX").addEventListener("click",function(){ sfx.tap(); sheetClose(); });
-  document.getElementById("chatWho").addEventListener("click",function(){
-    chatWho=1-chatWho; if(isBot(chatWho)) chatWho=1-chatWho;
-    sfx.tap(); openChat();
-  });
 }
 
 function renderSheet(){
