@@ -332,9 +332,17 @@ button{ font:inherit; }
 /* ---------- account ---------- */
 .acct{ display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid var(--hair);
   border-radius:15px; background:var(--panel); flex:none; }
-.acct .av{ width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
-  font-family:var(--mono); font-size:13px; font-weight:700; color:var(--ink); background:var(--pc); }
+.av{ width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
+  font-family:var(--mono); font-size:13px; font-weight:700; color:var(--ink); overflow:hidden; }
+.av.img{ background-size:cover; background-position:center; }
+.av.mini{ width:22px; height:22px; font-size:10px; }
+.av.big{ width:76px; height:76px; font-size:28px; }
 .acct .av.guest{ background:var(--panel-3); color:var(--grey); border:1px dashed var(--hair-2); }
+.avpick{ display:flex; align-items:center; gap:13px; }
+.avpick .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.avpick .t1{ font-size:13.5px; font-weight:600; }
+.avpick .t2{ font-size:11px; color:var(--grey-dim); line-height:1.4; }
+.avpick input[type=file]{ display:none; }
 .acct .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
 .acct .t1{ font-family:var(--mono); font-size:12.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .acct .t2{ font-size:11px; color:var(--grey-dim); }
@@ -1347,6 +1355,13 @@ function shade(hex,amt){
   return "#"+((1<<24)+(f(r)<<16)+(f(g)<<8)+f(b)).toString(16).slice(1);
 }
 function ppat(i){ return P(i).pattern||"solid"; }
+/* a picture if there is one, otherwise the first letter on the player's colour */
+function avatarHTML(i,cls){
+  var av=P(i).avatar, letter=(pname(i)||"?").trim().slice(0,1).toUpperCase();
+  return av
+    ? '<span class="av '+(cls||"")+' img" style="background-image:url('+av+')"></span>'
+    : '<span class="av '+(cls||"")+'" style="background:'+phex(i)+'">'+esc(letter)+"</span>";
+}
 function terrainOf(i){ var t=TERRAINS.filter(function(x){return x.id===P(i).terrain;})[0]; return t||TERRAINS[0]; }
 /* whose ground the match is played on */
 function homeTerrain(){ return terrainOf(typeof G.home==="number"?G.home:0); }
@@ -1816,14 +1831,21 @@ function chromePlain(label){
 
 function chromeHub(){
   topbar.classList.remove("recede");
-  var home=(tab==="home");
+  var home=(tab==="home"), me=NET.profile(), signed=NET.signedIn()&&me;
+  /* the top-left is who you are, not a device toggle: it opens your profile if
+     you have one, and asks you to make one if you do not. Swapping the two
+     local players lives in the Players tab, where both of them are visible. */
   topbar.innerHTML='<div class="slot">'
     + (home?"":'<button class="icon-btn tiny" id="hubBack" type="button" aria-label="Back to home">'+I.back+"</button>")
-    + '<button class="whoami" id="swapMe" type="button" aria-label="Switch active profile">'
-    + '<span class="dot"></span><span class="nm">'+esc(pname(DB.me))+'</span><span class="sw">'+I.swap+"</span></button></div>"
+    + '<button class="whoami" id="swapMe" type="button" aria-label="'+(signed?"Open your profile":"Sign in")+'">'
+    +   avatarHTML(DB.me,"mini")
+    +   '<span class="nm">'+(signed?"@"+esc(me.handle):"Guest")+"</span>"
+    +   '<span class="sw">'+(signed?I.user:I.swap)+"</span></button></div>"
     + '<div class="slot right">'+coinTag(P(DB.me).coins)+soundBtn()+"</div>";
   document.getElementById("swapMe").addEventListener("click",function(){
-    DB.me=1-DB.me; save(); sfx.tap(); accent(phex(DB.me)); renderHub();
+    sfx.tap();
+    if(signed){ tab="profile"; renderHub(); return; }
+    if(NET.signedIn()) screenHandle(false); else screenSignIn();
   });
   var hb=document.getElementById("hubBack");
   if(hb) hb.addEventListener("click",function(){ sfx.tap(); tab="home"; renderHub(); });
@@ -1892,7 +1914,7 @@ function acctStripHTML(){
   var p=NET.profile(), left=guestLeft();
   if(NET.signedIn()&&p){
     return '<div class="acct" style="--pc:'+phex(DB.me)+'">'
-      + '<span class="av">'+esc((p.handle||"?").slice(0,1).toUpperCase())+"</span>"
+      + avatarHTML(DB.me,"")
       + '<span class="txt"><span class="t1">@'+esc(p.handle)+'</span>'
       +   '<span class="t2">Signed in &middot; progress is saved</span></span>'
       + '<button class="act sm ghost" id="acctBtn" type="button">Account</button></div>';
@@ -2354,6 +2376,13 @@ function viewProfile(){
     +     '<div class="stat"><span class="v">'+(s.bestGuess===null?"&mdash;":s.bestGuess)+'</span><span class="k">Fewest guesses</span></div>'
     +     '<div class="stat"><span class="v">'+s.bestStreak+'</span><span class="k">Best run</span></div></div></div>'
     + acctStripHTML()
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Picture</span></div>'
+    +   '<div class="avpick">'+avatarHTML(me,"big")
+    +     '<span class="txt"><span class="t1">Profile picture</span>'
+    +       '<span class="t2">Kept on this device and shrunk to 160px, so it costs almost nothing.</span></span></div>'
+    +   '<div class="footrow"><label class="act sm" for="avIn" style="cursor:pointer">Choose a photo'
+    +     '<input type="file" id="avIn" accept="image/*"></label>'
+    +     (P(me).avatar?'<button class="act sm ghost" id="avClear" type="button">Remove</button>':"")+"</div></div>"
     + '<div class="panel"><div class="panel-h"><span class="lbl">Display name</span>'
     +   (locked()?'<span class="qmeta">needs an account</span>':"")+"</div>"
     +   '<div class="field"><input id="nameIn" type="text" maxlength="18" value="'+esc(pname(me))+'" autocomplete="off"'
@@ -2376,6 +2405,33 @@ function viewProfile(){
 
   var ab=document.getElementById("acctBtn");
   if(ab) ab.addEventListener("click",function(){ sfx.tap(); screenSignIn(); });
+
+  /* shrink before storing: a phone photo is several megabytes and localStorage
+     gives you about five in total */
+  document.getElementById("avIn").addEventListener("change",function(){
+    var f=this.files&&this.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)) return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      var img=new Image();
+      img.onload=function(){
+        var S=160, c=document.createElement("canvas"); c.width=c.height=S;
+        var g=c.getContext("2d");
+        var side=Math.min(img.width,img.height);            /* centre crop to a square */
+        g.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,S,S);
+        try{
+          P(me).avatar=c.toDataURL("image/jpeg",0.82);
+          save(); sfx.buy(); buzz(12); renderHub();
+        }catch(e){ sfx.nope(); }
+      };
+      img.onerror=function(){ sfx.nope(); };
+      img.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+  var ac=document.getElementById("avClear");
+  if(ac) ac.addEventListener("click",function(){ P(me).avatar=null; save(); sfx.tap(); renderHub(); });
+
   var nl=document.getElementById("nameLock");
   if(nl) nl.addEventListener("click",function(){ sfx.tap(); screenSignIn("A display name is tied to an account, so nobody else can turn up wearing it."); });
   var input=document.getElementById("nameIn"), sv=document.getElementById("saveName");
