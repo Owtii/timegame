@@ -361,13 +361,47 @@ button{ font:inherit; }
 .gbtn{ display:flex; align-items:center; justify-content:center; gap:9px; }
 .gbtn svg{ width:16px; height:16px; }
 
-.pcard .av2{ width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
-  font-family:var(--mono); font-size:14px; font-weight:700; color:var(--ink); background:var(--pc); }
-.tagcard{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 13px;
-  border:1px solid var(--pc); border-radius:13px; background:color-mix(in srgb,var(--pc) 11%,transparent); }
-.tagcard .tg{ font-family:var(--mono); font-size:17px; font-weight:700; letter-spacing:-.01em; color:var(--pc);
+/* ---------- players ----------
+   Your card, one switch, one list. Not a stack of panels that all look alike. */
+.mecard{ display:flex; align-items:center; gap:13px; flex:none; padding:15px;
+  border:1px solid var(--hair); border-radius:20px; position:relative; overflow:hidden;
+  background:linear-gradient(140deg, color-mix(in srgb,var(--pc) 22%,var(--panel)) 0%, var(--panel) 62%); }
+.mecard .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.mecard .tg{ font-family:var(--mono); font-size:18px; font-weight:700; letter-spacing:-.02em;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-#plres, #plfr, #plrec{ display:flex; flex-direction:column; gap:8px; }
+.mecard .sub{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:var(--grey); }
+.mecard .act{ width:auto; flex:none; padding:10px 14px; font-size:10px; border-radius:12px; }
+
+.plseg{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:3px; border-radius:14px;
+  background:var(--panel-2); border:1px solid var(--hair); flex:none; }
+.plseg button{ appearance:none; border:0; background:transparent; color:var(--grey-dim); border-radius:11px;
+  padding:10px 4px; cursor:pointer; font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; transition:background .2s, color .2s; position:relative; }
+.plseg button.on{ background:var(--panel); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.4); }
+.plseg .cnt{ font-size:9px; opacity:.7; margin-left:3px; }
+
+.plist{ display:flex; flex-direction:column; gap:7px; }
+.prow{ display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid var(--hair);
+  border-radius:15px; background:var(--panel); transition:border-color .2s, background .2s; }
+.prow:hover{ border-color:var(--hair-2); background:var(--panel-2); }
+.prow .av3{ width:38px; height:38px; border-radius:50%; flex:none; display:grid; place-items:center;
+  font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); background:var(--pc); }
+.prow .body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.prow .h{ font-family:var(--mono); font-size:13.5px; font-weight:700; letter-spacing:-.01em;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.prow .m{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:10.5px; color:var(--grey-dim); }
+.prow .act{ width:auto; flex:none; padding:9px 13px; font-size:9.5px; border-radius:11px; }
+.prow .done2{ font-family:var(--mono); font-size:9px; letter-spacing:.11em; text-transform:uppercase; color:var(--good); flex:none; }
+
+.plempty{ display:flex; flex-direction:column; align-items:center; gap:7px; text-align:center;
+  padding:30px 18px; border:1px dashed var(--hair-2); border-radius:18px; }
+.plempty .e1{ font-family:var(--mono); font-size:13px; font-weight:700; }
+.plempty .e2{ font-size:12px; color:var(--grey-dim); line-height:1.45; max-width:26ch; }
+.plsearch{ position:relative; flex:none; }
+.plsearch input{ width:100%; background:var(--panel-2); border:1px solid var(--hair); border-radius:14px;
+  padding:13px 14px 13px 38px; color:var(--text); font-size:14px; outline:none; transition:border-color .2s; }
+.plsearch input:focus{ border-color:var(--pc); }
+.plsearch .mag{ position:absolute; left:13px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:var(--grey-dim); }
 
 /* ---------- game shelf ----------
    A shelf, not a list: each card answers what the game is, what it asks of you
@@ -1871,7 +1905,7 @@ function chromePlain(label){
 
 function chromeHub(){
   topbar.classList.remove("recede");
-  var home=(tab==="home"), me=NET.profile(), signed=NET.signedIn()&&me;
+  var home=(tab==="home"), me=NET.profile(), signed=!!me;
   /* the top-left is who you are, not a device toggle: it opens your profile if
      you have one, and asks you to make one if you do not. Swapping the two
      local players lives in the Players tab, where both of them are visible. */
@@ -2234,177 +2268,170 @@ function themePreview(id){
 }
 function flash(el){ el.animate([{transform:"translateX(0)"},{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:240}); }
 
-/* ---------- online players ---------- */
+/* ---------- players ----------
+   One person per row, one action per row, one switch between the three lists
+   anyone actually wants: who you know, who you played, and who else is out
+   there. Everything else was panels stacked on panels. */
 
-function prow(pr,right){
+var plView="friends", plKnown=[];
+var I_MAG='<svg class="mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+
+function personRow(pr,right){
   var hex=(COLORS.filter(function(c){return c.id===pr.colour;})[0]||COLORS[0]).hex;
   var played=(pr.wins||0)+(pr.losses||0);
-  return '<div class="pcard" style="--pc:'+hex+'">'
-    + '<span class="av2">'+esc((pr.handle||"?").slice(0,1).toUpperCase())+"</span>"
-    + '<span class="body"><span class="n">@'+esc(pr.handle)+"</span>"
-    +   '<span class="s">'+(played?((pr.wins||0)+" of "+played+" matches"):"no matches yet")
+  return '<div class="prow" style="--pc:'+hex+'">'
+    + '<span class="av3">'+esc((pr.handle||"?").slice(0,1).toUpperCase())+"</span>"
+    + '<span class="body"><span class="h">@'+esc(pr.handle)+"</span>"
+    +   '<span class="m">'+(played?((pr.wins||0)+"W "+(pr.losses||0)+"L"):"no matches yet")
     +     " &middot; "+(pr.rounds_won||0)+" rounds</span></span>"
     + right + "</div>";
 }
-
-function renderOnlinePlayers(){
-  var box=document.getElementById("onlineBlock");
-  if(!box) return;
-  var me=NET.profile();
-
-  if(!NET.signedIn()||!me){
-    box.innerHTML='<div class="panel"><div class="panel-h"><span class="lbl">Play people</span></div>'
-      + '<p style="margin:0;color:var(--grey);font-size:13px;line-height:1.5">Sign in to get a tag. Then people can find you by it, and you can add anyone you have played.</p>'
-      + '<button class="act sm accent" id="plSign" type="button" style="align-self:flex-start">'
-      +   (NET.signedIn()?"Pick your tag":"Sign in")+"</button></div>";
-    document.getElementById("plSign").addEventListener("click",function(){
-      sfx.tap();
-      if(NET.signedIn()) screenHandle(false); else screenSignIn();
-    });
-    return;
-  }
-
-  box.innerHTML='<div class="panel"><div class="panel-h"><span class="lbl">Your tag</span></div>'
-    +   '<div class="tagcard"><span class="tg">@'+esc(me.handle)+"</span>"
-    +     '<button class="act sm" id="tagCopy" type="button">Copy</button></div>'
-    +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">Send this and they can add you.</p></div>'
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Find someone</span></div>'
-    +   '<div class="composer"><input id="plq" type="text" placeholder="Search a tag" autocomplete="off" autocapitalize="none" spellcheck="false"></div>'
-    +   '<div id="plres"></div></div>'
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Added</span></div><div id="plfr"><span class="qmeta">Loading...</span></div></div>'
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Recently played</span></div><div id="plrec"><span class="qmeta">Loading...</span></div></div>';
-
-  document.getElementById("tagCopy").addEventListener("click",function(){
-    var t="@"+me.handle;
-    if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){});
-    sfx.tap(); buzz(10);
-    this.textContent="Copied";
-    var b=this; setTimeout(function(){ if(b.isConnected) b.textContent="Copy"; },1400);
-  });
-
-  var known=[];
-  function paintFriends(){
-    NET.friendIds().then(function(ids){
-      known=ids;
-      var el=document.getElementById("plfr"); if(!el) return;
-      if(!ids.length){ el.innerHTML='<span class="qmeta">Nobody yet. Search a tag above.</span>'; return; }
-      NET.people(ids).then(function(list){
-        el.innerHTML=list.map(function(pr){
-          return prow(pr,'<button class="act sm" data-drop="'+pr.id+'" type="button">Remove</button>');
-        }).join("")||'<span class="qmeta">Nobody yet.</span>';
-        el.querySelectorAll("[data-drop]").forEach(function(b){
-          b.addEventListener("click",function(){
-            b.disabled=true; sfx.tap();
-            NET.dropFriend(b.dataset.drop).then(function(){ paintFriends(); });
-          });
-        });
-      });
-    });
-  }
-  function paintRecent(){
-    NET.recent().then(function(rows){
-      var el=document.getElementById("plrec"); if(!el) return;
-      var ids=[], seen={};
-      rows.forEach(function(r){ if(r.opponent&&!seen[r.opponent]){ seen[r.opponent]=1; ids.push(r.opponent); } });
-      if(!ids.length){ el.innerHTML='<span class="qmeta">No online matches yet. The bot does not count.</span>'; return; }
-      NET.people(ids.slice(0,10)).then(function(list){
-        el.innerHTML=list.map(function(pr){
-          var added=known.indexOf(pr.id)>-1;
-          return prow(pr, added?'<span class="qmeta done">Added</span>'
-                            :'<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
-        }).join("");
-        wireAdd(el);
-      });
-    });
-  }
-  function wireAdd(el){
-    el.querySelectorAll("[data-add]").forEach(function(b){
-      b.addEventListener("click",function(){
-        b.disabled=true; b.textContent="Adding..."; sfx.tap();
-        NET.addFriend(b.dataset.add).then(function(ok){
-          b.textContent=ok?"Added":"Failed";
-          if(ok){ buzz(12); paintFriends(); }
-        });
-      });
-    });
-  }
-
-  var q=document.getElementById("plq"), timer=null, asked="";
-  q.addEventListener("input",function(){
-    var v=q.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
-    if(v!==q.value) q.value=v;
-    var el=document.getElementById("plres");
-    clearTimeout(timer);
-    if(v.length<2){ el.innerHTML='<span class="qmeta">Type at least two characters.</span>'; return; }
-    el.innerHTML='<span class="qmeta">Searching...</span>';
-    timer=setTimeout(function(){
-      asked=v;
-      NET.search(v).then(function(list){
-        if(q.value!==asked) return;            /* they kept typing */
-        var el2=document.getElementById("plres"); if(!el2) return;
-        if(!list.length){ el2.innerHTML='<span class="qmeta">Nobody with a tag like that.</span>'; return; }
-        el2.innerHTML=list.map(function(pr){
-          var added=known.indexOf(pr.id)>-1;
-          return prow(pr, added?'<span class="qmeta done">Added</span>'
-                            :'<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
-        }).join("");
-        wireAdd(el2);
-      });
-    },380);
-  });
-
-  paintFriends();
-  paintRecent();
+function plEmpty(t,d){
+  return '<div class="plempty"><span class="e1">'+esc(t)+'</span><span class="e2">'+esc(d)+"</span></div>";
 }
 
 function viewPlayers(){
-  var msgs=DB.chat.length
-    ? DB.chat.map(function(m){
-        return '<div class="msg '+(m.from===DB.me?"b":"a")+'" style="--pc:'+phex(m.from)+'">'
-          + '<span class="who">'+esc(pname(m.from))+'<span class="tm">'+timeOf(m.ts)+"</span></span>"+esc(m.text)+"</div>";
-      }).join("")
-    : '<div class="emptychat">No messages yet. Talk trash before the next match.</div>';
+  /* A tag is what makes you findable, not whether you upgraded from a guest.
+     Guests are real accounts here, so one with a handle is a real player. */
+  var me=NET.profile(), signed=!!me;
+  var s=P(0).stats, s2=P(1).stats;
+
   stage.innerHTML='<div class="view">'
-    + '<div class="headline"><span class="lbl">People</span><span class="big">Players</span></div>'
-    + '<div id="onlineBlock"></div>'
-    + '<div class="headline"><span class="lbl">On this device</span></div>'
+    + (signed
+       ? '<div class="mecard" style="--pc:'+phex(DB.me)+'">'+avatarHTML(DB.me,"big")
+         + '<span class="txt"><span class="tg">@'+esc(me.handle)+"</span>"
+         +   '<span class="sub">'+(me.wins||0)+"W "+(me.losses||0)+"L &middot; "+(me.rounds_won||0)+" rounds</span></span>"
+         + '<button class="act" id="shareMe" type="button">Share</button></div>'
+       : '<div class="mecard" style="--pc:'+phex(DB.me)+'">'+avatarHTML(DB.me,"big")
+         + '<span class="txt"><span class="tg">No tag yet</span>'
+         +   '<span class="sub">People need one to find you</span></span>'
+         + '<button class="act hero" id="shareMe" type="button">'+(NET.user()?"Pick a tag":"Sign in")+"</button></div>")
+    + '<div class="plseg">'
+    +   '<button data-pl="friends" type="button">Friends</button>'
+    +   '<button data-pl="recent" type="button">Played</button>'
+    +   '<button data-pl="find" type="button">Find</button></div>'
+    + '<div id="plbody"></div>'
+    + '<div class="headline" style="margin-top:4px"><span class="lbl">On this phone</span></div>'
     + [0,1].map(function(i){
-        var s=P(i).stats;
-        return '<div class="pcard" style="--pc:'+phex(i)+'"><span class="g"><span style="color:'+phex(i)+';display:block">'+markSVG(pmark(i),false,i)+"</span></span>"
-          + '<span class="body"><span class="n">'+esc(pname(i))+'</span><span class="s">'+s.wins+" of "+s.matches+" matches &middot; "+s.roundsWon+" squares</span></span>"
-          + '<span class="me">'+pmark(i)+"</span></div>";
+        var st=P(i).stats;
+        return '<div class="prow" style="--pc:'+phex(i)+'">'
+          + '<span class="av3" style="background:none;color:'+phex(i)+'">'+markSVG(pmark(i),false,i)+"</span>"
+          + '<span class="body"><span class="h">'+esc(pname(i))+"</span>"
+          +   '<span class="m">'+st.wins+"W &middot; "+st.roundsWon+" rounds</span></span>"
+          + '<span class="done2">'+pmark(i)+"</span></div>";
       }).join("")
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Chat</span>'
-    +   (DB.chat.length?'<button class="act sm" id="clearChat" type="button">Clear</button>':"")+"</div>"
-    +   '<div class="chat"><div class="msgs" id="msgs">'+msgs+"</div>"
-    +   '<div class="composer"><input id="chatIn" type="text" maxlength="240" placeholder="Message as '+esc(pname(DB.me))+'" autocomplete="off">'
-    +     '<button class="send" id="chatSend" type="button" aria-label="Send" disabled>'+I.send+"</button></div></div></div></div>";
-  renderOnlinePlayers();
-  stage.querySelectorAll("[data-be-removed]").forEach(function(b){
-    b.addEventListener("click",function(){ DB.me=+b.dataset.be; save(); sfx.tap(); accent(phex(DB.me)); renderHub(); });
+    + '<button class="act ghost" id="localChat" type="button">'+I.chat+"Chat on this phone</button>"
+    + "</div>";
+
+  document.getElementById("shareMe").addEventListener("click",function(){
+    sfx.tap();
+    if(!NET.user()){ screenSignIn(); return; }
+    if(!me){ screenHandle(false); return; }
+    var url=location.origin+location.pathname+"?add="+encodeURIComponent(me.handle);
+    var b=this;
+    if(navigator.share){ navigator.share({ title:"Add me on Duel Board", text:"@"+me.handle, url:url }).catch(function(){}); return; }
+    if(navigator.clipboard) navigator.clipboard.writeText(url).catch(function(){});
+    buzz(10); b.textContent="Copied";
+    setTimeout(function(){ if(b.isConnected) b.textContent="Share"; },1500);
   });
-  var cc=document.getElementById("clearChat");
-  if(cc) cc.addEventListener("click",function(){ DB.chat=[]; save(); sfx.tap(); renderHub(); });
-  var box=document.getElementById("msgs"); box.scrollTop=box.scrollHeight;
-  var input=document.getElementById("chatIn"), send=document.getElementById("chatSend");
-  function sync(){ send.disabled=!input.value.trim(); }
-  /* append rather than re-render: rebuilding the tab threw away the caret,
-     the keyboard and the scroll position on every single message */
-  function post(){
-    var t=input.value.trim(); if(!t) return;
-    var m={ from:DB.me, text:t.slice(0,240), ts:Date.now() };
-    DB.chat.push(m);
-    if(DB.chat.length>200) DB.chat=DB.chat.slice(-200);
-    save(); sfx.msg(); buzz(8);
-    var empty=box.querySelector(".emptychat"); if(empty) empty.remove();
-    box.insertAdjacentHTML("beforeend",chatBubble(m,DB.me));
-    box.scrollTop=box.scrollHeight;
-    input.value=""; sync(); input.focus({preventScroll:true});
-  }
-  input.addEventListener("input",sync);
-  input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); post(); } });
-  send.addEventListener("click",post);
+  document.getElementById("localChat").addEventListener("click",function(){ sfx.tap(); openChat(); });
+  stage.querySelectorAll("[data-pl]").forEach(function(b){
+    if(b.dataset.pl===plView) b.classList.add("on");
+    b.addEventListener("click",function(){ plView=b.dataset.pl; sfx.tap(); viewPlayers(); });
+  });
+  renderPlBody(signed);
 }
+
+function renderPlBody(signed){
+  var box=document.getElementById("plbody"); if(!box) return;
+  if(!signed){
+    box.innerHTML=plEmpty(NET.user()?"Pick a tag first":"Nothing here yet",
+      NET.user() ? "A tag is how people find you. It takes one tap."
+                 : "Sign in and pick a tag. Then people can find you, and anyone you play turns up in this list.");
+    return;
+  }
+  box.innerHTML='<div class="plist"><span class="qmeta">Loading...</span></div>';
+
+  function wireAdd(){
+    box.querySelectorAll("[data-add]").forEach(function(b){
+      b.addEventListener("click",function(){
+        b.disabled=true; b.textContent="..."; sfx.tap();
+        NET.addFriend(b.dataset.add).then(function(ok){
+          b.outerHTML=ok?'<span class="done2">Added</span>':'<span class="qmeta">Failed</span>';
+          if(ok){ buzz(12); NET.friendIds().then(function(ids){ plKnown=ids; }); }
+        });
+      });
+    });
+    box.querySelectorAll("[data-drop]").forEach(function(b){
+      b.addEventListener("click",function(){
+        b.disabled=true; sfx.tap();
+        NET.dropFriend(b.dataset.drop).then(function(){ renderPlBody(true); });
+      });
+    });
+  }
+
+  NET.friendIds().then(function(ids){
+    plKnown=ids;
+
+    if(plView==="friends"){
+      if(!ids.length){ box.innerHTML=plEmpty("No friends yet","Find someone by their tag, or add anyone from the people you have played."); return; }
+      NET.people(ids).then(function(list){
+        box.innerHTML='<div class="plist">'+list.map(function(pr){
+          return personRow(pr,'<button class="act sm" data-drop="'+pr.id+'" type="button">Remove</button>');
+        }).join("")+"</div>";
+        wireAdd();
+      });
+      return;
+    }
+
+    if(plView==="recent"){
+      NET.recent().then(function(rows){
+        var seen={}, out=[];
+        rows.forEach(function(r){ if(r.opponent&&!seen[r.opponent]){ seen[r.opponent]=1; out.push(r.opponent); } });
+        if(!out.length){ box.innerHTML=plEmpty("Nobody yet","Play someone online and they will show up here. The bot does not count."); return; }
+        NET.people(out.slice(0,15)).then(function(list){
+          box.innerHTML='<div class="plist">'+list.map(function(pr){
+            return personRow(pr, plKnown.indexOf(pr.id)>-1
+              ? '<span class="done2">Friend</span>'
+              : '<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
+          }).join("")+"</div>";
+          wireAdd();
+        });
+      });
+      return;
+    }
+
+    /* find */
+    box.innerHTML='<div class="plsearch">'+I_MAG
+      + '<input id="plq" type="text" placeholder="Search a tag" autocomplete="off" autocapitalize="none" spellcheck="false"></div>'
+      + '<div class="plist" id="plres" style="margin-top:10px"></div>';
+    var res=document.getElementById("plres");
+    res.innerHTML=plEmpty("Find a player","Type at least two characters of their tag.");
+    var q=document.getElementById("plq"), timer=null, asked="";
+    q.addEventListener("input",function(){
+      var v=q.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+      if(v!==q.value) q.value=v;
+      clearTimeout(timer);
+      if(v.length<2){ res.innerHTML=plEmpty("Find a player","Type at least two characters of their tag."); return; }
+      res.innerHTML='<span class="qmeta">Searching...</span>';
+      timer=setTimeout(function(){
+        asked=v;
+        NET.search(v).then(function(list){
+          if(q.value!==asked) return;                 /* they kept typing */
+          if(!list.length){ res.innerHTML=plEmpty("No match","Nobody has a tag starting with that."); return; }
+          res.innerHTML=list.map(function(pr){
+            return personRow(pr, plKnown.indexOf(pr.id)>-1
+              ? '<span class="done2">Friend</span>'
+              : '<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
+          }).join("");
+          wireAdd();
+        });
+      },380);
+    });
+    q.focus({preventScroll:true});
+  });
+}
+
 function timeOf(ts){ var d=new Date(ts),h=d.getHours(),m=d.getMinutes(); return (h<10?"0":"")+h+":"+(m<10?"0":"")+m; }
 /* one bubble, drawn the same way wherever the chat appears */
 function chatBubble(m,mine){
