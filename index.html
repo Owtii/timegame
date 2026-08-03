@@ -353,6 +353,13 @@ button{ font:inherit; }
 .gbtn{ display:flex; align-items:center; justify-content:center; gap:9px; }
 .gbtn svg{ width:16px; height:16px; }
 
+.handlebox{ display:flex; align-items:center; gap:2px; background:var(--panel-2); border:1px solid var(--hair);
+  border-radius:14px; padding:0 14px; transition:border-color .2s; }
+.handlebox:focus-within{ border-color:var(--pc); }
+.handlebox .at{ font-family:var(--mono); font-size:19px; font-weight:700; color:var(--grey-dim); flex:none; }
+.handlebox input{ flex:1 1 auto; min-width:0; background:none; border:0; outline:none; color:var(--text);
+  font-family:var(--mono); font-size:19px; font-weight:700; letter-spacing:-.01em; padding:14px 0; }
+
 .setrow{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0;
   border-bottom:1px solid var(--hair); cursor:pointer; }
 .setrow:last-of-type{ border-bottom:0; padding-bottom:2px; }
@@ -1857,6 +1864,7 @@ function screenSignIn(why){
            : "You can keep playing as a guest. An account saves your coins and cosmetics, and lets you play people who are not sitting next to you.")
      + "</p>"
      + '<div class="foot">'
+     +   (signed&&!p ? '<button class="act hero" id="hPick" type="button">Pick your tag</button>' : "")
      +   (signed
           ? '<button class="act ghost" id="soBtn" type="button">Sign out</button>'
           : '<button class="act hero gbtn" id="gBtn" type="button">'+G_ICON+"Continue with Google</button>"
@@ -1870,11 +1878,74 @@ function screenSignIn(why){
       if(!ok){ g.innerHTML=G_ICON+"Could not reach Google"; g.disabled=false; sfx.nope(); }
     });
   });
+  var hp=document.getElementById("hPick");
+  if(hp) hp.addEventListener("click",function(){ sfx.tap(); screenHandle(false); });
   var so=document.getElementById("soBtn");
   if(so) so.addEventListener("click",function(){ sfx.tap(); NET.signOut().then(function(){ tab="home"; showHub(); }); });
   var l=document.getElementById("laterBtn");
   if(l) l.addEventListener("click",function(){ sfx.tap(); screenSetup(); });
   document.getElementById("backBtn").addEventListener("click",function(){ sfx.tap(); tab="home"; showHub(); });
+}
+
+/* Picking a handle is the one thing an account must do before anything else
+   works: it is how another player finds you. */
+function screenHandle(first){
+  enterGame(); stage.classList.add("scrolls"); accent(phex(DB.me));
+  chromePlain("Your tag");
+  var suggest=(P(DB.me).name||"player").toLowerCase().replace(/[^a-z0-9_]/g,"").slice(0,16);
+  if(suggest.length<3) suggest="";
+
+  show('<div class="screen signin">'
+     + '<div class="hero2">'+I.user+"</div>"
+     + "<h2>Pick your tag</h2>"
+     + "<p>This is how people find you and add you. Letters, numbers and underscores, 3 to 16 characters. You cannot change it later.</p>"
+     + '<div class="foot">'
+     +   '<div class="handlebox"><span class="at">@</span>'
+     +     '<input id="hIn" type="text" maxlength="16" autocomplete="off" autocapitalize="none" spellcheck="false" value="'+esc(suggest)+'"></div>'
+     +   '<span class="qmeta" id="hMsg">&nbsp;</span>'
+     +   '<button class="act hero" id="hGo" type="button" disabled>Claim it</button>'
+     +   (first?"":'<button class="act ghost" id="hBack" type="button">Back</button>')+"</div></div>");
+
+  var inp=document.getElementById("hIn"), msg=document.getElementById("hMsg"), go=document.getElementById("hGo");
+  var checking=null, lastAsked="";
+
+  function shape(v){
+    if(!v) return "Pick something";
+    if(v.length<3) return "At least 3 characters";
+    if(!/^[a-z0-9_]+$/.test(v)) return "Letters, numbers and _ only";
+    return null;
+  }
+  function paint(){
+    var v=inp.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+    if(v!==inp.value) inp.value=v;
+    var bad=shape(v);
+    go.disabled=true;
+    if(bad){ msg.textContent=bad; msg.className="qmeta"; return; }
+    msg.textContent="Checking..."; msg.className="qmeta";
+    clearTimeout(checking);
+    checking=setTimeout(function(){
+      lastAsked=v;
+      NET.handleFree(v).then(function(free){
+        if(inp.value!==lastAsked) return;                 /* they kept typing */
+        if(free===null){ msg.textContent="Cannot reach the server"; msg.className="qmeta"; return; }
+        if(free){ msg.textContent="@"+v+" is free"; msg.className="qmeta done"; go.disabled=false; }
+        else { msg.textContent="@"+v+" is taken"; msg.className="qmeta"; }
+      });
+    },420);
+  }
+  inp.addEventListener("input",paint);
+  go.addEventListener("click",function(){
+    var v=inp.value; go.disabled=true; go.textContent="Claiming...";
+    NET.claim(v,DB.me).then(function(r){
+      if(r===true){ sfx.buy(); buzz([14,30,14]); tab="home"; showHub(); return; }
+      go.textContent="Claim it"; go.disabled=false; sfx.nope();
+      msg.textContent=(r&&r.code==="23505")?"Someone just took that one":"Could not save that";
+      msg.className="qmeta";
+    });
+  });
+  var hb=document.getElementById("hBack");
+  if(hb) hb.addEventListener("click",function(){ sfx.tap(); tab="home"; showHub(); });
+  paint();
 }
 
 function viewHome(){
@@ -3928,6 +3999,9 @@ showHub();
    settles, so a slow or missing network never holds the game up - it just
    redraws the account strip once it knows who you are. */
 NET.boot().then(function(){
+  /* back from Google without a tag yet: that is the one thing to settle before
+     the hub is any use, since it is how anyone finds you */
+  if(NET.signedIn()&&!NET.profile()){ screenHandle(true); return; }
   if(NET.signedIn()||NET.isGuest()){
     if(tab==="home"&&document.getElementById("play")) renderHub();
   }
