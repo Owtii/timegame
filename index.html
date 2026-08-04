@@ -329,6 +329,26 @@ button{ font:inherit; }
   letter-spacing:.06em; color:var(--grey-dim); text-transform:uppercase; }
 .twinnote{ margin:0; font-size:11px; line-height:1.45; color:var(--void); }
 
+/* ---------- daily reward ---------- */
+.daily{ display:flex; flex-direction:column; gap:10px; padding:13px 14px; flex:none;
+  border:1px solid var(--hair); border-radius:17px; background:var(--panel); }
+.daily.ready{ border-color:var(--pc); background:linear-gradient(150deg,color-mix(in srgb,var(--pc) 14%,var(--panel)),var(--panel) 70%); }
+.daily .dhead{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.daily .t1{ font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:-.01em; }
+.daily .t2{ font-family:var(--mono); font-size:11px; color:var(--grey-dim); }
+.daily.ready .t2{ color:var(--pc); }
+.dtrack{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+.dday{ display:grid; place-items:center; height:34px; border-radius:9px; border:1px solid var(--hair);
+  background:var(--panel-2); transition:border-color .2s, background .2s; }
+.dday i{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:10.5px; font-weight:700;
+  font-style:normal; color:var(--grey-dim); }
+.dday.done{ background:color-mix(in srgb,var(--good) 20%,transparent); border-color:color-mix(in srgb,var(--good) 45%,transparent); }
+.dday.done i{ color:var(--good); }
+.dday.now{ border-color:var(--pc); background:color-mix(in srgb,var(--pc) 20%,transparent); animation:dayPulse 1.9s ease-in-out infinite; }
+.dday.now i{ color:var(--pc); }
+@keyframes dayPulse{ 50%{ box-shadow:0 0 0 4px color-mix(in srgb,var(--pc) 0%,transparent) } 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb,var(--pc) 30%,transparent) } }
+.daily .act{ padding:12px; font-size:11px; }
+
 /* ---------- account ---------- */
 .acct{ display:flex; align-items:center; gap:11px; padding:11px 13px; border:1px solid var(--hair);
   border-radius:15px; background:var(--panel); flex:none; }
@@ -1292,6 +1312,27 @@ function REDEEM(code){
   return true;
 }
 
+/* ---------- daily reward ----------
+   Seven rising days, then it loops but the streak keeps counting. Miss more
+   than a day and it starts over, which is the only thing that makes a streak
+   worth anything. */
+var DAILY=[10,15,20,30,40,55,80];
+function dayNum(d){ d=d||new Date(); return Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)+d.getFullYear()*400; }
+function dailyState(){
+  var s=DB.daily||{last:0,streak:0}, today=dayNum();
+  if(s.last===today) return { ready:false, streak:s.streak, next:DAILY[s.streak%7] };
+  var streak=(s.last===today-1)?s.streak:0;      /* one day's grace, no more */
+  return { ready:true, streak:streak, next:DAILY[streak%7] };
+}
+function claimDaily(){
+  var st=dailyState();
+  if(!st.ready) return 0;
+  var amount=st.next;
+  DB.daily={ last:dayNum(), streak:st.streak+1 };
+  P(DB.me).coins+=amount; save();
+  return amount;
+}
+
 function guestLeft(){ return Math.max(0,GUEST_LIMIT-(DB.guestGames||0)); }
 /* an invite always gets you in, account or not - a guest should never be the
    reason a friend cannot start the game they were invited to. It survives the
@@ -1312,15 +1353,27 @@ var SEQ_ITEMS=[
 ];
 var SEQ_N=4, SEQ_MAX=8;
 
+/* Every kit has an away strip. Football solved this a century ago: when both
+   sides turn up in the same colour, one changes into something plainly
+   different - not a shade of the same thing. `alt` is that strip, and it is
+   picked to sit far from `hex` in hue, not just in brightness. */
 var COLORS=[
-  {id:"flare",name:"Flare",hex:"#FF6154",price:0},   {id:"arc",name:"Arc",hex:"#8B7BFF",price:0},
-  {id:"signal",name:"Signal",hex:"#FFB020",price:60},{id:"mint",name:"Mint",hex:"#2ED3A0",price:60},
-  {id:"ice",name:"Ice",hex:"#4CC9F0",price:90},      {id:"rose",name:"Rose",hex:"#FF5FA2",price:90},
-  {id:"lime",name:"Lime",hex:"#B4E33D",price:140},   {id:"ember",name:"Ember",hex:"#FF3B30",price:140},
-  {id:"sky",  name:"Sky",  hex:"#5AA9FF",price:170}, {id:"plum",name:"Plum",hex:"#C264F0",price:170},
-  {id:"sand", name:"Sand", hex:"#E8C77A",price:210}, {id:"jade",name:"Jade",hex:"#19C79B",price:210},
-  {id:"coral",name:"Coral",hex:"#FF8A5B",price:260}, {id:"steel",name:"Steel",hex:"#9FB3C8",price:260},
-  {id:"neon", name:"Neon", hex:"#39F5C0",price:340}, {id:"blood",name:"Blood",hex:"#C4213A",price:340}
+  {id:"flare",name:"Red",   hex:"#E23B2E",alt:"#FFC93C",price:0},
+  {id:"arc",  name:"Blue",  hex:"#2D6CFF",alt:"#14D6C4",price:0},
+  {id:"signal",name:"Signal",hex:"#FFB020",alt:"#7A5BFF",price:60},
+  {id:"mint", name:"Mint",  hex:"#2ED3A0",alt:"#FF5FA2",price:60},
+  {id:"ice",  name:"Ice",   hex:"#4CC9F0",alt:"#FF8A2B",price:90},
+  {id:"rose", name:"Rose",  hex:"#FF5FA2",alt:"#5CE08A",price:90},
+  {id:"lime", name:"Lime",  hex:"#B4E33D",alt:"#A455FF",price:140},
+  {id:"ember",name:"Ember", hex:"#FF3B30",alt:"#38C7FF",price:140},
+  {id:"sky",  name:"Sky",   hex:"#5AA9FF",alt:"#FFCE47",price:170},
+  {id:"plum", name:"Plum",  hex:"#C264F0",alt:"#9BE84A",price:170},
+  {id:"sand", name:"Sand",  hex:"#E8C77A",alt:"#4E7BFF",price:210},
+  {id:"jade", name:"Jade",  hex:"#19C79B",alt:"#FF6B8A",price:210},
+  {id:"coral",name:"Coral", hex:"#FF8A5B",alt:"#3FD0E8",price:260},
+  {id:"steel",name:"Steel", hex:"#9FB3C8",alt:"#E0603A",price:260},
+  {id:"neon", name:"Neon",  hex:"#39F5C0",alt:"#F0459B",price:340},
+  {id:"blood",name:"Blood", hex:"#C4213A",alt:"#26D6C0",price:340}
 ];
 
 /* the design carried inside the piece, so two players can share a colour */
@@ -1400,6 +1453,7 @@ function load(){
   if(DB.lastHome!==0&&DB.lastHome!==1) DB.lastHome=0;
   if(typeof DB.guestGames!=="number"||!isFinite(DB.guestGames)) DB.guestGames=0;
   DB.dev=!!DB.dev;
+  if(!DB.daily||typeof DB.daily.last!=="number") DB.daily={ last:0, streak:0 };
   if(!Array.isArray(DB.chat)) DB.chat=[];
   if(!Array.isArray(DB.series)) DB.series=[0,0];
   if(!Array.isArray(DB.history)) DB.history=[];
@@ -1422,11 +1476,16 @@ function P(i){ return DB.players[i]; }
 function isBot(i){ return G.vsBot&&i===G.bot; }
 function pname(i){ return isBot(i)?"Bot":P(i).name; }
 function pmark(i){ return i===0?"X":"O"; }
-function phexRaw(i){ var c=COLORS.filter(function(c){return c.id===P(i).color;})[0]; return c?c.hex:COLORS[i].hex; }
-/* Two players are allowed to wear the same colour now. When they do, the second
-   one is shifted and ringed so the pieces still read apart at a glance. */
+function colourOf(i){ return COLORS.filter(function(c){return c.id===P(i).color;})[0]||COLORS[i]; }
+function phexRaw(i){ return colourOf(i).hex; }
+/* Both players may wear the same colour. When they do the second changes into
+   his away strip - a different colour, not a darker one, because a shade of
+   the same red still reads as that red at a glance. */
 function twinned(){ return phexRaw(0)===phexRaw(1); }
-function phex(i){ return (i===1&&twinned()) ? shade(phexRaw(i),-0.30) : phexRaw(i); }
+function phex(i){
+  var c=colourOf(i);
+  return (i===1&&twinned()) ? (c.alt||shade(c.hex,-0.30)) : c.hex;
+}
 function shade(hex,amt){
   var n=parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255;
   var f=function(v){ return Math.max(0,Math.min(255,Math.round(amt<0 ? v*(1+amt) : v+(255-v)*amt))); };
@@ -2113,6 +2172,19 @@ function screenHandle(first){
   paint();
 }
 
+function dailyHTML(){
+  var st=dailyState();
+  var dots=DAILY.map(function(v,i){
+    var done=(st.streak%7)>i, now=(st.streak%7)===i&&st.ready;
+    return '<span class="dday'+(done?" done":"")+(now?" now":"")+'"><i>'+v+"</i></span>";
+  }).join("");
+  return '<div class="daily'+(st.ready?" ready":"")+'" style="--pc:'+phex(DB.me)+'">'
+    + '<div class="dhead"><span class="t1">Daily reward</span>'
+    +   '<span class="t2">'+(st.ready?("Day "+(st.streak+1)+" &middot; +"+st.next):"Come back tomorrow")+"</span></div>"
+    + '<div class="dtrack">'+dots+"</div>"
+    + (st.ready?'<button class="act hero" id="dailyGo" type="button">Claim '+st.next+"</button>":"")+"</div>";
+}
+
 function viewHome(){
   var s=P(DB.me).stats;
   stage.innerHTML='<div class="view">'
@@ -2141,10 +2213,16 @@ function viewHome(){
             }).join("")
           + "</div>"
         : "")
+    + dailyHTML()
     + acctStripHTML()
     + '<div class="foot"><button class="act hero" id="play" type="button">New match</button>'
     +   (quickLabel()?'<button class="act ghost" id="quick" type="button">'+I.play+esc(quickLabel())+"</button>":"")
     + "</div></div>";
+  var dg=document.getElementById("dailyGo");
+  if(dg) dg.addEventListener("click",function(){
+    var got=claimDaily();
+    if(got){ toast(got,"Daily reward"); buzz([14,30,14]); renderHub(); }
+  });
   document.getElementById("play").addEventListener("click",function(){
     sfx.warm(); sfx.tap();
     if(needsAccount()){ screenSignIn(); return; }
