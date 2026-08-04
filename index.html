@@ -392,13 +392,26 @@ button{ font:inherit; }
 .mecard .sub{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:var(--grey); }
 .mecard .act{ width:auto; flex:none; padding:10px 14px; font-size:10px; border-radius:12px; }
 
-.plseg{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:3px; border-radius:14px;
-  background:var(--panel-2); border:1px solid var(--hair); flex:none; }
-.plseg button{ appearance:none; border:0; background:transparent; color:var(--grey-dim); border-radius:11px;
-  padding:10px 4px; cursor:pointer; font-family:var(--mono); font-size:10px; font-weight:600;
-  letter-spacing:.12em; text-transform:uppercase; transition:background .2s, color .2s; position:relative; }
-.plseg button.on{ background:var(--panel); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.4); }
-.plseg .cnt{ font-size:9px; opacity:.7; margin-left:3px; }
+/* ---------- profile header ---------- */
+.profhead{ display:flex; align-items:center; gap:14px; padding:16px; flex:none; position:relative;
+  border:1px solid var(--hair); border-radius:20px;
+  background:linear-gradient(140deg,color-mix(in srgb,var(--pc) 20%,var(--panel)) 0%,var(--panel) 64%); }
+.profhead .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.profhead .nm{ font-family:var(--mono); font-size:17px; font-weight:700; letter-spacing:-.02em;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.profhead .tg{ font-family:var(--mono); font-size:11.5px; color:var(--grey); }
+.profhead .lvl{ display:flex; align-items:center; gap:7px; margin-top:5px; }
+.profhead .lv{ font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--pc); flex:none; }
+.profhead .bar{ flex:1 1 auto; height:5px; border-radius:5px; background:rgba(255,255,255,.1); overflow:hidden; min-width:40px; }
+.profhead .bar i{ display:block; height:100%; background:var(--pc); border-radius:5px; }
+.profhead .lx{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:9.5px; color:var(--grey-dim); flex:none; }
+.profhead .coinpill{ position:absolute; top:14px; right:14px; }
+
+.plsec{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.plsec:first-child{ margin-top:4px; }
+.plsechead{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.plcount{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:10px; font-weight:700;
+  color:var(--grey-dim); background:var(--panel-2); border:1px solid var(--hair); border-radius:999px; padding:2px 8px; }
 
 .plist{ display:flex; flex-direction:column; gap:7px; }
 .prow{ display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid var(--hair);
@@ -1266,6 +1279,16 @@ var NET=(function(){
         if(!client||!user) return false;
         return client.from("friends").delete().eq("user_id",user.id).eq("friend_id",id)
           .then(function(r){ return !r.error; }).catch(function(){ return false; });
+      });
+    },
+    /* people who turned up lately - somebody to add when your list is empty */
+    newest:function(){
+      return boot().then(function(){
+        if(!client) return [];
+        return client.from("profiles").select("id,handle,name,colour,wins,losses,rounds_won")
+          .order("created_at",{ascending:false}).limit(12)
+          .then(function(r){ return (r.data||[]).filter(function(x){ return !user||x.id!==user.id; }); })
+          .catch(function(){ return []; });
       });
     },
     recent:function(){
@@ -2451,10 +2474,11 @@ function viewPlayers(){
          + '<span class="txt"><span class="tg">No tag yet</span>'
          +   '<span class="sub">People need one to find you</span></span>'
          + '<button class="act hero" id="shareMe" type="button">'+(NET.user()?"Pick a tag":"Sign in")+"</button></div>")
-    + '<div class="plseg">'
-    +   '<button data-pl="friends" type="button">Friends</button>'
-    +   '<button data-pl="recent" type="button">Played</button>'
-    +   '<button data-pl="find" type="button">Find</button></div>'
+    + (signed
+       ? '<div class="plsearch">'+I_MAG
+         + '<input id="plq" type="text" placeholder="Add someone by their tag" autocomplete="off" autocapitalize="none" spellcheck="false"></div>'
+         + '<div id="plres"></div>'
+       : "")
     + '<div id="plbody"></div>'
     + '<div class="headline" style="margin-top:4px"><span class="lbl">On this phone</span></div>'
     + [0,1].map(function(i){
@@ -2480,100 +2504,101 @@ function viewPlayers(){
     setTimeout(function(){ if(b.isConnected) b.textContent="Share"; },1500);
   });
   document.getElementById("localChat").addEventListener("click",function(){ sfx.tap(); openChat(); });
-  stage.querySelectorAll("[data-pl]").forEach(function(b){
-    if(b.dataset.pl===plView) b.classList.add("on");
-    b.addEventListener("click",function(){ plView=b.dataset.pl; sfx.tap(); viewPlayers(); });
-  });
+  if(signed) wireSearch();
   renderPlBody(signed);
 }
 
+function actionFor(pr){
+  return plKnown.indexOf(pr.id)>-1
+    ? '<button class="act sm" data-drop="'+pr.id+'" type="button">Remove</button>'
+    : '<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>';
+}
+function wirePeople(root){
+  root.querySelectorAll("[data-add]").forEach(function(b){
+    b.addEventListener("click",function(){
+      b.disabled=true; b.textContent="..."; sfx.tap();
+      NET.addFriend(b.dataset.add).then(function(ok){
+        if(ok){ buzz(12); renderPlBody(true); }
+        else { b.disabled=false; b.textContent="Add"; sfx.nope(); }
+      });
+    });
+  });
+  root.querySelectorAll("[data-drop]").forEach(function(b){
+    b.addEventListener("click",function(){
+      b.disabled=true; sfx.tap();
+      NET.dropFriend(b.dataset.drop).then(function(){ renderPlBody(true); });
+    });
+  });
+}
+function plSection(title,count,body){
+  return '<div class="plsec"><div class="plsechead"><span class="lbl">'+esc(title)+"</span>"
+    + (count!==null?'<span class="plcount">'+count+"</span>":"")+"</div>"+body+"</div>";
+}
+
+/* One page, in the order you actually want it: the people you keep, then the
+   people you just played, then everyone else who turned up recently. */
 function renderPlBody(signed){
   var box=document.getElementById("plbody"); if(!box) return;
   if(!signed){
     box.innerHTML=plEmpty(NET.user()?"Pick a tag first":"Nothing here yet",
       NET.user() ? "A tag is how people find you. It takes one tap."
-                 : "Sign in and pick a tag. Then people can find you, and anyone you play turns up in this list.");
+                 : "Sign in and pick a tag. Then people can find you, and anyone you play turns up here.");
     return;
   }
-  box.innerHTML='<div class="plist"><span class="qmeta">Loading...</span></div>';
-
-  function wireAdd(){
-    box.querySelectorAll("[data-add]").forEach(function(b){
-      b.addEventListener("click",function(){
-        b.disabled=true; b.textContent="..."; sfx.tap();
-        NET.addFriend(b.dataset.add).then(function(ok){
-          b.outerHTML=ok?'<span class="done2">Added</span>':'<span class="qmeta">Failed</span>';
-          if(ok){ buzz(12); NET.friendIds().then(function(ids){ plKnown=ids; }); }
-        });
-      });
-    });
-    box.querySelectorAll("[data-drop]").forEach(function(b){
-      b.addEventListener("click",function(){
-        b.disabled=true; sfx.tap();
-        NET.dropFriend(b.dataset.drop).then(function(){ renderPlBody(true); });
-      });
-    });
-  }
+  box.innerHTML='<span class="qmeta">Loading...</span>';
 
   NET.friendIds().then(function(ids){
     plKnown=ids;
+    Promise.all([ NET.people(ids), NET.recent(), NET.newest() ]).then(function(r){
+      var friends=r[0], rows=r[1], fresh=r[2];
+      var seen={}, oppIds=[];
+      rows.forEach(function(x){ if(x.opponent&&!seen[x.opponent]){ seen[x.opponent]=1; oppIds.push(x.opponent); } });
 
-    if(plView==="friends"){
-      if(!ids.length){ box.innerHTML=plEmpty("No friends yet","Find someone by their tag, or add anyone from the people you have played."); return; }
-      NET.people(ids).then(function(list){
-        box.innerHTML='<div class="plist">'+list.map(function(pr){
-          return personRow(pr,'<button class="act sm" data-drop="'+pr.id+'" type="button">Remove</button>');
-        }).join("")+"</div>";
-        wireAdd();
+      NET.people(oppIds.slice(0,12)).then(function(opps){
+        var mine={}; ids.forEach(function(x){ mine[x]=1; });
+        var html="";
+
+        html+=plSection("Friends",friends.length,
+          friends.length
+            ? '<div class="plist">'+friends.map(function(pr){ return personRow(pr,actionFor(pr)); }).join("")+"</div>"
+            : plEmpty("Nobody yet","Search a tag above, or add someone you have played."));
+
+        var newOpps=opps.filter(function(pr){ return !mine[pr.id]; });
+        if(opps.length) html+=plSection("Recently played",opps.length,
+          '<div class="plist">'+opps.map(function(pr){ return personRow(pr,actionFor(pr)); }).join("")+"</div>");
+
+        var others=(fresh||[]).filter(function(pr){ return !mine[pr.id]&&!seen[pr.id]; }).slice(0,6);
+        if(others.length) html+=plSection("New here",null,
+          '<div class="plist">'+others.map(function(pr){ return personRow(pr,actionFor(pr)); }).join("")+"</div>");
+
+        box.innerHTML=html;
+        wirePeople(box);
       });
-      return;
-    }
-
-    if(plView==="recent"){
-      NET.recent().then(function(rows){
-        var seen={}, out=[];
-        rows.forEach(function(r){ if(r.opponent&&!seen[r.opponent]){ seen[r.opponent]=1; out.push(r.opponent); } });
-        if(!out.length){ box.innerHTML=plEmpty("Nobody yet","Play someone online and they will show up here. The bot does not count."); return; }
-        NET.people(out.slice(0,15)).then(function(list){
-          box.innerHTML='<div class="plist">'+list.map(function(pr){
-            return personRow(pr, plKnown.indexOf(pr.id)>-1
-              ? '<span class="done2">Friend</span>'
-              : '<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
-          }).join("")+"</div>";
-          wireAdd();
-        });
-      });
-      return;
-    }
-
-    /* find */
-    box.innerHTML='<div class="plsearch">'+I_MAG
-      + '<input id="plq" type="text" placeholder="Search a tag" autocomplete="off" autocapitalize="none" spellcheck="false"></div>'
-      + '<div class="plist" id="plres" style="margin-top:10px"></div>';
-    var res=document.getElementById("plres");
-    res.innerHTML=plEmpty("Find a player","Type at least two characters of their tag.");
-    var q=document.getElementById("plq"), timer=null, asked="";
-    q.addEventListener("input",function(){
-      var v=q.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
-      if(v!==q.value) q.value=v;
-      clearTimeout(timer);
-      if(v.length<2){ res.innerHTML=plEmpty("Find a player","Type at least two characters of their tag."); return; }
-      res.innerHTML='<span class="qmeta">Searching...</span>';
-      timer=setTimeout(function(){
-        asked=v;
-        NET.search(v).then(function(list){
-          if(q.value!==asked) return;                 /* they kept typing */
-          if(!list.length){ res.innerHTML=plEmpty("No match","Nobody has a tag starting with that."); return; }
-          res.innerHTML=list.map(function(pr){
-            return personRow(pr, plKnown.indexOf(pr.id)>-1
-              ? '<span class="done2">Friend</span>'
-              : '<button class="act sm accent" data-add="'+pr.id+'" type="button">Add</button>');
-          }).join("");
-          wireAdd();
-        });
-      },380);
     });
-    q.focus({preventScroll:true});
+  });
+}
+
+/* the search sits above the lists and writes into its own slot */
+function wireSearch(){
+  var q=document.getElementById("plq"), res=document.getElementById("plres");
+  if(!q||!res) return;
+  var timer=null, asked="";
+  q.addEventListener("input",function(){
+    var v=q.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+    if(v!==q.value) q.value=v;
+    clearTimeout(timer);
+    if(v.length<2){ res.innerHTML=""; return; }
+    res.innerHTML='<span class="qmeta">Searching...</span>';
+    timer=setTimeout(function(){
+      asked=v;
+      NET.search(v).then(function(list){
+        if(q.value!==asked) return;                 /* they kept typing */
+        if(!list.length){ res.innerHTML='<span class="qmeta">Nobody with a tag starting with that.</span>'; return; }
+        res.innerHTML='<div class="plist" style="margin-top:9px">'
+          + list.map(function(pr){ return personRow(pr,actionFor(pr)); }).join("")+"</div>";
+        wirePeople(res);
+      });
+    },380);
   });
 }
 
@@ -2585,15 +2610,31 @@ function chatBubble(m,mine){
     + esc(m.text)+"</div>";
 }
 
+/* rounds won is the one number every game here produces, so it is what a level
+   is built on - it cannot be farmed by picking the shortest game */
+function levelOf(p){
+  var r=p.stats.roundsWon||0, lvl=1, need=5, spent=0;
+  while(r-spent>=need){ spent+=need; lvl++; need=Math.round(need*1.35); }
+  return { lvl:lvl, into:r-spent, need:need };
+}
+
 function viewProfile(){
-  var me=DB.me, p=P(me), s=p.stats;
+  var me=DB.me, p=P(me), s=p.stats, L=levelOf(p), acct=NET.profile();
+  var played=s.matches||0, rate=played?Math.round(s.wins/played*100):0;
   stage.innerHTML='<div class="view">'
-    + '<div class="headline"><span class="lbl">Playing as '+pmark(me)+'</span><span class="big">'+esc(pname(me))+"</span></div>"
-    + '<div class="panel"><div class="panel-h"><span class="lbl">Balance</span>'+coinTag(p.coins)+"</div>"
+    + '<div class="profhead" style="--pc:'+phex(me)+'">'+avatarHTML(me,"big")
+    +   '<div class="txt"><span class="nm">'+esc(pname(me))+"</span>"
+    +     '<span class="tg">'+(acct?"@"+esc(acct.handle):"Guest &middot; no tag yet")+"</span>"
+    +     '<div class="lvl"><span class="lv">Level '+L.lvl+"</span>"
+    +       '<span class="bar"><i style="width:'+Math.round(L.into/L.need*100)+'%"></i></span>'
+    +       '<span class="lx">'+L.into+"/"+L.need+"</span></div></div>"
+    +   coinTag(p.coins)+"</div>"
+    + '<div class="panel"><div class="panel-h"><span class="lbl">Record</span>'
+    +   '<span class="qmeta">'+rate+"% won</span></div>"
     +   '<div class="statgrid">'
     +     '<div class="stat"><span class="v">'+s.matches+'</span><span class="k">Matches</span></div>'
     +     '<div class="stat"><span class="v">'+s.wins+'</span><span class="k">Match wins</span></div>'
-    +     '<div class="stat"><span class="v">'+s.roundsWon+'</span><span class="k">Squares</span></div></div>'
+    +     '<div class="stat"><span class="v">'+s.roundsWon+'</span><span class="k">Rounds</span></div></div>'
     +   '<div class="statgrid">'
     +     '<div class="stat"><span class="v">'+(s.best===null?"&mdash;":fx2(s.best)+"s")+'</span><span class="k">Best miss</span></div>'
     +     '<div class="stat"><span class="v">'+(s.bestGuess===null?"&mdash;":s.bestGuess)+'</span><span class="k">Fewest guesses</span></div>'
