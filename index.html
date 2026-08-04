@@ -101,7 +101,9 @@ button{ font:inherit; }
 #stage.scrolls{ overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
 #stage.scrolls::-webkit-scrollbar{ display:none; }
 
-.screen{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; animation:screenIn .38s var(--ease) both; }
+/* min-width:0 or a wide child (the case strip) prises the screen open and
+   everything else slides off the side with it */
+.screen{ flex:1 1 auto; min-height:0; min-width:0; display:flex; flex-direction:column; animation:screenIn .38s var(--ease) both; }
 @keyframes screenIn{ from{ opacity:0; transform:translateY(10px); } }
 .view{ flex:1 1 auto; display:flex; flex-direction:column; gap:14px; padding:4px 0 8px; animation:screenIn .3s var(--ease) both; }
 
@@ -489,6 +491,50 @@ button{ font:inherit; }
   color:var(--grey-dim); margin-top:4px; }
 .gcard .flag{ position:absolute; top:11px; right:11px; font-family:var(--mono); font-size:8px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--pc); border:1px solid currentColor; border-radius:999px; padding:2px 6px; }
+
+/* ---------- cases ---------- */
+.skin{ display:block; border-radius:50%; box-shadow:inset 0 2px 4px rgba(255,255,255,.25), inset 0 -3px 6px rgba(0,0,0,.35); }
+.skin.sm{ width:26px; height:26px; }
+.skin.md{ width:40px; height:40px; }
+.skin.big{ width:84px; height:84px; }
+.casebox{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; padding:16px; flex:none;
+  border:1px solid var(--hair); border-radius:20px; background:var(--panel);
+  background-image:radial-gradient(60% 80% at 50% 0%, rgba(255,255,255,.05), transparent 70%); }
+.odds{ display:flex; flex-direction:column; gap:6px; }
+.oddrow{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 11px;
+  border:1px solid var(--hair); border-left:3px solid var(--rt); border-radius:10px; background:var(--panel-2); }
+.oddrow .on{ font-family:var(--mono); font-size:11px; font-weight:700; color:var(--rt); }
+.oddrow .ov{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:var(--grey-dim); }
+
+/* A flex item will not shrink below its content unless told to, and the track
+   inside is fifty tickets wide - without min-width:0 it prises the whole
+   column open and everything below slides off screen. */
+.rollwrap{ position:relative; overflow:hidden; flex:none; width:100%; min-width:0;
+  padding-block:16px; border-radius:18px; border:1px solid var(--hair); background:var(--panel-2);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent); }
+.rollmark{ position:absolute; left:50%; top:0; bottom:0; width:3px; margin-left:-1.5px; z-index:3;
+  background:var(--coin); box-shadow:0 0 16px var(--coin); border-radius:3px; }
+.rollmark::before,.rollmark::after{ content:''; position:absolute; left:50%; transform:translateX(-50%);
+  border:6px solid transparent; }
+.rollmark::before{ top:-1px; border-top-color:var(--coin); }
+.rollmark::after{ bottom:-1px; border-bottom-color:var(--coin); }
+.rolltrack{ display:flex; gap:8px; will-change:transform; }
+.ticket{ flex:none; width:86px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:12px 6px; border:1px solid var(--hair); border-bottom:3px solid var(--rt); border-radius:13px;
+  background:var(--panel);
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--rt) 14%,transparent),transparent 60%); }
+.ticket .tn{ font-family:var(--mono); font-size:10px; font-weight:700; }
+.ticket .tr{ font-family:var(--mono); font-size:8px; letter-spacing:.11em; text-transform:uppercase; color:var(--rt); }
+
+.rollout{ display:flex; flex-direction:column; gap:14px; width:100%; min-width:0; }
+.casescreen{ justify-content:center; gap:16px; }
+.prize{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:22px 16px;
+  border:1px solid var(--rt); border-radius:20px; animation:screenIn .4s var(--ease) both;
+  background:radial-gradient(70% 70% at 50% 0%, color-mix(in srgb,var(--rt) 22%,transparent), transparent 72%); }
+.prize .pr{ font-family:var(--mono); font-size:9.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--rt); margin-top:4px; }
+.prize .pn{ font-family:var(--mono); font-size:20px; font-weight:700; letter-spacing:-.02em; }
+.prize .pd{ font-size:12px; color:var(--grey); text-align:center; }
 
 .handlebox{ display:flex; align-items:center; gap:2px; background:var(--panel-2); border:1px solid var(--hair);
   border-radius:14px; padding:0 14px; transition:border-color .2s; }
@@ -1413,6 +1459,54 @@ var COLORS=[
   {id:"blood",name:"Blood", hex:"#C4213A",alt:"#26D6C0",price:340}
 ];
 
+/* ---------- cases ----------
+   Gradients cannot be bought outright. They come out of a case, and the odds
+   are stated on the case rather than hidden, because a rate you cannot see is
+   just a number somebody made up. */
+var RARITY={
+  common:   { name:"Common",    tint:"#8A8FA0", odds:58 },
+  uncommon: { name:"Uncommon",  tint:"#4CC9F0", odds:26 },
+  rare:     { name:"Rare",      tint:"#8B7BFF", odds:12 },
+  epic:     { name:"Epic",      tint:"#F05CD6", odds:3.4 },
+  legendary:{ name:"Legendary", tint:"#E8B44A", odds:0.6 }
+};
+var RARITY_ORDER=["common","uncommon","rare","epic","legendary"];
+
+/* every one of these is a gradient, and none of them has a price */
+var PREMIUM=[
+  {id:"dusk",   name:"Dusk",     hex:"#FF7A59", grad:["#FF9A5B","#E7455C"], rarity:"common"},
+  {id:"moss",   name:"Moss",     hex:"#63C77F", grad:["#8FE08A","#2E9B6B"], rarity:"common"},
+  {id:"slateb", name:"Slate",    hex:"#8FA4BF", grad:["#B6C6DA","#5E7793"], rarity:"common"},
+  {id:"clay",   name:"Clay",     hex:"#D08A63", grad:["#E8AE7E","#A75F42"], rarity:"common"},
+  {id:"tide",   name:"Tide",     hex:"#3FBEE0", grad:["#67E4F0","#1E7FC2"], rarity:"uncommon"},
+  {id:"orchid", name:"Orchid",   hex:"#C46BE8", grad:["#E39BFF","#8A3FD1"], rarity:"uncommon"},
+  {id:"amberf", name:"Amberfall",hex:"#F0A93C", grad:["#FFD36B","#E0741F"], rarity:"uncommon"},
+  {id:"frostb", name:"Frostbite",hex:"#7FD8FF", grad:["#CFF3FF","#3E8FE0"], rarity:"rare"},
+  {id:"venom",  name:"Venom",    hex:"#8FE33D", grad:["#CBFF6B","#3FA02B"], rarity:"rare"},
+  {id:"magma",  name:"Magma",    hex:"#FF6A3D", grad:["#FFD24A","#E02020"], rarity:"rare"},
+  {id:"nebula", name:"Nebula",   hex:"#A46BFF", grad:["#6BE8FF","#B44BFF","#FF5FA2"], rarity:"epic"},
+  {id:"mirage", name:"Mirage",   hex:"#3FE0C0", grad:["#FFE45E","#3FE0C0","#5B8CFF"], rarity:"epic"},
+  {id:"aurora", name:"Aurora",   hex:"#5CF0C0", grad:["#B6FF7A","#3FE8D6","#8A6BFF"], rarity:"legendary"},
+  {id:"solar",  name:"Solar",    hex:"#FFC93C", grad:["#FFF2A8","#FFB020","#FF4D2E"], rarity:"legendary"}
+];
+var CASE_COST=220, DUPE_BACK={ common:25, uncommon:45, rare:90, epic:200, legendary:450 };
+
+function premiumById(id){ return PREMIUM.filter(function(x){ return x.id===id; })[0]||null; }
+function rollRarity(){
+  var r=Math.random()*100, acc=0;
+  for(var i=0;i<RARITY_ORDER.length;i++){
+    acc+=RARITY[RARITY_ORDER[i]].odds;
+    if(r<acc) return RARITY_ORDER[i];
+  }
+  return "common";
+}
+function rollCase(){
+  var tier=rollRarity();
+  var pool=PREMIUM.filter(function(x){ return x.rarity===tier; });
+  if(!pool.length) pool=PREMIUM.filter(function(x){ return x.rarity==="common"; });
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
 /* the design carried inside the piece, so two players can share a colour */
 var PATTERNS=[
   {id:"solid",name:"Solid",  price:0},   {id:"ring", name:"Ring",  price:45},
@@ -1500,7 +1594,7 @@ function today(){ var d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+
 
 function freshPlayer(i){
   return { name:"Player "+(i+1), color:COLORS[i].id, pattern:"solid", terrain:"default", coins:0,
-           owned:[COLORS[0].id,COLORS[1].id], ownedPat:["solid"], ownedTer:["default"],
+           owned:[COLORS[0].id,COLORS[1].id], ownedPat:["solid"], ownedTer:["default"], ownedPrem:[],
            stats:{ matches:0, wins:0, roundsWon:0, best:null, bestGuess:null, streak:0, bestStreak:0 },
            q:{}, claimed:{} };
 }
@@ -1524,6 +1618,7 @@ function load(){
     if(!Array.isArray(p.owned)) p.owned=d.owned;
     if(!Array.isArray(p.ownedPat)) p.ownedPat=d.ownedPat;
     if(!Array.isArray(p.ownedTer)) p.ownedTer=d.ownedTer;
+    if(!Array.isArray(p.ownedPrem)) p.ownedPrem=[];
     if(!PATTERNS.some(function(x){return x.id===p.pattern;})) p.pattern=d.pattern;
     if(!TERRAINS.some(function(x){return x.id===p.terrain;})) p.terrain=d.terrain;
     p.stats=Object.assign(d.stats,p.stats||{});
@@ -1564,7 +1659,11 @@ function P(i){ return DB.players[i]; }
 function isBot(i){ return G.vsBot&&i===G.bot; }
 function pname(i){ return isBot(i)?"Bot":P(i).name; }
 function pmark(i){ return i===0?"X":"O"; }
-function colourOf(i){ return COLORS.filter(function(c){return c.id===P(i).color;})[0]||COLORS[i]; }
+/* a player's colour may be a shop colour or one that came out of a case */
+function skinById(id){
+  return COLORS.filter(function(c){ return c.id===id; })[0] || premiumById(id) || null;
+}
+function colourOf(i){ return skinById(P(i).color)||COLORS[i]; }
 function phexRaw(i){ return colourOf(i).hex; }
 /* Both players may wear the same colour. When they do the second changes into
    his away strip - a different colour, not a darker one, because a shade of
@@ -1611,10 +1710,28 @@ function patternSVG(pid,ring){
   if(ring) s+='<circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="4"/>';
   return s;
 }
+/* Gradients need a definition per drawing, and ids have to be unique or the
+   second piece on screen inherits the first one's paint. */
+var GRADN=0;
+function gradFor(i){
+  var c=colourOf(i);
+  /* the away strip stays solid: a gradient that changed hue mid-piece would
+     undo the very thing the away strip is there to make obvious */
+  if(i===1&&twinned()) return null;
+  return c.grad||null;
+}
+function gradDefs(g,id){
+  var n=g.length, stops="";
+  for(var k=0;k<n;k++) stops+='<stop offset="'+(n===1?0:(k/(n-1)))+'" stop-color="'+g[k]+'"/>';
+  return '<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="1">'+stops+"</linearGradient></defs>";
+}
+
 /* a Connect 4 piece, pattern and all */
 function discSVG(i,cls){
+  var g=gradFor(i), id="dg"+(++GRADN);
   return '<svg class="disc'+(cls?" "+cls:"")+'" viewBox="0 0 100 100" style="color:'+phex(i)+'" aria-hidden="true">'
-    + '<circle cx="50" cy="50" r="47" fill="currentColor"/>'
+    + (g?gradDefs(g,id):"")
+    + '<circle cx="50" cy="50" r="47" fill="'+(g?"url(#"+id+")":"currentColor")+'"/>'
     + patternSVG(ppat(i), i===1&&twinned()) + "</svg>";
 }
 function hexA(hex,a){ var n=parseInt(hex.slice(1),16); return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"; }
@@ -1787,9 +1904,16 @@ function markSVG(m,animate,who){
   var cls="mk mk-"+m.toLowerCase()+(animate?" anim":"");
   var known=(who===0||who===1);
   var motif=known?markMotif(ppat(who), who===1&&twinned()):"";
-  if(m==="X") return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true">'+motif
-    + '<line class="s1" x1="24" y1="24" x2="76" y2="76"/><line class="s2" x1="76" y1="24" x2="24" y2="76"/></svg>';
-  return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="26"/>'+motif+"</svg>";
+  var g=known?gradFor(who):null, id="mg"+(++GRADN);
+  var defs=g?gradDefs(g,id):"";
+  /* inline style, not an attribute: the stylesheet sets stroke on .mk and
+     would win over a presentation attribute */
+  var paint=g?' style="stroke:url(#'+id+')"':"";
+  if(m==="X") return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true">'+defs+motif
+    + '<line class="s1" x1="24" y1="24" x2="76" y2="76"'+paint+"/>"
+    + '<line class="s2" x1="76" y1="24" x2="24" y2="76"'+paint+"/></svg>";
+  return '<svg class="'+cls+'" viewBox="0 0 100 100" aria-hidden="true">'+defs
+    + '<circle cx="50" cy="50" r="26"'+paint+"/>"+motif+"</svg>";
 }
 /* player emblem - the X/O for tic-tac-toe, a disc for connect 4 */
 function emblem(i,animate){
@@ -2405,8 +2529,25 @@ function viewShop(){
       + (equipped?'<span class="qmeta done">Home</span>':owned?'<span class="qmeta">Use</span>':coinTag(t.price))+"</button>";
   }).join("");
 
+  /* what came out of cases, shown apart from what can simply be bought */
+  var prem=p.ownedPrem.map(function(id){
+    var sk=premiumById(id); if(!sk) return "";
+    var eq=p.color===id;
+    return '<button class="sw'+(eq?" equipped":"")+'" data-prem="'+id+'" type="button" style="color:'+RARITY[sk.rarity].tint+'">'
+      + skinChip(sk,"sm")
+      + '<span class="p" style="color:'+(eq?RARITY[sk.rarity].tint:"var(--grey-dim)")+'">'+(eq?"Worn":"Wear")+"</span></button>";
+  }).join("");
+
   stage.innerHTML='<div class="view">'
     + '<div class="headline"><span class="lbl">Balance '+p.coins+' &middot; '+esc(pname(me))+'</span><span class="big">Shop</span></div>'
+    + '<button class="qtease" id="toCase" type="button" style="--pc:'+RARITY.legendary.tint+'">'
+    +   '<span class="ic">'+I.shop+"</span>"
+    +   '<span class="txt"><span class="t1">Colour case</span>'
+    +     '<span class="t2">'+PREMIUM.length+" gradients, only from a case &middot; "+CASE_COST+" coins</span></span>"
+    +   '<span class="pip">'+RARITY.legendary.odds+"%</span></button>"
+    + (prem?'<div class="panel"><div class="panel-h"><span class="lbl">From cases</span>'
+        + '<span class="qmeta">'+p.ownedPrem.length+" of "+PREMIUM.length+"</span></div>"
+        + '<div class="swatches">'+prem+"</div></div>":"")
     + '<div class="panel"><div class="panel-h"><span class="lbl">Colour</span></div><div class="swatches">'+sw+"</div>"
     +   (clash?'<p class="twinnote">You and '+esc(pname(1-me))+" share a colour. "+esc(pname(1))
              +"'s pieces are darkened and ringed so the two still read apart.</p>"
@@ -2425,6 +2566,12 @@ function viewShop(){
     if(p.coins<cost){ sfx.nope(); buzz(40); flash(btn); return false; }
     p.coins-=cost; ownList.push(id); sfx.buy(); buzz([12,30,12]); return true;
   }
+  document.getElementById("toCase").addEventListener("click",function(){ sfx.tap(); screenCase(); });
+  stage.querySelectorAll("[data-prem]").forEach(function(b){
+    b.addEventListener("click",function(){
+      p.color=b.dataset.prem; save(); sfx.tap(); accent(phex(DB.me)); renderHub();
+    });
+  });
   stage.querySelectorAll("[data-color]").forEach(function(b){
     b.addEventListener("click",function(){
       var c=COLORS.filter(function(x){return x.id===b.dataset.color;})[0]; if(!c) return;
@@ -2447,6 +2594,116 @@ function viewShop(){
     });
   });
 }
+/* ---------- case opening ---------- */
+
+function skinChip(sk,size){
+  var bg=sk.grad ? "linear-gradient("+(sk.grad.length>2?"120deg":"135deg")+","+sk.grad.join(",")+")" : sk.hex;
+  return '<span class="skin '+(size||"")+'" style="background:'+bg+'"></span>';
+}
+function caseTicket(sk){
+  var r=RARITY[sk.rarity];
+  return '<div class="ticket" style="--rt:'+r.tint+'">'+skinChip(sk,"md")
+    + '<span class="tn">'+esc(sk.name)+"</span>"
+    + '<span class="tr">'+esc(r.name)+"</span></div>";
+}
+
+function screenCase(){
+  var p=P(DB.me);
+  enterGame(); stage.classList.add("scrolls"); accent(phex(DB.me));
+  chromePlain("Case");
+  var odds=RARITY_ORDER.slice().reverse().map(function(k){
+    return '<div class="oddrow" style="--rt:'+RARITY[k].tint+'"><span class="on">'+RARITY[k].name+"</span>"
+      + '<span class="ov">'+RARITY[k].odds+"%</span></div>";
+  }).join("");
+
+  show('<div class="screen casescreen">'
+     + '<div class="headline mid"><span class="lbl">Gradients only</span><span class="big">Colour case</span></div>'
+     + '<div class="casebox" id="caseBox">'+PREMIUM.slice(0,7).map(function(s){ return skinChip(s,"sm"); }).join("")+"</div>"
+     + '<div class="panel"><div class="panel-h"><span class="lbl">What is inside</span>'
+     +   '<span class="qmeta">'+PREMIUM.length+" colours</span></div>"
+     +   '<div class="odds">'+odds+"</div>"
+     +   '<p style="margin:0;color:var(--grey-dim);font-size:11px">A colour you already own comes back as coins instead.</p></div>'
+     + '<div class="foot"><button class="act hero" id="openCase" type="button">Open for '+CASE_COST+"</button>"
+     +   '<button class="act ghost" id="caseBack" type="button">Back</button></div></div>');
+
+  document.getElementById("caseBack").addEventListener("click",function(){ sfx.tap(); tab="shop"; showHub(); });
+  document.getElementById("openCase").addEventListener("click",function(){
+    if(p.coins<CASE_COST && !DB.dev){ sfx.nope(); buzz(40); flash(this); return; }
+    if(!DB.dev) p.coins-=CASE_COST;
+    save(); sfx.tap();
+    rollCaseScreen();
+  });
+}
+
+/* The strip is built so the prize sits at a known index, then slid under a
+   fixed marker. Landing is decided before the animation, never by where it
+   happens to stop. */
+function rollCaseScreen(){
+  var won=rollCase(), p=P(DB.me);
+  var LAND=42, N=LAND+8, strip=[];
+  for(var i=0;i<N;i++) strip.push(i===LAND?won:PREMIUM[Math.floor(Math.random()*PREMIUM.length)]);
+
+  enterGame(); stage.classList.add("scrolls");
+  chromePlain("Opening");
+  show('<div class="screen casescreen">'
+     + '<div class="rollwrap"><div class="rollmark"></div>'
+     +   '<div class="rolltrack" id="rollTrack">'+strip.map(caseTicket).join("")+"</div></div>"
+     + '<div class="rollout" id="rollOut"></div></div>');
+
+  var track=document.getElementById("rollTrack"), out=document.getElementById("rollOut");
+  var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  function settle(){
+    var r=RARITY[won.rarity], dupe=p.ownedPrem.indexOf(won.id)>-1;
+    var back=DUPE_BACK[won.rarity]||25;
+    if(dupe){ p.coins+=back; }
+    else p.ownedPrem.push(won.id);
+    save();
+    if(won.rarity==="legendary"||won.rarity==="epic"){ sfx.burst?sfx.burst():sfx.win(); buzz([30,50,90]); }
+    else { sfx.win(); buzz([18,30,18]); }
+    out.innerHTML='<div class="prize" style="--rt:'+r.tint+'">'+skinChip(won,"big")
+      + '<span class="pr">'+esc(r.name)+"</span>"
+      + '<span class="pn">'+esc(won.name)+"</span>"
+      + '<span class="pd">'+(dupe?("Already yours &mdash; +"+back+" coins instead"):"Added to your colours")+"</span></div>"
+      + '<div class="foot"><button class="act hero" id="wear" type="button">'+(dupe?"Nice":"Wear it")+"</button>"
+      +   '<button class="act" id="again" type="button">Open another ('+CASE_COST+")</button>"
+      +   '<button class="act ghost" id="done" type="button">Back to shop</button></div>';
+    document.getElementById("wear").addEventListener("click",function(){
+      sfx.tap();
+      if(!dupe){ p.color=won.id; save(); accent(phex(DB.me)); }
+      tab="shop"; showHub();
+    });
+    document.getElementById("again").addEventListener("click",function(){
+      if(p.coins<CASE_COST && !DB.dev){ sfx.nope(); buzz(40); flash(this); return; }
+      if(!DB.dev) p.coins-=CASE_COST;
+      save(); sfx.tap(); rollCaseScreen();
+    });
+    document.getElementById("done").addEventListener("click",function(){ sfx.tap(); tab="shop"; showHub(); });
+  }
+
+  if(reduced||!track.animate){ track.style.transform="translateX(0)"; later(settle,60); return; }
+
+  /* measure rather than assume: the ticket width comes from the stylesheet */
+  var first=track.querySelector(".ticket");
+  var w=first.getBoundingClientRect().width+parseFloat(getComputedStyle(track).gap||8);
+  var mid=track.parentNode.getBoundingClientRect().width/2;
+  var jitter=(Math.random()*0.5-0.25)*w;              /* never dead centre, so it reads as luck */
+  var end=-(LAND*w+w/2-mid+jitter);
+
+  var ticks=0;
+  var a=track.animate(
+    [{ transform:"translateX(0)" },{ transform:"translateX("+end+"px)" }],
+    { duration:4200, easing:"cubic-bezier(.12,.72,.06,1)", fill:"forwards" });
+  /* a tick per ticket passing the marker, thinning out as it slows */
+  var tick=setInterval(function(){
+    ticks++;
+    if(ticks<34) sfx.key();
+  },110);
+  var stop=function(){ clearInterval(tick); };
+  a.onfinish=function(){ stop(); later(settle,260); };
+  later(function(){ stop(); if(a.playState!=="finished"){ try{a.finish();}catch(e){ settle(); } } },4900);
+}
+
 function patPreview(pid,hex){
   return '<svg viewBox="0 0 100 100" width="100%" height="100%" style="color:'+hex+'">'
     + '<circle cx="50" cy="50" r="47" fill="currentColor"/>'+patternSVG(pid,false)+"</svg>";
