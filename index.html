@@ -329,6 +329,20 @@ button{ font:inherit; }
   letter-spacing:.06em; color:var(--grey-dim); text-transform:uppercase; }
 .twinnote{ margin:0; font-size:11px; line-height:1.45; color:var(--void); }
 
+.qtease{ appearance:none; display:flex; align-items:center; gap:12px; text-align:left; cursor:pointer; flex:none;
+  border:1px solid var(--hair); border-radius:16px; padding:12px 14px; background:var(--panel); color:var(--text);
+  transition:transform .12s var(--ease), border-color .2s, background .2s; position:relative; }
+.qtease:active{ transform:scale(.985); }
+.qtease:hover{ border-color:var(--hair-2); background:var(--panel-2); }
+.qtease .ic{ width:22px; height:22px; flex:none; color:var(--pc); }
+.qtease .txt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.qtease .t1{ font-family:var(--mono); font-size:12.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.qtease .t2{ font-size:11px; color:var(--grey-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.qtease .bar{ height:4px; border-radius:4px; background:rgba(255,255,255,.09); overflow:hidden; margin-top:3px; }
+.qtease .bar i{ display:block; height:100%; background:var(--pc); border-radius:4px; }
+.qtease .pip{ flex:none; min-width:22px; height:22px; border-radius:999px; background:var(--coin); color:var(--ink);
+  display:grid; place-items:center; font-family:var(--mono); font-size:11px; font-weight:700; padding:0 6px; }
+
 /* ---------- daily reward ---------- */
 .daily{ display:flex; flex-direction:column; gap:10px; padding:13px 14px; flex:none;
   border:1px solid var(--hair); border-radius:17px; background:var(--panel); }
@@ -1416,14 +1430,65 @@ var TERRAINS=[
   {id:"copper", name:"Copper",    desc:"Warm metal, tight radius.",       price:340, frame:"#261D15",well:"#0F0A06",rad:8},
   {id:"frost",  name:"Frost",     desc:"Pale rime over deep blue.",       price:340, frame:"#17232F",well:"#060B11",rad:18}
 ];
+/* Forty-odd of these, but you only ever see six: a stable daily set drawn from
+   the pool by date, so the list changes without becoming a wall. */
 var QUESTS=[
-  {id:"play5", t:"Clock in",     d:"Play 5 rounds in any mode",            goal:5, reward:15, track:"roundsPlayed"},
-  {id:"win3",  t:"Take three",   d:"Win 3 rounds",                          goal:3, reward:25, track:"roundsWon"},
-  {id:"sharp", t:"Sharpshooter", d:"Stop within 0.10s of a target",         goal:1, reward:30, track:"sharp"},
-  {id:"mind",  t:"Mind reader",  d:"Win a Number Duel round in 2 guesses",  goal:1, reward:35, track:"mind"},
-  {id:"match1",t:"Close it out", d:"Win a match",                           goal:1, reward:50, track:"matchesWon"},
-  {id:"c4win", t:"Four deep",    d:"Win a Connect 4 match",                 goal:1, reward:60, track:"c4Wins"}
+  {id:"play5",  t:"Clock in",      d:"Play 5 rounds",                        goal:5,  reward:15, track:"roundsPlayed"},
+  {id:"play15", t:"Regular",       d:"Play 15 rounds",                       goal:15, reward:35, track:"roundsPlayed"},
+  {id:"play30", t:"Marathon",      d:"Play 30 rounds",                       goal:30, reward:70, track:"roundsPlayed"},
+  {id:"win3",   t:"Take three",    d:"Win 3 rounds",                         goal:3,  reward:25, track:"roundsWon"},
+  {id:"win8",   t:"On a roll",     d:"Win 8 rounds",                         goal:8,  reward:45, track:"roundsWon"},
+  {id:"win20",  t:"Dominant",      d:"Win 20 rounds",                        goal:20, reward:90, track:"roundsWon"},
+  {id:"match1", t:"Close it out",  d:"Win a match",                          goal:1,  reward:50, track:"matchesWon"},
+  {id:"match3", t:"Hat trick",     d:"Win 3 matches",                        goal:3,  reward:85, track:"matchesWon"},
+  {id:"match6", t:"Unbeaten run",  d:"Win 6 matches",                        goal:6,  reward:140,track:"matchesWon"},
+  {id:"sharp",  t:"Sharpshooter",  d:"Stop within 0.10s of a target",        goal:1,  reward:30, track:"sharp"},
+  {id:"sharp3", t:"Steady hand",   d:"Stop within 0.10s three times",        goal:3,  reward:70, track:"sharp"},
+  {id:"mind",   t:"Mind reader",   d:"Win a number round in 2 guesses",      goal:1,  reward:35, track:"mind"},
+  {id:"mind3",  t:"Telepath",      d:"Do that three times",                  goal:3,  reward:80, track:"mind"},
+  {id:"long2",  t:"Long haul",     d:"Win 2 rounds on a target over 6.00s",  goal:2,  reward:40, track:"longWins"},
+  {id:"long5",  t:"Patience",      d:"Win 5 of those",                       goal:5,  reward:85, track:"longWins"},
+  {id:"c4win",  t:"Four deep",     d:"Win a Connect 4 match",                goal:1,  reward:60, track:"c4Wins"},
+  {id:"c4win3", t:"Column king",   d:"Win 3 Connect 4 matches",              goal:3,  reward:120,track:"c4Wins"},
+  {id:"g_ttt",  t:"Noughts",       d:"Play Tic-Tac-Toe",                     goal:1,  reward:20, track:"g_ttt"},
+  {id:"g_ttt3", t:"Grid regular",  d:"Play Tic-Tac-Toe 3 times",             goal:3,  reward:45, track:"g_ttt"},
+  {id:"g_c4",   t:"Drop in",       d:"Play Connect 4",                       goal:1,  reward:20, track:"g_c4"},
+  {id:"g_c43",  t:"Stacker",       d:"Play Connect 4 3 times",               goal:3,  reward:45, track:"g_c4"},
+  {id:"g_guess",t:"Hot and cold",  d:"Play Number Guess",                    goal:1,  reward:20, track:"g_guess"},
+  {id:"g_tap",  t:"Blind clock",   d:"Play Tap the Time",                    goal:1,  reward:20, track:"g_tap"},
+  {id:"g_tap3", t:"Metronome",     d:"Play Tap the Time 3 times",            goal:3,  reward:45, track:"g_tap"},
+  {id:"g_seqc", t:"Order up",      d:"Play Sequence Race",                   goal:1,  reward:20, track:"g_seqc"},
+  {id:"g_seqc3",t:"Codebreaker",   d:"Play Sequence Race 3 times",           goal:3,  reward:45, track:"g_seqc"},
+  {id:"g_bid",  t:"Going once",    d:"Play Bid-Tac-Toe",                     goal:1,  reward:20, track:"g_bid"},
+  {id:"g_bid3", t:"Auction house", d:"Play Bid-Tac-Toe 3 times",             goal:3,  reward:45, track:"g_bid"},
+  {id:"g_dtimer",t:"Clock duel",   d:"Play Timer Duel",                      goal:1,  reward:20, track:"g_dtimer"},
+  {id:"g_dnumber",t:"Number duel", d:"Play Number Duel",                     goal:1,  reward:20, track:"g_dnumber"},
+  {id:"g_seq",  t:"Race duel",     d:"Play Sequence Duel",                   goal:1,  reward:20, track:"g_seq"},
+  {id:"w_ttt",  t:"Three in a row",d:"Win at Tic-Tac-Toe",                   goal:1,  reward:40, track:"w_ttt"},
+  {id:"w_c4",   t:"Four in a row", d:"Win at Connect 4",                     goal:1,  reward:40, track:"w_c4"},
+  {id:"w_guess",t:"Nailed it",     d:"Win at Number Guess",                  goal:1,  reward:40, track:"w_guess"},
+  {id:"w_tap",  t:"Dead on",       d:"Win at Tap the Time",                  goal:1,  reward:40, track:"w_tap"},
+  {id:"w_seqc", t:"Cracked",       d:"Win at Sequence Race",                 goal:1,  reward:40, track:"w_seqc"},
+  {id:"w_bid",  t:"Outbid",        d:"Win at Bid-Tac-Toe",                   goal:1,  reward:40, track:"w_bid"},
+  {id:"bot1",   t:"Machine work",  d:"Beat the bot",                         goal:1,  reward:35, track:"botWins"},
+  {id:"bot3",   t:"Unplugged",     d:"Beat the bot 3 times",                 goal:3,  reward:75, track:"botWins"},
+  {id:"human1", t:"Face to face",  d:"Beat a person",                        goal:1,  reward:45, track:"humanWins"},
+  {id:"human3", t:"Local legend",  d:"Beat a person 3 times",                goal:3,  reward:95, track:"humanWins"},
+  {id:"var3",   t:"Variety",       d:"Play 3 different games",               goal:3,  reward:60, track:"variety"},
+  {id:"var5",   t:"Restless",      d:"Play 5 different games",               goal:5,  reward:110,track:"variety"},
+  {id:"pass1",  t:"Frugal",        d:"Pass on a bid and bank the point",     goal:1,  reward:25, track:"passes"},
+  {id:"void1",  t:"Wiped out",     d:"Sit through a void round",             goal:1,  reward:20, track:"voids"}
 ];
+var QUESTS_DAILY=6;
+/* the same six all day for everyone on this device, rotating with the date */
+function dailyQuests(){
+  var seed=dayNum(), pool=QUESTS.slice(), out=[];
+  for(var i=0;i<QUESTS_DAILY&&pool.length;i++){
+    seed=(seed*1103515245+12345)&0x7fffffff;
+    out.push(pool.splice(seed%pool.length,1)[0]);
+  }
+  return out;
+}
 var COIN_ROUND=5, COIN_SHARP=3, COIN_MATCH=25;
 
 /* ============================================================
@@ -1934,7 +1999,7 @@ function bump(pi,key,n){ if(isBot(pi)) return; var q=P(pi).q; q[key]=(q[key]||0)
 function award(pi,amount,reason){ if(isBot(pi)) return; P(pi).coins+=amount; save(); toast(amount,reason); }
 function questsReady(pi){
   var p=P(pi), n=0;
-  QUESTS.forEach(function(q){ if(!p.claimed[q.id]&&(p.q[q.track]||0)>=q.goal) n++; });
+  dailyQuests().forEach(function(q){ if(!p.claimed[q.id]&&(p.q[q.track]||0)>=q.goal) n++; });
   return n;
 }
 
@@ -2195,6 +2260,25 @@ function screenHandle(first){
   paint();
 }
 
+/* what is one tap away and nearly done - the reason to open the app again */
+function questTeaseHTML(){
+  var p=P(DB.me), list=dailyQuests(), ready=0, best=null;
+  list.forEach(function(q){
+    var have=p.q[q.track]||0;
+    if(p.claimed[q.id]) return;
+    if(have>=q.goal){ ready++; return; }
+    var frac=have/q.goal;
+    if(!best||frac>best.frac) best={ q:q, have:have, frac:frac };
+  });
+  if(!ready&&!best) return "";
+  return '<button class="qtease" id="qTease" type="button" style="--pc:'+phex(DB.me)+'">'
+    + '<span class="ic">'+I.quest+"</span>"
+    + '<span class="txt"><span class="t1">'+(ready?ready+" quest"+(ready===1?"":"s")+" ready to claim":esc(best.q.t))+"</span>"
+    +   '<span class="t2">'+(ready?"Tap to collect":esc(best.q.d)+" &middot; "+best.have+"/"+best.q.goal)+"</span>"
+    +   (ready?"":'<span class="bar"><i style="width:'+Math.round(best.frac*100)+'%"></i></span>')+"</span>"
+    + (ready?'<span class="pip">'+ready+"</span>":"")+"</button>";
+}
+
 function dailyHTML(){
   var st=dailyState();
   var dots=DAILY.map(function(v,i){
@@ -2237,6 +2321,7 @@ function viewHome(){
           + "</div>"
         : "")
     + dailyHTML()
+    + questTeaseHTML()
     + acctStripHTML()
     + '<div class="foot"><button class="act hero" id="play" type="button">New match</button>'
     +   (quickLabel()?'<button class="act ghost" id="quick" type="button">'+I.play+esc(quickLabel())+"</button>":"")
@@ -2246,6 +2331,8 @@ function viewHome(){
     var got=claimDaily();
     if(got){ toast(got,"Daily reward"); buzz([14,30,14]); renderHub(); }
   });
+  var qt=document.getElementById("qTease");
+  if(qt) qt.addEventListener("click",function(){ sfx.tap(); tab="quests"; renderHub(); });
   document.getElementById("play").addEventListener("click",function(){
     sfx.warm(); sfx.tap();
     if(needsAccount()){ screenSignIn(); return; }
@@ -2270,7 +2357,7 @@ function viewHome(){
 
 function viewQuests(){
   var me=DB.me, p=P(me);
-  var rows=QUESTS.map(function(q){
+  var rows=dailyQuests().map(function(q){
     var have=Math.min(q.goal,p.q[q.track]||0), done=have>=q.goal, claimed=!!p.claimed[q.id];
     return '<div class="qrow"><div class="body"><span class="t">'+esc(q.t)+'</span><span class="d">'+esc(q.d)+"</span>"
       + '<div class="bar"><i style="width:'+Math.round(have/q.goal*100)+'%"></i></div></div><div class="side">'
@@ -2285,7 +2372,7 @@ function viewQuests(){
     + '<p style="margin:0;color:var(--grey-dim);font-size:11.5px;line-height:1.5">Tracked for '+esc(pname(me))+". Switch profile from the top-left to see the other player's.</p></div>";
   stage.querySelectorAll("[data-claim]").forEach(function(b){
     b.addEventListener("click",function(){
-      var q=QUESTS.filter(function(x){return x.id===b.dataset.claim;})[0];
+      var q=dailyQuests().filter(function(x){return x.id===b.dataset.claim;})[0];
       if(!q||p.claimed[q.id]) return;
       p.claimed[q.id]=1; award(me,q.reward,q.t); buzz(14); renderHub();
     });
@@ -4440,6 +4527,8 @@ function finishMatch(w){
     ST(1-w).streak=0;
     bump(w,"matchesWon");
     if(hasBoard()&&G.board==="c4") bump(w,"c4Wins");
+    bump(w,"w_"+G.game);
+    bump(w,G.vsBot?"botWins":"humanWins");
     award(w,COIN_MATCH,"Match won");
   }
   ST(0).matches++; ST(1).matches++;
@@ -4517,6 +4606,15 @@ function newMatch(id,opts){
   G.home = G.vsBot ? 0 : DB.lastHome;
   if(!G.vsBot){ DB.lastHome=1-DB.lastHome; save(); }
   if(hasBoard()) logRound({ t:"At "+pname(G.home)+"'s place", d:terrainOf(G.home).name+" terrain", winner:null });
+  /* one place that knows which game started, so per-game quests need no
+     bookkeeping scattered through the modes */
+  [0,1].forEach(function(i){
+    if(isBot(i)) return;
+    var q=P(i).q, key="g_"+id;
+    if(!q[key]) bump(i,"variety");        /* first time today counts towards variety */
+    bump(i,key);
+  });
+  save();
   if(g.kind==="board") screenClassic();
   else if(g.kind==="bid") bidStart(Math.min(BID_MAX,Math.max(BID_MIN,opts.pool||BID_POOL)));
   else startRound(null,true);
