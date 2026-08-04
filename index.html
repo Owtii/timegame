@@ -1294,8 +1294,12 @@ function REDEEM(code){
 
 function guestLeft(){ return Math.max(0,GUEST_LIMIT-(DB.guestGames||0)); }
 /* an invite always gets you in, account or not - a guest should never be the
-   reason a friend cannot start the game they were invited to */
-function invited(){ return /[?&](invite|code)=/.test(location.search); }
+   reason a friend cannot start the game they were invited to. It survives the
+   sign-in reload, so check where it is parked as well as the address bar. */
+function invited(){
+  if(/[?&](add|invite|code)=/.test(location.search)) return true;
+  try{ return !!sessionStorage.getItem("db.invite"); }catch(e){ return false; }
+}
 function needsAccount(){ return !NET.signedIn() && !invited() && guestLeft()<=0; }
 
 /* Sequence Race: four pieces told apart by shape *and* colour, so neither
@@ -2093,7 +2097,12 @@ function screenHandle(first){
   go.addEventListener("click",function(){
     var v=inp.value; go.disabled=true; go.textContent="Claiming...";
     NET.claim(v,DB.me).then(function(r){
-      if(r===true){ sfx.buy(); buzz([14,30,14]); tab="home"; showHub(); return; }
+      if(r===true){
+        sfx.buy(); buzz([14,30,14]);
+        var inv=pendingInvite();                 /* finish what the link started */
+        if(inv){ screenInvite(inv); return; }
+        tab="home"; showHub(); return;
+      }
       go.textContent="Claim it"; go.disabled=false; sfx.nope();
       msg.textContent=(r&&r.code==="23505")?"Someone just took that one":"Could not save that";
       msg.className="qmeta";
@@ -2288,6 +2297,64 @@ function personRow(pr,right){
 }
 function plEmpty(t,d){
   return '<div class="plempty"><span class="e1">'+esc(t)+'</span><span class="e2">'+esc(d)+"</span></div>";
+}
+
+/* ---------- invite links ----------
+   A link has to survive the whole detour: no session, no tag, a sign-in that
+   reloads the page. So the handle is parked before anything else happens and
+   only cleared once it has actually been acted on. */
+function linkHandle(){
+  var m=/[?&]add=@?([a-z0-9_]{3,16})/i.exec(location.search);
+  return m?m[1].toLowerCase():null;
+}
+function stashInvite(){
+  var h=linkHandle();
+  if(h){
+    try{ sessionStorage.setItem("db.invite",h); }catch(e){}
+    /* drop it from the address bar so a refresh does not re-run the invite */
+    if(history.replaceState) history.replaceState(null,"",location.pathname);
+  }
+}
+function pendingInvite(){
+  try{ return sessionStorage.getItem("db.invite"); }catch(e){ return null; }
+}
+function clearInvite(){ try{ sessionStorage.removeItem("db.invite"); }catch(e){} }
+
+function screenInvite(h){
+  enterGame(); stage.classList.add("scrolls"); accent(phex(DB.me));
+  chromePlain("Invite");
+  show('<div class="screen signin"><div class="hero2">'+I.people+"</div>"
+     + '<h2>@'+esc(h)+"</h2>"
+     + '<p id="invMsg">Looking them up...</p>'
+     + '<div class="foot" id="invFoot"></div></div>');
+  var msg=document.getElementById("invMsg"), foot=document.getElementById("invFoot");
+
+  function bail(text){
+    msg.textContent=text;
+    foot.innerHTML='<button class="act ghost" id="invBack" type="button">Back</button>';
+    document.getElementById("invBack").addEventListener("click",function(){ sfx.tap(); clearInvite(); tab="home"; showHub(); });
+  }
+  NET.search(h).then(function(list){
+    var pr=list.filter(function(x){ return x.handle===h; })[0];
+    if(!pr){ bail("No player has that tag any more. The link may be out of date."); return; }
+    var played=(pr.wins||0)+(pr.losses||0);
+    msg.textContent=(played?((pr.wins||0)+" wins from "+played+" matches"):"No matches played yet")+". Add them and they show up in your Players tab.";
+    foot.innerHTML='<button class="act hero" id="invAdd" type="button">Add @'+esc(h)+"</button>"
+      + '<button class="act ghost" id="invSkip" type="button">Not now</button>';
+    document.getElementById("invSkip").addEventListener("click",function(){ sfx.tap(); clearInvite(); tab="home"; showHub(); });
+    document.getElementById("invAdd").addEventListener("click",function(){
+      var b=this; sfx.tap();
+      /* you need a tag of your own before you can be on anyone's list */
+      if(!NET.user()){ screenSignIn("Sign in first, then we will finish adding @"+h+"."); return; }
+      if(!NET.profile()){ screenHandle(false); return; }
+      b.disabled=true; b.textContent="Adding...";
+      NET.addFriend(pr.id).then(function(ok){
+        clearInvite();
+        if(ok){ sfx.buy(); buzz([14,30,14]); tab="players"; showHub(); }
+        else { b.disabled=false; b.textContent="Add @"+h; sfx.nope(); msg.textContent="That did not save. Try again."; }
+      });
+    });
+  });
 }
 
 function viewPlayers(){
@@ -4355,6 +4422,7 @@ function startRound(reason,keepFirst){
   }
 }
 
+stashInvite();   /* park it before anything can navigate the address bar away */
 load();
 showHub();
 
@@ -4362,10 +4430,14 @@ showHub();
    settles, so a slow or missing network never holds the game up - it just
    redraws the account strip once it knows who you are. */
 NET.boot().then(function(){
+  /* someone followed a link: that is why they opened the app, so it comes
+     before anything else the hub might want to say */
+  var inv=pendingInvite();
+  if(inv){ screenInvite(inv); return; }
   /* back from Google without a tag yet: that is the one thing to settle before
      the hub is any use, since it is how anyone finds you */
   if(NET.signedIn()&&!NET.profile()){ screenHandle(true); return; }
-  if(NET.signedIn()||NET.isGuest()){
+  if(NET.user()){
     if(tab==="home"&&document.getElementById("play")) renderHub();
   }
 }).catch(function(){});
