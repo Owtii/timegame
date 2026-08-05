@@ -128,7 +128,90 @@ profile on the device; the top-left control switches which one you're acting as.
 | Quests | Six daily objectives, claimable for coins; resets at midnight |
 | Shop | Mark colours (per player) and board styles (shared) |
 | Players | Both profiles side by side, plus a chat |
-| You | Stats, display name, coin balance, and a reset |
+| You | Stats, display name, coin balance, appearance, and the way out of the account |
+
+The top-left control is who you are. Tapping it opens a short menu over the
+button — **Your profile**, and **Log out** (or **Sign in**, as a guest). Logging
+out is also spelled out at the bottom of the You tab, behind a confirm, since
+that is where anyone goes looking for it.
+
+## In a match
+
+The match screen is the one screen that isn't a hub tab, and it's laid out like
+a scoreboard: what you're playing across the top with the way out beside it,
+then both players facing each other across the clock, then the board, then the
+three utilities on a dock at the bottom.
+
+The ring around the active player **is** the move clock — a conic-gradient arc
+that drains as their turn does. The small dial in the middle shows the same
+number of seconds off the same `--k`, so the two can never disagree about how
+long is left. The pill under each name carries whatever that screen counts:
+squares placed, tries left, points in hand.
+
+The board sits in a tray: a floor, a rim and its own shadow, so it reads as
+something you put pieces into rather than a grid drawn on the page. The square
+that just landed keeps a yellow ring until the next one does, which is how you
+find the last move without replaying the round.
+
+The dock rides in the tab bar's slot, so chat, history and sound sit exactly
+where the tabs do outside a match and the thumb never learns a second home.
+
+## Colour
+
+Two colours do the work, and they're kept apart on purpose:
+
+| | |
+| --- | --- |
+| `--brand` | The app's own colour. Pastel butter yellow. Primary buttons, the lit tab, quest and reward furniture. |
+| `--pc` | Whoever or whatever the thing in front of you is about. A player's mark, their ring, their pill, the line that won them the board. |
+
+Mixing the two was the old mistake: with `--pc` driving the chrome, the whole
+app changed colour when you bought a skin. Now the app stays yellow and the
+player's colour means a player.
+
+Anything carrying a player's colour derives two more shades from it in CSS — a
+tint to sit on, and a lifted version legible against that tint:
+
+```css
+--pc-lit:  color-mix(in srgb, var(--pc) 80%, var(--pc-mixer));
+--pc-tint: color-mix(in srgb, var(--pc) 14%, var(--pc-base));
+```
+
+`--pc-mixer` and `--pc-base` are the only per-skin part (white and the page in
+the dark skin, near-black and white in the light one), so a gradient pulled out
+of a case gets the same treatment as one of the sixteen without a new rule.
+
+The two default players are **tomato** and **sage** — the pair the reference
+draws. They're also the app's two semantic colours: tomato is what went wrong,
+sage is what went right, which is why a row of three stat tiles reads as three
+things rather than a wall of numbers. Red and blue are still in the shop.
+
+Nothing is separated by a border. Surfaces are separated by shadow, and solid
+buttons carry a hard lip underneath (`0 6px 0`) that they lose on the way down —
+that plus the travel is the whole of the pressable feel.
+
+## Light and dark
+
+Both skins are the same app: same geometry, same yellow, different surfaces —
+warm off-black in the dark skin, warm white in the light one, both carrying a
+trace of the brand so the two never look like different apps. **System / Light
+/ Dark** lives under Appearance in the You tab, and System follows the phone
+live: flip the OS switch and the app follows without a reload.
+
+Everything a skin has to change is a custom property at the top of the
+stylesheet, so a screen is written once and gets both. Three things needed more
+than a swapped surface:
+
+- **Boards carry a second pair of colours.** A board is the one surface you
+  stare at for a whole match, and a near-black well punched into a pale page
+  reads as a hole rather than a board. Every terrain declares `lframe` / `lwell`
+  alongside its dark pair.
+- **Rarity tints are picked per skin.** The case tints are chosen to glow
+  against near-black, which means they vanish against near-white; each tier
+  carries a darker `lt` for the light skin.
+- **Text on a fill of the brand or a player's colour stays dark in both.** The
+  palette runs from mid to bright, so white would fail on the yellows; one dark
+  ink works across all of it.
 
 Coins come from winning rounds (5), stopping inside 0.10s (3), winning matches
 (25), and claiming quests. Everything persists in `localStorage`; if storage is
@@ -181,8 +264,31 @@ greyed out in the shop, so you always stay distinguishable.
 - **The board sets `grid-template-rows`, not just columns.** With `auto` rows a
   row holding a mark sizes to its content and grows — squares come out visibly
   unequal (measured 96px against 55px).
-- Connect 4's topbar glance is a piece tally, not a mini board — a 7×6 grid is
-  illegible at 44px.
+- **A solid button carries a lip and loses it on the way down.** That, plus
+  scale, is the whole of the pressable feel; nothing animates position on hover,
+  because a phone has no hover.
+- **`min-width:0` on every flex column that holds content.** A flex item will
+  not shrink below its own content, so one wide child prises the whole column
+  open and drags the rest off the side of the phone. It has bitten this file
+  twice: a fifty-ticket case strip, and a file input left visible inside a
+  label, which draws its own 245px "Choose file" widget.
+- **No bare class name is shared between a component and a modifier.** `.ghost`
+  was both the faint mark a live square previews at 11% opacity and the
+  secondary button style — so every secondary button in the app was rendered at
+  11% opacity. The preview is `.mkghost` now.
+- **The theme selector is scoped to the root.** A bare `[data-theme="light"]`
+  also matches the theme picker's own buttons, and the Light one then paints
+  itself in the skin it is offering.
+- **A tray sets its width and the board fills it, never the other way round.**
+  Connect 4's wrapper is a percentage width; inside a `fit-content` tray it has
+  nothing to resolve against and the whole board collapses to nothing.
+- **A fading blob names its own colour at both stops.** Fading to the
+  `transparent` keyword interpolates through transparent *black*, which leaves a
+  grey smudge in the corner instead of light.
+- **The match top bar carries the title and nothing else.** The round, the
+  clock and the score used to live up there, next to a 44px board glance that a
+  7×6 grid was never legible in. They belong beside the two people they're
+  about, so they moved down into the versus header and the glance went.
 - Haptics use `navigator.vibrate` where supported (Android/Chrome; iOS Safari
   doesn't implement it). Audio is synthesised with the Web Audio API — there are
   no sound files to load.
