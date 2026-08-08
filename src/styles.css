@@ -1,0 +1,626 @@
+/* ============================================================
+   Duel Board - design system
+
+   Ported from the Claude design project "Duel Board" (16 frames,
+   1080 x 2340). Every accent below is lifted from the original app's
+   COLORS / PREMIUM tables, so this is a re-skin of the existing
+   palette rather than an invention.
+
+   Sizing: the whole app is authored in the design's 1080px-wide
+   space. `html` carries a font-size of one tenth of a design pixel,
+   so 1rem = 10 design px and `2.4rem` in this file is `24px` in the
+   design doc. Nothing is expressed in raw pixels except hairlines.
+   ============================================================ */
+
+:root {
+  /* ---------- palette ---------- */
+  --p1: #4cc9f0; /* player one - COLORS.ice */
+  --p1-lip: #2a8fb4;
+  --p2: #ff5fa2; /* player two - COLORS.rose */
+  --p2-lip: #c22e70;
+  --action: #ffb020; /* COLORS.signal */
+  --action-lip: #c07a0b;
+  --mind: #a46bff; /* PREMIUM.nebula */
+  --mind-lip: #6e3fc7;
+  --coin: #ffc93c; /* PREMIUM.solar */
+  --coin-lip: #c08a0b;
+  --good: #3ed598; /* energy */
+  --good-lip: #229c6c;
+
+  /* ---------- surfaces ---------- */
+  --night: #0b0b1b;
+  --card: #161436;
+  --card-dim: #131230;
+  --sunken: #221e52;
+  --sunken-lip: #12103a;
+  --rail: #2b2758;
+  --grab: #312b63;
+
+  /* ---------- type ---------- */
+  --text: #f2f0ff;
+  --muted: #8c87b8;
+  --dim: #6b679b;
+  --faint: #4a4670;
+  --stroke: #3a3663;
+  --on-fill: #0a0c11; /* near-black type on a bright block */
+
+  /* ---------- radii ---------- */
+  --r-pill: 999px;
+  --r-sheet: 4rem;
+  --r-card: 3.2rem;
+  --r-chip: 2.4rem;
+
+  /* one design pixel = 0.1rem, so the frame is 108rem across */
+  font-size: calc(min(100vw, 100vh * 1080 / 2340) / 108);
+}
+
+@supports (height: 100dvh) {
+  :root {
+    font-size: calc(min(100vw, 100dvh * 1080 / 2340) / 108);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #050410;
+  color: var(--text);
+  font-family: Nunito, system-ui, -apple-system, sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   The frame - a phone-shaped stage, letterboxed on a desktop
+   ============================================================ */
+
+#root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.frame {
+  position: relative;
+  width: 108rem;
+  height: 234rem;
+  max-height: 100vh;
+  overflow: hidden;
+  background: var(--night);
+  isolation: isolate;
+}
+
+@supports (height: 100dvh) {
+  .frame {
+    max-height: 100dvh;
+  }
+}
+
+/* a screen fills the frame and owns its own scrolling */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.screen-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 4rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* the soft coloured bloom behind the base and the sheets */
+.bloom {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   Type scale - Nunito, and nothing under 2.4rem with tracking
+   ============================================================ */
+
+.t-hero {
+  font: 900 14rem/1 Nunito;
+  letter-spacing: -0.045em;
+  color: var(--text);
+}
+
+.t-title {
+  font: 900 6.8rem/1 Nunito;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.t-row {
+  font: 900 4rem/1 Nunito;
+  color: var(--text);
+}
+
+.t-body {
+  font: 700 3rem/1.35 Nunito;
+  color: var(--muted);
+}
+
+.t-label {
+  font: 800 2.4rem/1 Nunito;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.t-micro {
+  font: 800 2.2rem/1 Nunito;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ============================================================
+   Buttons - a solid block with a lip under it. Pressing sinks the
+   block into the lip; nothing fades, nothing changes opacity.
+   ============================================================ */
+
+.btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--action);
+  color: var(--on-fill);
+  font: 900 4.6rem/1 Nunito;
+  letter-spacing: 0.06em;
+  height: 14rem;
+  width: 100%;
+  box-shadow:
+    0 1.4rem 0 var(--action-lip),
+    inset 0 0.6rem 0 rgba(255, 255, 255, 0.42);
+  transition:
+    transform 90ms cubic-bezier(0.34, 1.3, 0.64, 1),
+    box-shadow 90ms ease;
+  will-change: transform;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1rem);
+  box-shadow:
+    0 0.4rem 0 var(--action-lip),
+    inset 0 0.3rem 0 rgba(255, 255, 255, 0.24);
+}
+
+.btn:disabled {
+  filter: saturate(0.25) brightness(0.62);
+  cursor: default;
+}
+
+.btn.p1 {
+  background: var(--p1);
+  box-shadow:
+    0 1.4rem 0 var(--p1-lip),
+    inset 0 0.6rem 0 rgba(255, 255, 255, 0.34);
+}
+.btn.p1:active:not(:disabled) {
+  box-shadow: 0 0.4rem 0 var(--p1-lip);
+}
+
+.btn.p2 {
+  background: var(--p2);
+  box-shadow:
+    0 1.4rem 0 var(--p2-lip),
+    inset 0 0.6rem 0 rgba(255, 255, 255, 0.34);
+}
+.btn.p2:active:not(:disabled) {
+  box-shadow: 0 0.4rem 0 var(--p2-lip);
+}
+
+.btn.coin {
+  background: var(--coin);
+  box-shadow:
+    0 1.6rem 0 var(--coin-lip),
+    inset 0 0.6rem 0 rgba(255, 255, 255, 0.46);
+}
+.btn.coin:active:not(:disabled) {
+  box-shadow: 0 0.4rem 0 var(--coin-lip);
+}
+
+.btn.mind {
+  background: var(--mind);
+  box-shadow:
+    0 1.4rem 0 var(--mind-lip),
+    inset 0 0.6rem 0 rgba(255, 255, 255, 0.3);
+}
+.btn.mind:active:not(:disabled) {
+  box-shadow: 0 0.4rem 0 var(--mind-lip);
+}
+
+.btn.sunk {
+  background: var(--sunken);
+  color: var(--text);
+  box-shadow: 0 0.8rem 0 var(--sunken-lip);
+}
+.btn.sunk:active:not(:disabled) {
+  box-shadow: 0 0.2rem 0 var(--sunken-lip);
+}
+
+/* outlined - no lip, so it never competes with the primary */
+.btn.ghost {
+  background: none;
+  border: 0.6rem solid var(--stroke);
+  color: var(--muted);
+  box-shadow: none;
+  height: 13.2rem;
+  font-size: 4.2rem;
+}
+.btn.ghost:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.btn.sm {
+  height: 11rem;
+  font-size: 3rem;
+}
+
+/* ============================================================
+   Cards, rows, chips
+   ============================================================ */
+
+.card {
+  background: var(--card);
+  border-radius: var(--r-card);
+}
+
+.block {
+  border-radius: var(--r-sheet);
+  color: var(--on-fill);
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: 1fr 1.16fr 1fr;
+  gap: 1.6rem;
+  padding: 0 4rem;
+  flex: none;
+}
+
+.hud-tile {
+  background: var(--card);
+  border-radius: 2.8rem;
+  padding: 2.2rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  text-align: left;
+}
+
+.hud-cap {
+  font: 800 2rem/1 Nunito;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+.hud-val {
+  font: 900 4.4rem/1 Nunito;
+}
+
+.coin-dot {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  background: var(--coin);
+  box-shadow: inset 0 -0.6rem 0 rgba(0, 0, 0, 0.18);
+  flex: none;
+}
+
+.pill {
+  font: 900 1.7rem/1 Nunito;
+  letter-spacing: 0.08em;
+  color: var(--on-fill);
+  background: var(--good);
+  padding: 0.6rem 1rem;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.list-row {
+  height: 10.4rem;
+  background: var(--card);
+  border-radius: 2.8rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex: none;
+  width: 100%;
+  text-align: left;
+  transition: transform 120ms cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.list-row:active {
+  transform: scale(0.975);
+}
+
+.list-row .flag {
+  width: 1.4rem;
+  align-self: stretch;
+  flex: none;
+}
+
+/* ============================================================
+   Segmented meter - blocks you can count, never a smooth bar
+   ============================================================ */
+
+.meter {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.meter span {
+  flex: 1;
+  height: 3.4rem;
+  border-radius: 0.8rem;
+  background: var(--sunken);
+  transition:
+    background-color 220ms ease,
+    transform 220ms cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+.meter.sm span {
+  height: 1.6rem;
+  border-radius: 0.5rem;
+}
+
+.meter.md span {
+  height: 2.6rem;
+  border-radius: 0.7rem;
+}
+
+.meter.thin span {
+  height: 1.4rem;
+  border-radius: 0.5rem;
+}
+
+/* ============================================================
+   Sheets - slide up from the bottom over a dimmed screen
+   ============================================================ */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 4, 16, 0.76);
+  z-index: 40;
+}
+
+.sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card);
+  border-radius: 5.2rem 5.2rem 0 0;
+  padding: 3.6rem 4.4rem 5.6rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 41;
+  max-height: 96%;
+}
+
+.grabber {
+  width: 13.2rem;
+  height: 1.2rem;
+  border-radius: 0.6rem;
+  background: var(--grab);
+  align-self: center;
+  flex: none;
+}
+
+.popup {
+  position: absolute;
+  left: 6rem;
+  right: 6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--card);
+  border-radius: 5.6rem;
+  padding: 4.8rem 4.8rem 5.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 41;
+}
+
+/* ============================================================
+   Tab rail
+   ============================================================ */
+
+.rail {
+  flex: none;
+  height: 21.2rem;
+  background: var(--card);
+  padding: 2.2rem 2rem 4.6rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.8rem;
+  z-index: 20;
+}
+
+.rail button {
+  border-radius: 2.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  font: 900 2.2rem/1 Nunito;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  transition: transform 140ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.rail button:active {
+  transform: scale(0.92);
+}
+
+.rail button[data-on='true'] {
+  background: var(--action);
+  color: var(--on-fill);
+  box-shadow: inset 0 -0.6rem 0 rgba(0, 0, 0, 0.14);
+}
+
+/* ============================================================
+   Match chrome
+   ============================================================ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4rem;
+  height: 8.4rem;
+  flex: none;
+  margin-top: 2.2rem;
+}
+
+.tag {
+  font: 900 2.4rem/1 Nunito;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  background: var(--card);
+  padding: 1.6rem 2.2rem;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.player-card {
+  border-radius: 3.6rem;
+  padding: 2.6rem 2.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  background: var(--card);
+  transition:
+    transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    background-color 260ms ease;
+}
+
+/* ============================================================
+   Boards
+   ============================================================ */
+
+.board-frame {
+  background: var(--sunken);
+  border-radius: 4.4rem;
+  padding: 1.8rem;
+  box-shadow: 0 1.8rem 0 var(--sunken-lip);
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+.hole {
+  border-radius: 50%;
+  background: var(--night);
+  margin: 0.8rem;
+}
+
+.disc {
+  border-radius: 50%;
+  box-shadow: inset 0 -1rem 0 rgba(0, 0, 0, 0.22);
+}
+
+.ttt-cell {
+  border-radius: 2.8rem;
+  background: var(--card);
+  transition: transform 180ms cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+/* ============================================================
+   Motion - nothing in this app changes state instantly
+   ============================================================ */
+
+@keyframes db-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes db-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.4rem);
+  }
+}
+
+@keyframes db-rise {
+  from {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulse {
+  animation: db-pulse 2.2s ease-in-out infinite;
+}
+
+.rise {
+  animation: db-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

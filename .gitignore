@@ -12,3 +12,7 @@ Desktop.ini
 # Local tooling
 node_modules/
 .claude/settings.local.json
+
+# Build output
+dist/
+*.tsbuildinfo
