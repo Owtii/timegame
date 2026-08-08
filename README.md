@@ -93,6 +93,32 @@ Timing, Deduction, Strategy - track which games moved it.
 It is **not** an IQ and is never described as one, in the app or anywhere else.
 It measures how you have played here and makes no other claim.
 
+## Profile and people
+
+Tapping your name at the top of the hub opens the profile. It holds two
+players, because that is what a pass-and-play game needs:
+
+- **You** - name, mark, coins, per-game record, and your **tag**.
+- **On this phone** - whoever you hand the phone to. They keep a name and a
+  mark; the base, the coins and the Mind Score stay yours. Two players may not
+  wear the same mark, so the other one's is greyed out.
+
+The **tag** is the only part of a profile that has to be unique, so it is the
+only part that needs an account behind it. Claiming one signs you in as a guest
+if you are not already - a guest is a real account with no identity attached, so
+progress survives being upgraded to a real one later - and writes a row to
+`profiles`.
+
+Once you have a tag the Friends tab can do something: search anyone by theirs,
+add and remove them, and see **Friends**, **Recently played** and **New here**
+in that order. `?add=<tag>` is an invite link - it is parked in session storage
+and dropped from the address bar, so a refresh does not re-run it, and it is
+honoured as soon as you have a tag of your own.
+
+None of this is required to play. With no account, no connection, or no project
+configured, the Friends tab is the only screen that changes - and it says so
+rather than showing a list that is not there.
+
 ## The base
 
 Three structures, left to right, each a separate `<Hoverable>`:

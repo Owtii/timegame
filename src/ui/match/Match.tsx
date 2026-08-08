@@ -67,15 +67,24 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
   }, [request.board, entry.board]);
 
   const names = useMemo<[string, string]>(
-    () => [save.name, request.vsBot ? 'Bot' : 'Player 2'],
-    [save.name, request.vsBot],
+    () => [save.name, request.vsBot ? 'Bot' : save.rival.name],
+    [save.name, save.rival.name, request.vsBot],
   );
 
+  /**
+   * The bot borrows the other seat's colour but never its name or its
+   * progress. Two players may not wear the same mark, so a clash falls back
+   * to the other end of the palette rather than putting two identical pieces
+   * on one board.
+   */
   const colours = useMemo<[string, string]>(() => {
     const mine = colourById(save.wornColour).hex;
-    const theirs = mine.toUpperCase() === '#FF5FA2' ? '#4CC9F0' : '#FF5FA2';
+    let theirs = colourById(save.rival.colour).hex;
+    if (theirs.toUpperCase() === mine.toUpperCase()) {
+      theirs = mine.toUpperCase() === '#FF5FA2' ? '#4CC9F0' : '#FF5FA2';
+    }
     return [mine, theirs];
-  }, [save.wornColour]);
+  }, [save.wornColour, save.rival.colour]);
 
   // ---------- shared match state ----------
 

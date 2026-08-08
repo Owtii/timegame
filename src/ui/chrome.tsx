@@ -1,21 +1,75 @@
 import { BALANCE } from '../config/balance';
+import { colourById } from '../state/cosmetics';
 import { useSaveData } from '../state/store';
 import { Meter } from './primitives';
 
 export type Tab = 'base' | 'play' | 'friends' | 'cups' | 'shop';
 
 /**
- * Coins, energy, Mind Score. Present on every hub screen and gone entirely
- * inside a match, where nothing but the board should be competing for the eye.
+ * Who you are, then what you have.
+ *
+ * The profile sits above the figures rather than behind a settings cog: it is
+ * how you rename yourself, claim the tag other people search for, and set up
+ * the person you are about to hand the phone to.
  */
-export function Hud({ onMind }: { onMind: () => void }) {
+export function Hud({ onMind, onProfile }: { onMind: () => void; onProfile: () => void }) {
   const save = useSaveData();
   const boosted = save.energy > 0;
   const blocks = 8;
   const filled = Math.round((save.energy / BALANCE.base.energyMax) * blocks);
 
   return (
-    <div className="hud" style={{ paddingTop: '10.4rem' }}>
+    <>
+      <button
+        onClick={onProfile}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.6rem',
+          margin: '8.6rem 4rem 1.6rem',
+          flex: 'none',
+          textAlign: 'left',
+        }}
+      >
+        <span
+          style={{
+            width: '6.4rem',
+            height: '6.4rem',
+            borderRadius: '2rem',
+            background: colourById(save.wornColour).hex,
+            display: 'grid',
+            placeItems: 'center',
+            flex: 'none',
+            boxShadow: 'inset 0 -0.8rem 0 rgba(0,0,0,.2)',
+          }}
+        >
+          <span
+            style={{
+              width: '2.8rem',
+              height: '2.8rem',
+              borderRadius: '50%',
+              border: '0.8rem solid var(--on-fill)',
+            }}
+          />
+        </span>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', minWidth: 0 }}>
+          <span
+            style={{
+              font: '900 3.2rem/1 Nunito',
+              color: 'var(--text)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {save.name}
+          </span>
+          <span style={{ font: '700 2.2rem/1 Nunito', color: save.handle ? 'var(--p1)' : 'var(--dim)' }}>
+            {save.handle ? `@${save.handle}` : 'Tap to pick a tag'}
+          </span>
+        </span>
+      </button>
+
+      <div className="hud">
       <div className="hud-tile">
         <span className="hud-cap">COINS</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
@@ -61,7 +115,8 @@ export function Hud({ onMind }: { onMind: () => void }) {
           )}
         </span>
       </button>
-    </div>
+      </div>
+    </>
   );
 }
 

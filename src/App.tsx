@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import { gameById } from './game/catalog';
 import type { BoardId, GameId, MatchRequest } from './game/types';
+import { stashInvite } from './net/supabase';
 import type { StructureId } from './state/economy';
 import { useSave } from './state/store';
 import { Hud, TabBar, type Tab } from './ui/chrome';
 import { Match } from './ui/match/Match';
+import { ProfileSheet } from './ui/ProfileSheet';
 import { BaseScreen } from './ui/screens/BaseScreen';
 import { CupsScreen } from './ui/screens/CupsScreen';
 import { FriendsScreen } from './ui/screens/FriendsScreen';
@@ -65,6 +67,7 @@ export default function App() {
     return id === 'pump' || id === 'worker' || id === 'machine' ? id : null;
   });
   const [mindOpen, setMindOpen] = useState(() => window.location.hash === '#/mind');
+  const [profileOpen, setProfileOpen] = useState(() => window.location.hash === '#/me');
 
   const tick = useSave((s) => s.tick);
   const bootOffline = useSave((s) => s.bootOffline);
@@ -72,6 +75,8 @@ export default function App() {
   // what the base made while the app was shut, worked out once at boot
   useEffect(() => {
     bootOffline();
+    // park an invite link before anything can navigate the address bar away
+    stashInvite();
   }, [bootOffline]);
 
   /**
@@ -119,7 +124,7 @@ export default function App() {
   return (
     <div className="frame">
       <div className="screen">
-        <Hud onMind={() => setMindOpen(true)} />
+        <Hud onMind={() => setMindOpen(true)} onProfile={() => setProfileOpen(true)} />
 
         {tab === 'base' && (
           <BaseScreen
@@ -129,7 +134,7 @@ export default function App() {
           />
         )}
         {tab === 'play' && <PlayScreen onPick={(game) => setPicking({ game })} />}
-        {tab === 'friends' && <FriendsScreen />}
+        {tab === 'friends' && <FriendsScreen onProfile={() => setProfileOpen(true)} />}
         {tab === 'cups' && <CupsScreen />}
         {tab === 'shop' && <ShopScreen />}
 
@@ -153,6 +158,7 @@ export default function App() {
 
       {structure && <UpgradePopup id={structure} onClose={() => setStructure(null)} />}
       {mindOpen && <MindSheet onClose={() => setMindOpen(false)} />}
+      {profileOpen && <ProfileSheet onClose={() => setProfileOpen(false)} />}
       <WelcomeBack />
     </div>
   );

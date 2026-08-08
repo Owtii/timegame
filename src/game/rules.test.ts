@@ -166,9 +166,32 @@ describe('bid-tac-toe', () => {
 });
 
 describe('the bot', () => {
+  /**
+   * The slip is deliberate - about one move in seven the bot plays at random
+   * so it stays beatable - which makes an unstubbed assertion about its best
+   * move fail roughly that often. Pinning `Math.random` high keeps the search
+   * under test rather than the dice.
+   */
+  const pinned = <T>(value: number, fn: () => T): T => {
+    const real = Math.random;
+    Math.random = () => value;
+    try {
+      return fn();
+    } finally {
+      Math.random = real;
+    }
+  };
+
   it('takes a win when one is on offer', () => {
     // o o . / x x . / . . .  - o to move takes index 2
-    expect(ticTacToe(board('oo.xx....'), 1)).toBe(2);
+    expect(pinned(0.99, () => ticTacToe(board('oo.xx....'), 1))).toBe(2);
+  });
+
+  it('still returns a legal square when it slips', () => {
+    // below the slip rate the search is skipped entirely, so this covers the
+    // branch that keeps the bot beatable without betting on the dice
+    const move = pinned(0, () => ticTacToe(board('oo.xx....'), 1));
+    expect([2, 5, 6, 7, 8]).toContain(move);
   });
 
   it('names the square that completes its own line first', () => {

@@ -32,9 +32,21 @@ export interface MatchRow {
   mindDelta: number;
 }
 
+/** The other person on this phone. Pass and play needs them to have a name. */
+export interface Rival {
+  name: string;
+  colour: string;
+}
+
 export interface Save {
   version: number;
   name: string;
+  /**
+   * Your online tag, once claimed. It is how other people find you, and it is
+   * the one piece of the profile that has to be unique across everybody.
+   */
+  handle: string | null;
+  rival: Rival;
   coins: number;
   energy: number;
   mind: MindState;
@@ -55,8 +67,10 @@ export interface Save {
 }
 
 const freshSave = (): Save => ({
-  version: 3,
+  version: 4,
   name: 'You',
+  handle: null,
+  rival: { name: 'Player 2', colour: 'rose' },
   coins: 250,
   energy: 0,
   mind: newMindState(),
@@ -105,6 +119,10 @@ interface SaveStore {
   buyStyle: (id: string, price: number) => boolean;
   setCupsNotify: (on: boolean) => void;
   rename: (name: string) => void;
+  setHandle: (handle: string) => void;
+  renameRival: (name: string) => void;
+  /** Two players may not wear the same mark, or the board stops being readable. */
+  dressRival: (colour: string) => void;
   reset: () => void;
 }
 
@@ -293,12 +311,29 @@ export const useSave = create<SaveStore>()(
 
       setCupsNotify: (on) => set((s) => ({ save: { ...s.save, cupsNotify: on } })),
       rename: (name) => set((s) => ({ save: { ...s.save, name: name.slice(0, 14) || 'You' } })),
+      setHandle: (handle) => set((s) => ({ save: { ...s.save, handle } })),
+
+      renameRival: (name) =>
+        set((s) => ({
+          save: { ...s.save, rival: { ...s.save.rival, name: name.slice(0, 14) || 'Player 2' } },
+        })),
+
+      dressRival: (colour) =>
+        set((s) => ({ save: { ...s.save, rival: { ...s.save.rival, colour } } })),
+
       reset: () => set({ save: freshSave(), offline: null }),
     }),
     {
-      name: 'duelboard.save.v3',
+      name: 'duelboard.save.v4',
       // only the save travels; `offline` is worked out fresh every boot
       partialize: (s) => ({ save: s.save }),
+      // a save written by an older build is filled out rather than discarded:
+      // losing somebody's base to a field they never had is not acceptable
+      merge: (persisted, current) => {
+        const saved = (persisted as { save?: Partial<Save> } | undefined)?.save;
+        if (!saved) return current;
+        return { ...current, save: { ...current.save, ...saved } };
+      },
     },
   ),
 );
