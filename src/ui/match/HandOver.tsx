@@ -8,10 +8,13 @@
 export function HandOver({
   name,
   colour,
+  reason,
   onReady,
 }: {
   name: string;
   colour: string;
+  /** Why the phone is moving: a fresh round, a replay, or simply their turn. */
+  reason: string;
   onReady: () => void;
 }) {
   return (
@@ -55,12 +58,14 @@ export function HandOver({
       </span>
       <span
         style={{
-          font: '900 5.2rem/1.2 Nunito',
+          font: '900 4.4rem/1.25 Nunito',
           color: 'rgba(10,12,17,.62)',
           marginTop: '1.8rem',
+          padding: '0 6rem',
+          textAlign: 'center',
         }}
       >
-        Hand the phone over
+        {reason}
       </span>
       <span
         className="pulse"

@@ -3,16 +3,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BALANCE } from '../../config/balance';
 import {
   BOARDS,
-  isFull,
   judge,
   marksOn,
   openCells,
   play,
   type BoardSpec,
-  type BoardVerdict,
 } from '../../game/board';
 import { newBidState, reveal, settle, type BidState, type BidVerdict } from '../../game/bid';
-import { botBid, botGuess, botMove, botPickSquare, botStopTime } from '../../game/bot';
+import { botBid, botGuess, botMove, botPickSquare } from '../../game/bot';
 import { gameById } from '../../game/catalog';
 import {
   closestWinner,
@@ -29,19 +27,23 @@ import {
   record,
   resolveTiming,
   timingActor,
+  type TimingOutcome,
   type TimingRound,
 } from '../../game/timing';
 import type { MatchRequest, Mark } from '../../game/types';
 import { colourById } from '../../state/cosmetics';
 import type { MatchOutcome } from '../../state/mind';
 import { useSave, useSaveData, type MatchReward } from '../../state/store';
+import { ChatSheet } from '../ChatSheet';
 import { Meter } from '../primitives';
 import { BidPlace, BidReveal } from './BidScreens';
 import { BoardView, ColumnArrows, type DropAnimation } from './BoardView';
 import { ClockScreen } from './ClockScreen';
 import { HandOver } from './HandOver';
 import { NumberScreen } from './NumberScreen';
+import { AutoAdvance, useTurnClock } from './pacing';
 import { Result } from './Result';
+import { TimingReveal } from './TimingReveal';
 
 type Phase =
   | { k: 'toss' }
@@ -50,10 +52,11 @@ type Phase =
   | { k: 'seal'; player: 0 | 1 }
   | { k: 'reveal'; bids: [number, number]; verdict: BidVerdict; run: number }
   | { k: 'clock' }
+  | { k: 'clockReveal'; outcome: TimingOutcome; winner: 0 | 1 | null }
   | { k: 'number' }
   | { k: 'claim'; winner: 0 | 1 }
-  | { k: 'round'; title: string; sub: string; tone: string }
-  | { k: 'handover'; to: 0 | 1; next: Phase }
+  | { k: 'round'; title: string; sub: string; tone: string; label: string; winner: 0 | 1 | null }
+  | { k: 'handover'; to: 0 | 1; reason: string; next: Phase }
   | { k: 'over'; winner: 0 | 1 | null; reason: string };
 
 export function Match({ request, onExit }: { request: MatchRequest; onExit: () => void }) {
@@ -73,9 +76,9 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
 
   /**
    * The bot borrows the other seat's colour but never its name or its
-   * progress. Two players may not wear the same mark, so a clash falls back
-   * to the other end of the palette rather than putting two identical pieces
-   * on one board.
+   * progress. Two players may not wear the same mark, so a clash falls back to
+   * the other end of the palette rather than putting two identical pieces on
+   * one board.
    */
   const colours = useMemo<[string, string]>(() => {
     const mine = colourById(save.wornColour).hex;
@@ -92,7 +95,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
     spec ? new Array<Mark>(spec.cols * spec.rows).fill(null) : [],
   );
   const [phase, setPhase] = useState<Phase>(() =>
-    entry.kind === 'bid' ? { k: 'toss' } : entry.kind === 'board' ? { k: 'play' } : { k: 'round', title: 'Round 1', sub: '', tone: 'var(--action)' },
+    entry.kind === 'bid' ? { k: 'toss' } : entry.kind === 'board' ? { k: 'play' } : { k: 'toss' },
   );
   const [turn, setTurn] = useState<0 | 1>(0);
   const [score, setScore] = useState<[number, number]>([0, 0]);
@@ -101,6 +104,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
   const [falling, setFalling] = useState<DropAnimation | null>(null);
   const [reward, setReward] = useState<MatchReward | null>(null);
   const [sharpStops, setSharpStops] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const [bid, setBid] = useState<BidState>(() =>
     newBidState(BALANCE.bidding.pool, BALANCE.bidding.passBank, BALANCE.bidding.passLimit, 0),
@@ -113,20 +117,18 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
   const dropKey = useRef(0);
 
   /**
-   * Which player the bid screen is for.
-   *
-   * Against the bot the human always seals - the bot's number is worked out
-   * at the reveal - so a bot chooser must not be handed the dial.
+   * Pass and play hands the phone over, and says why: a fresh round, a replay,
+   * or simply the other person's turn. Against the bot there is nobody to hand
+   * it to, so the match runs straight through.
    */
-  const sealFor = useCallback(
-    (player: 0 | 1): Phase => ({ k: 'seal', player: request.vsBot ? 0 : player }),
+  const handOver = useCallback(
+    (to: 0 | 1, reason: string, next: Phase): Phase =>
+      request.vsBot ? next : { k: 'handover', to, reason, next },
     [request.vsBot],
   );
 
-  /** Pass and play hands the phone over; against the bot it runs straight through. */
-  const handOver = useCallback(
-    (to: 0 | 1, next: Phase): Phase =>
-      request.vsBot || to === 1 ? next : { k: 'handover', to, next },
+  const sealFor = useCallback(
+    (player: 0 | 1): Phase => ({ k: 'seal', player: request.vsBot ? 0 : player }),
     [request.vsBot],
   );
 
@@ -137,37 +139,38 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       if (settled.current) return;
       settled.current = true;
       const outcome: MatchOutcome = winner === null ? 'draw' : winner === 0 ? 'win' : 'loss';
-      const paid = finishMatch({
-        game: request.game,
-        vsBot: request.vsBot,
-        outcome,
-        facet: entry.facet,
-        rounds: round,
-        roundsWon,
-        sharpStops,
-      });
-      setReward(paid);
+      setReward(
+        finishMatch({
+          game: request.game,
+          vsBot: request.vsBot,
+          outcome,
+          facet: entry.facet,
+          rounds: round,
+          roundsWon,
+          sharpStops,
+        }),
+      );
       setPhase({ k: 'over', winner, reason });
     },
     [entry.facet, finishMatch, request.game, request.vsBot, round, sharpStops],
   );
 
-  /** A board that has produced a line or filled up ends the match there. */
   const judgeBoard = useCallback(
-    (next: Mark[]): BoardVerdict | null => {
-      if (!spec) return null;
+    (next: Mark[]): boolean => {
+      if (!spec) return false;
       const v = judge(next, spec);
-      if (!v) return null;
+      if (!v) return false;
       setLine(v.line);
-      const reason =
-        v.winner === null
-          ? 'Board full, no line'
-          : `${spec.need} in a row`;
       window.setTimeout(
-        () => finish(v.winner, reason, v.winner === 0 ? 1 : 0),
+        () =>
+          finish(
+            v.winner,
+            v.winner === null ? 'Board full, no line' : `${spec.need} in a row`,
+            v.winner === 0 ? 1 : 0,
+          ),
         v.line ? 900 : 400,
       );
-      return v;
+      return true;
     },
     [finish, spec],
   );
@@ -196,12 +199,15 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
   // ---------- rounds ----------
 
   const startRound = useCallback(
-    (n: number) => {
+    (n: number, replay?: 'tie' | 'void') => {
       const first = ((n - 1) % 2) as 0 | 1; // who acts first alternates every round
       setRound(n);
       setLine(null);
 
-      if (entry.kind === 'tap' || (entry.kind === 'duel' && entry.id === 'dtimer')) {
+      const clock = entry.kind === 'tap' || entry.id === 'dtimer';
+      const deduce = entry.kind === 'guess' || entry.id === 'dnumber';
+
+      if (clock) {
         const t = BALANCE.timing;
         const target =
           entry.kind === 'tap'
@@ -209,13 +215,19 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
             : randomTarget(t.duelTargetMin, t.duelTargetMax);
         setTiming(newTimingRound(target, t.voidLimitSeconds, first));
         setTurn(first);
-        setPhase(handOver(first, { k: 'clock' }));
+
+        const reason =
+          replay === 'tie'
+            ? 'Sudden death. New target, same stakes.'
+            : replay === 'void'
+              ? 'Round replayed. New target.'
+              : 'You go first this round.';
+        setPhase(handOver(first, reason, { k: 'clock' }));
         return;
       }
 
-      if (entry.kind === 'guess' || (entry.kind === 'duel' && entry.id === 'dnumber')) {
-        const isDuel = entry.kind === 'duel';
-        setNumbers(newNumberRound(isDuel, first, BALANCE.numbers));
+      if (deduce) {
+        setNumbers(newNumberRound(entry.kind === 'duel', first, BALANCE.numbers));
         setTurn(first);
         setPhase({ k: 'number' });
         return;
@@ -233,24 +245,44 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       if (winner !== null) next[winner] += 1;
       setScore(next);
 
-      const tone = winner === null ? 'var(--muted)' : colours[winner];
-      setPhase({ k: 'round', title, sub, tone });
-
       const winTo = entry.winTo ?? 0;
-      if (winTo && (next[0] >= winTo || next[1] >= winTo)) {
-        const champ = next[0] >= winTo ? 0 : 1;
-        window.setTimeout(() => finish(champ, `First to ${winTo} rounds`, next[0]), 1900);
-        return;
-      }
+      const over = winTo > 0 && (next[0] >= winTo || next[1] >= winTo);
+      const claims = entry.kind === 'duel' && winner !== null;
 
-      if (entry.kind === 'duel' && winner !== null) {
-        window.setTimeout(() => setPhase({ k: 'claim', winner }), 1600);
-        return;
-      }
-
-      window.setTimeout(() => startRound(round + 1), 1900);
+      setPhase({
+        k: 'round',
+        title,
+        sub,
+        tone: winner === null ? 'var(--muted)' : colours[winner],
+        label: over
+          ? 'See the result'
+          : claims
+            ? spec?.drop
+              ? 'Drop your piece'
+              : 'Claim a square'
+            : 'Next round',
+        winner,
+      });
     },
-    [colours, entry, finish, round, score, startRound],
+    [colours, entry, score, spec],
+  );
+
+  /** What the button under a round summary actually does. */
+  const leaveRound = useCallback(
+    (winner: 0 | 1 | null) => {
+      const winTo = entry.winTo ?? 0;
+      if (winTo > 0 && (score[0] >= winTo || score[1] >= winTo)) {
+        const champ = score[0] >= winTo ? 0 : 1;
+        finish(champ, `First to ${winTo} rounds`, score[0]);
+        return;
+      }
+      if (entry.kind === 'duel' && winner !== null) {
+        setPhase({ k: 'claim', winner });
+        return;
+      }
+      startRound(round + 1);
+    },
+    [entry, finish, round, score, startRound],
   );
 
   // ---------- timing ----------
@@ -271,27 +303,35 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
         setTiming(advanced);
         const other = timingActor(advanced);
         setTurn(other);
-        setPhase(handOver(other, { k: 'clock' }));
+        setPhase(handOver(other, 'Hand the phone over.', { k: 'clock' }));
         return;
       }
 
       setTiming(next);
       const { outcome, winner } = resolveTiming(next);
-      const shown = `${names[0]} ${next.times[0]?.toFixed(2)}s · ${names[1]} ${next.times[1]?.toFixed(2)}s`;
+      setPhase({ k: 'clockReveal', outcome, winner });
+    },
+    [handOver, timing],
+  );
+
+  /** The reveal has had its say; now the round actually resolves. */
+  const leaveClockReveal = useCallback(
+    (outcome: TimingOutcome, winner: 0 | 1 | null) => {
+      if (!timing) return;
+      const shown = `${names[0]} ${timing.times[0]?.toFixed(2)}s · ${names[1]} ${timing.times[1]?.toFixed(2)}s`;
 
       if (outcome === 'void') {
-        closeRound(null, 'Round void', `Both more than ${next.voidLimit.toFixed(2)}s out. ${shown}`);
+        // nobody takes it, so the round number does not move either
+        startRound(round, 'void');
         return;
       }
       if (outcome === 'tie') {
-        // sudden death: same round number, a fresh target
-        setPhase({ k: 'round', title: 'Sudden death', sub: `Dead level. ${shown}`, tone: 'var(--action)' });
-        window.setTimeout(() => startRound(round), 1900);
+        startRound(round, 'tie');
         return;
       }
-      closeRound(winner, `${names[winner!]} takes it`, shown);
+      closeRound(winner, `${names[winner as 0 | 1]} takes it`, shown);
     },
-    [closeRound, handOver, names, round, startRound, timing],
+    [closeRound, names, round, startRound, timing],
   );
 
   // ---------- numbers ----------
@@ -323,6 +363,13 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
     [closeRound, names, numbers],
   );
 
+  const autoGuess = useCallback(() => {
+    if (!numbers) return;
+    // out of time: the app guesses somewhere still in play rather than stalling
+    const { lo, hi } = knownRange(numbers);
+    guess(botGuess(lo, hi, numbers.guesses.map((g) => g.n)));
+  }, [guess, numbers]);
+
   // ---------- bid-tac-toe ----------
 
   const openReveal = useCallback(
@@ -353,7 +400,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       }
 
       setTurn(them);
-      setPhase(handOver(them, { k: 'seal', player: them }));
+      setPhase(handOver(them, 'Their bid stays private.', { k: 'seal', player: them }));
     },
     [bid, cells, handOver, openReveal, request.vsBot],
   );
@@ -369,7 +416,12 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
         if (v) {
           setLine(v.line);
           window.setTimeout(
-            () => finish(v.winner, v.winner === null ? 'Board full, no line' : 'Three in a row', v.winner === 0 ? 1 : 0),
+            () =>
+              finish(
+                v.winner,
+                v.winner === null ? 'Board full, no line' : 'Three in a row',
+                v.winner === 0 ? 1 : 0,
+              ),
             900,
           );
           return;
@@ -377,8 +429,6 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       }
 
       setTurn(applied.state.chooser);
-      // a tie settles nothing: the same square comes straight back up with the
-      // same player still holding the pick
       setPhase(verdict.winner >= 0 ? { k: 'pick' } : sealFor(applied.state.chooser));
     },
     [bid, cells, finish, sealFor],
@@ -412,35 +462,40 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       if (v) {
         setLine(v.line);
         window.setTimeout(
-          () => finish(v.winner, v.winner === null ? 'Board full, no line' : `${spec.need} in a row`, score[0]),
+          () =>
+            finish(
+              v.winner,
+              v.winner === null ? 'Board full, no line' : `${spec.need} in a row`,
+              score[0],
+            ),
           900,
         );
         return;
       }
-      window.setTimeout(() => startRound(round + 1), 500);
+      window.setTimeout(() => startRound(round + 1), 520);
     },
     [cells, finish, round, score, spec, startRound],
   );
 
-  // ---------- the toss, and the first round ----------
+  // ---------- the opening ----------
 
   useEffect(() => {
     if (phase.k !== 'toss') return;
+
+    if (entry.kind !== 'bid') {
+      startRound(1);
+      return;
+    }
     const first = Math.random() < 0.5 ? 0 : 1;
     const t = window.setTimeout(() => {
       setBid((s) => ({ ...s, chooser: first as 0 | 1 }));
       setTurn(first as 0 | 1);
       setPhase({ k: 'pick' });
-    }, 1600);
+    }, 1700);
     return () => clearTimeout(t);
-  }, [phase.k]);
-
-  useEffect(() => {
-    if (entry.kind === 'bid' || entry.kind === 'board') return;
-    startRound(1);
     // one shot: the round machine drives itself from here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [phase.k]);
 
   // ---------- the bot ----------
 
@@ -449,19 +504,17 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
     let timer = 0;
 
     if (phase.k === 'play' && turn === 1 && spec) {
-      timer = window.setTimeout(() => playBoard(botMove(cells, spec.id, 1), 1), 620);
+      timer = window.setTimeout(() => playBoard(botMove(cells, spec.id, 1), 1), 720);
     } else if (phase.k === 'claim' && phase.winner === 1 && spec) {
       const where = spec.drop ? botMove(cells, spec.id, 1) : botPickSquare(cells, 1);
-      timer = window.setTimeout(() => claimSquare(where, 1), 720);
+      timer = window.setTimeout(() => claimSquare(where, 1), 820);
     } else if (phase.k === 'pick' && bid.chooser === 1) {
-      timer = window.setTimeout(() => pickSquare(botPickSquare(cells, 1)), 760);
-    } else if (phase.k === 'clock' && timing && timingActor(timing) === 1) {
-      timer = window.setTimeout(() => stopClock(botStopTime(timing.target)), 1200);
+      timer = window.setTimeout(() => pickSquare(botPickSquare(cells, 1)), 860);
     } else if (phase.k === 'number' && numbers && numberActor(numbers) === 1) {
       const { lo, hi } = knownRange(numbers);
       timer = window.setTimeout(
         () => guess(botGuess(lo, hi, numbers.guesses.map((g) => g.n))),
-        900,
+        1100,
       );
     }
 
@@ -477,30 +530,49 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
     playBoard,
     request.vsBot,
     spec,
-    stopClock,
-    timing,
     turn,
   ]);
 
-  // ---------- the seal clock ----------
+  // ---------- turn clocks ----------
+
+  const botActing =
+    request.vsBot &&
+    ((phase.k === 'play' && turn === 1) ||
+      (phase.k === 'claim' && phase.winner === 1) ||
+      (phase.k === 'pick' && bid.chooser === 1) ||
+      (phase.k === 'number' && !!numbers && numberActor(numbers) === 1));
+
+  const boardTimeout = useCallback(() => {
+    if (!spec) return;
+    // run a move clock out and the app plays a legal move rather than stalling
+    if (phase.k === 'play') playBoard(botMove(cells, spec.id, turn), turn);
+    else if (phase.k === 'claim') claimSquare(botPickSquare(cells, phase.winner), phase.winner);
+    else if (phase.k === 'pick') pickSquare(botPickSquare(cells, bid.chooser));
+  }, [bid.chooser, cells, claimSquare, phase, pickSquare, playBoard, spec, turn]);
+
+  const moveClock = useTurnClock({
+    seconds: BALANCE.clocks.moveSeconds,
+    active: !chatOpen && !botActing && (phase.k === 'play' || phase.k === 'claim' || phase.k === 'pick'),
+    paused: chatOpen,
+    onExpire: boardTimeout,
+  });
+
+  const guessClock = useTurnClock({
+    seconds: BALANCE.clocks.guessSeconds,
+    active: !chatOpen && !botActing && phase.k === 'number',
+    paused: chatOpen,
+    onExpire: autoGuess,
+  });
 
   const sealSeconds = BALANCE.clocks.bidSeconds;
-  const [sealLeft, setSealLeft] = useState(sealSeconds);
-
-  useEffect(() => {
-    if (phase.k !== 'seal') {
-      setSealLeft(sealSeconds);
-      return;
-    }
-    const started = performance.now();
-    const id = window.setInterval(() => {
-      const left = sealSeconds - (performance.now() - started) / 1000;
-      setSealLeft(Math.max(0, left));
-      // run the clock out and the app seals for you rather than stalling
-      if (left <= 0) seal(0, phase.player);
-    }, 100);
-    return () => clearInterval(id);
-  }, [phase, seal, sealSeconds]);
+  const sealClock = useTurnClock({
+    seconds: sealSeconds,
+    active: !chatOpen && phase.k === 'seal',
+    paused: chatOpen,
+    onExpire: () => {
+      if (phase.k === 'seal') seal(0, phase.player);
+    },
+  });
 
   // ---------- render ----------
 
@@ -509,6 +581,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
       <HandOver
         name={names[phase.to]}
         colour={colours[phase.to]}
+        reason={phase.reason}
         onReady={() => setPhase(phase.next)}
       />
     );
@@ -534,102 +607,108 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
     );
   }
 
-  /**
-   * Who the screen is waiting on.
-   *
-   * `turn` alone is not it: claiming a square and naming one are their own
-   * phases with their own actor, and a header that says the wrong name is
-   * worse than no header at all.
-   */
   const acting: 0 | 1 =
     phase.k === 'claim' ? phase.winner : phase.k === 'pick' ? bid.chooser : turn;
 
   const tag =
     entry.kind === 'bid'
-      ? // squares settled, not bids placed: a tie or a double pass puts the
-        // same square straight back up, and the count must not move for it
+      ? // squares settled, not bids placed: a tie or a double pass puts the same
+        // square straight back up, and the count must not move for it
         `SQUARE ${marksOn(cells) + 1} OF 9`
       : entry.winTo
         ? `ROUND ${round} · ${score[0]}-${score[1]}`
         : `${names[acting].toUpperCase()} TO PLAY`;
 
+  const clockLeft =
+    phase.k === 'number'
+      ? guessClock
+      : phase.k === 'seal'
+        ? sealClock
+        : moveClock;
+
+  const showBars =
+    phase.k !== 'seal' && phase.k !== 'reveal' && phase.k !== 'clockReveal' && phase.k !== 'toss';
+
   return (
     <div className="screen">
       <div className="topbar">
         <span className="tag">{tag}</span>
-        <span style={{ font: '900 3.4rem/1 Nunito', color: 'var(--text)' }}>{entry.name}</span>
-        <button
-          onClick={onExit}
-          aria-label="Leave the match"
-          style={{
-            width: '7.6rem',
-            height: '7.6rem',
-            borderRadius: '2.6rem',
-            background: 'var(--card)',
-            display: 'grid',
-            placeItems: 'center',
-            position: 'relative',
-          }}
-        >
-          <span
-            style={{
-              position: 'absolute',
-              width: '3.4rem',
-              height: '0.8rem',
-              borderRadius: '0.4rem',
-              background: 'var(--muted)',
-              transform: 'rotate(45deg)',
-            }}
-          />
-          <span
-            style={{
-              position: 'absolute',
-              width: '3.4rem',
-              height: '0.8rem',
-              borderRadius: '0.4rem',
-              background: 'var(--muted)',
-              transform: 'rotate(-45deg)',
-            }}
-          />
-        </button>
+        <span style={{ font: '900 3.2rem/1 Nunito', color: 'var(--text)' }}>{entry.name}</span>
+
+        <span style={{ display: 'flex', gap: '1.2rem' }}>
+          <IconButton label="Open the chat" onClick={() => setChatOpen(true)}>
+            <span
+              style={{
+                width: '3.4rem',
+                height: '2.6rem',
+                borderRadius: '0.9rem 0.9rem 0.9rem 0.2rem',
+                background: 'var(--muted)',
+              }}
+            />
+          </IconButton>
+          <IconButton label="Leave the match" onClick={onExit}>
+            <span
+              style={{
+                position: 'absolute',
+                width: '3.2rem',
+                height: '0.8rem',
+                borderRadius: '0.4rem',
+                background: 'var(--muted)',
+                transform: 'rotate(45deg)',
+              }}
+            />
+            <span
+              style={{
+                position: 'absolute',
+                width: '3.2rem',
+                height: '0.8rem',
+                borderRadius: '0.4rem',
+                background: 'var(--muted)',
+                transform: 'rotate(-45deg)',
+              }}
+            />
+          </IconButton>
+        </span>
       </div>
 
-      {phase.k !== 'seal' && phase.k !== 'reveal' && (
-        <div style={{ padding: '0 4rem', marginTop: '3.2rem', flex: 'none' }}>
+      {showBars && (
+        <div style={{ padding: '0 4rem', marginTop: '2.6rem', flex: 'none' }}>
           <PlayerBars
             names={names}
             colours={colours}
             turn={acting}
             score={score}
             showScore={!!entry.winTo}
+            seconds={clockLeft.left}
+            // the seal screen carries its own fuse, so the bars never see it
+            total={
+              phase.k === 'number' ? BALANCE.clocks.guessSeconds : BALANCE.clocks.moveSeconds
+            }
+            running={!botActing && !chatOpen && phase.k !== 'clock' && phase.k !== 'round'}
           />
         </div>
       )}
 
-      <div className="screen-scroll" style={{ paddingTop: '3rem' }}>
+      <div className="screen-scroll" style={{ paddingTop: '2.6rem' }}>
         {phase.k === 'toss' && <Toss names={names} colours={colours} />}
 
         {(phase.k === 'play' || phase.k === 'claim') && spec && (
           <>
-            {/* everything gives way to the board: it is centred in whatever
-                room the header and the prompt leave it */}
             <div style={{ flex: 1, minHeight: '2rem' }} />
             {spec.drop && (
               <ColumnArrows
                 spec={spec}
                 cells={cells}
-                colour={colours[phase.k === 'claim' ? phase.winner : turn]}
+                colour={colours[acting]}
                 active={null}
-                onPick={(c) =>
-                  phase.k === 'claim' ? claimSquare(c, phase.winner) : playBoard(c, turn)
-                }
+                onPick={(c) => (phase.k === 'claim' ? claimSquare(c, phase.winner) : playBoard(c, turn))}
               />
             )}
             <BoardView
               spec={spec}
               cells={cells}
               colours={colours}
-              live={phase.k === 'claim' ? phase.winner : turn}
+              live={acting}
               onPlay={(w) => (phase.k === 'claim' ? claimSquare(w, phase.winner) : playBoard(w, turn))}
               line={line}
               falling={falling}
@@ -648,9 +727,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
             >
               <span style={{ font: '900 4.4rem/1.15 Nunito', color: 'var(--text)' }}>
                 {phase.k === 'claim' ? 'Claim a square, ' : spec.drop ? 'Drop a piece, ' : 'Take a square, '}
-                <span style={{ color: colours[phase.k === 'claim' ? phase.winner : turn] }}>
-                  {names[phase.k === 'claim' ? phase.winner : turn]}
-                </span>
+                <span style={{ color: colours[acting] }}>{names[acting]}</span>
               </span>
               <span style={{ font: '700 2.8rem/1 Nunito', color: 'var(--muted)' }}>
                 {spec.need} in a row takes the match
@@ -665,13 +742,13 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
               style={{
                 flex: 'none',
                 textAlign: 'center',
-                marginBottom: '3.4rem',
+                marginBottom: '3rem',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1.2rem',
               }}
             >
-              <span style={{ font: '900 5.4rem/1.1 Nunito', color: 'var(--text)' }}>
+              <span style={{ font: '900 5.2rem/1.1 Nunito', color: 'var(--text)' }}>
                 <span style={{ color: colours[bid.chooser] }}>{names[bid.chooser]}</span> names the
                 square
               </span>
@@ -686,7 +763,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
               live={bid.chooser}
               onPlay={pickSquare}
             />
-            <div style={{ flex: 1, minHeight: '3.4rem' }} />
+            <div style={{ flex: 1, minHeight: '3rem' }} />
             <div
               style={{
                 flex: 'none',
@@ -713,7 +790,7 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
             value={Math.min(bidValue, bid.balance[phase.player])}
             setValue={setBidValue}
             onSeal={() => seal(Math.min(bidValue, bid.balance[phase.player]), phase.player)}
-            secondsLeft={sealLeft}
+            secondsLeft={sealClock.left}
             totalSeconds={sealSeconds}
           />
         )}
@@ -731,16 +808,43 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
               bid.balance[1] - (phase.bids[1] === 0 ? -bid.passBank : phase.bids[1]),
             ]}
             onNext={() => nextSquare(phase.bids, phase.verdict, phase.run)}
+            paused={chatOpen}
+            seconds={BALANCE.clocks.resultSeconds}
           />
         )}
 
         {phase.k === 'clock' && timing && (
           <ClockScreen
+            key={`${round}-${timing.turnIndex}`}
             target={timing.target}
             actorName={names[timingActor(timing)]}
             actorColour={colours[timingActor(timing)]}
             onStop={stopClock}
             botTurn={request.vsBot && timingActor(timing) === 1}
+          />
+        )}
+
+        {phase.k === 'clockReveal' && timing && (
+          <TimingReveal
+            round={timing}
+            outcome={phase.outcome}
+            winner={phase.winner}
+            names={names}
+            colours={colours}
+            nextLabel={
+              phase.outcome === 'tie'
+                ? 'Replay the round'
+                : phase.outcome === 'void'
+                  ? 'New target'
+                  : entry.kind === 'duel'
+                    ? spec?.drop
+                      ? 'Drop your piece'
+                      : 'Claim a square'
+                    : 'Next round'
+            }
+            onNext={() => leaveClockReveal(phase.outcome, phase.winner)}
+            paused={chatOpen}
+            seconds={BALANCE.clocks.resultSeconds}
           />
         )}
 
@@ -751,12 +855,27 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
             colours={colours}
             actor={numberActor(numbers)}
             onGuess={guess}
-            locked={request.vsBot && numberActor(numbers) === 1}
+            botThinking={request.vsBot && numberActor(numbers) === 1}
+            duel={numbers.isDuel}
+            tries={BALANCE.numbers.duelTries}
+            secondsLeft={guessClock.left}
+            warn={guessClock.warn}
           />
         )}
 
-        {phase.k === 'round' && <RoundCard title={phase.title} sub={phase.sub} tone={phase.tone} />}
+        {phase.k === 'round' && (
+          <RoundCard
+            title={phase.title}
+            sub={phase.sub}
+            tone={phase.tone}
+            label={phase.label}
+            paused={chatOpen}
+            onNext={() => leaveRound(phase.winner)}
+          />
+        )}
       </div>
+
+      {chatOpen && <ChatSheet as={acting} onClose={() => setChatOpen(false)} />}
     </div>
   );
 }
@@ -765,22 +884,58 @@ export function Match({ request, onExit }: { request: MatchRequest; onExit: () =
 // chrome
 // ============================================================
 
+function IconButton({
+  children,
+  onClick,
+  label,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      style={{
+        width: '7.4rem',
+        height: '7.4rem',
+        borderRadius: '2.4rem',
+        background: 'var(--card)',
+        display: 'grid',
+        placeItems: 'center',
+        position: 'relative',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 function PlayerBars({
   names,
   colours,
   turn,
   score,
   showScore,
+  seconds,
+  total,
+  running,
 }: {
   names: [string, string];
   colours: [string, string];
   turn: 0 | 1;
   score: [number, number];
   showScore: boolean;
+  seconds: number;
+  total: number;
+  running: boolean;
 }) {
+  const warn = running && seconds <= BALANCE.clocks.warnAtSeconds;
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.8rem' }}>
-      {[0, 1].map((p) => {
+      {([0, 1] as const).map((p) => {
         const on = turn === p;
         return (
           <div
@@ -788,16 +943,18 @@ function PlayerBars({
             className="player-card"
             style={{
               background: on ? colours[p] : 'var(--card)',
-              boxShadow: on ? `0 1.2rem 0 rgba(0,0,0,.38)` : 'none',
+              boxShadow: on ? '0 1.2rem 0 rgba(0,0,0,.38)' : 'none',
               transform: on ? 'translateY(-0.4rem)' : 'none',
+              gap: '1.2rem',
+              padding: '2.2rem 2.4rem',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '1.8rem', minWidth: 0 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '1.6rem', minWidth: 0 }}>
               <span
                 style={{
-                  width: '7.4rem',
-                  height: '7.4rem',
-                  borderRadius: '2.4rem',
+                  width: '6.4rem',
+                  height: '6.4rem',
+                  borderRadius: '2rem',
                   background: on ? 'rgba(10,12,17,.16)' : 'var(--sunken)',
                   display: 'grid',
                   placeItems: 'center',
@@ -806,8 +963,8 @@ function PlayerBars({
               >
                 <span
                   style={{
-                    width: '4.4rem',
-                    height: '4.4rem',
+                    width: '3.6rem',
+                    height: '3.6rem',
                     borderRadius: '50%',
                     background: on ? 'var(--on-fill)' : colours[p],
                   }}
@@ -816,24 +973,45 @@ function PlayerBars({
               <span style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', minWidth: 0 }}>
                 <span
                   style={{
-                    font: '900 3.8rem/1 Nunito',
+                    font: '900 3.2rem/1 Nunito',
                     color: on ? 'var(--on-fill)' : colours[p],
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {names[p]}
                 </span>
                 <span
                   style={{
-                    font: '800 2.2rem/1 Nunito',
-                    letterSpacing: '.14em',
+                    font: '800 2.1rem/1 Nunito',
+                    letterSpacing: '.12em',
                     color: on ? 'rgba(10,12,17,.62)' : 'var(--dim)',
                   }}
                 >
-                  {on ? 'YOUR TURN' : 'WAITING'}
+                  {on ? (warn ? `${Math.ceil(seconds)}s LEFT` : 'YOUR TURN') : 'WAITING'}
                 </span>
               </span>
+            </span>
+
+            {/* the turn clock drains under whoever has to act */}
+            <span
+              style={{
+                height: '0.8rem',
+                borderRadius: '0.4rem',
+                background: on ? 'rgba(10,12,17,.22)' : 'var(--sunken)',
+                overflow: 'hidden',
+              }}
+            >
+              <span
+                style={{
+                  display: 'block',
+                  height: '100%',
+                  width: on && running ? `${Math.max(0, Math.min(1, seconds / total)) * 100}%` : on ? '100%' : '0%',
+                  borderRadius: '0.4rem',
+                  background: warn ? 'var(--p2)' : on ? 'var(--on-fill)' : 'transparent',
+                }}
+              />
             </span>
 
             {showScore && (
@@ -914,7 +1092,7 @@ function Toss({ names, colours }: { names: [string, string]; colours: [string, s
       <span className="t-label">WHO NAMES THE FIRST SQUARE</span>
       <span
         style={{
-          font: '900 11rem/1 Nunito',
+          font: '900 10rem/1 Nunito',
           letterSpacing: '-.03em',
           color: colours[at],
           transition: 'color 60ms linear',
@@ -926,31 +1104,57 @@ function Toss({ names, colours }: { names: [string, string]; colours: [string, s
   );
 }
 
-/**
- * A result advances on its own with a depleting bar showing when; the button
- * next to it only skips ahead. A tap is asked for where it means something.
- */
-function RoundCard({ title, sub, tone }: { title: string; sub: string; tone: string }) {
+function RoundCard({
+  title,
+  sub,
+  tone,
+  label,
+  paused,
+  onNext,
+}: {
+  title: string;
+  sub: string;
+  tone: string;
+  label: string;
+  paused: boolean;
+  onNext: () => void;
+}) {
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '2.4rem',
-        textAlign: 'center',
-        animation: 'db-rise 320ms cubic-bezier(.22,1,.36,1) both',
-      }}
-    >
-      <span style={{ font: '900 8rem/1.05 Nunito', letterSpacing: '-.02em', color: tone }}>
-        {title}
-      </span>
-      {sub && <span style={{ font: '700 3rem/1.35 Nunito', color: 'var(--muted)', maxWidth: '24ch' }}>{sub}</span>}
-    </div>
+    <>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2.4rem',
+          textAlign: 'center',
+          animation: 'db-rise 320ms cubic-bezier(.22,1,.36,1) both',
+        }}
+      >
+        <span style={{ font: '900 7.4rem/1.05 Nunito', letterSpacing: '-.02em', color: tone }}>
+          {title}
+        </span>
+        {sub && (
+          <span style={{ font: '700 3rem/1.35 Nunito', color: 'var(--muted)', maxWidth: '26ch' }}>
+            {sub}
+          </span>
+        )}
+      </div>
+
+      <div style={{ flex: 'none', paddingBottom: '5rem' }}>
+        <AutoAdvance
+          seconds={BALANCE.clocks.roundSeconds}
+          label={label}
+          tone={tone === 'var(--muted)' ? 'var(--action)' : tone}
+          onDone={onNext}
+          paused={paused}
+        />
+      </div>
+    </>
   );
 }
 
 /** Kept for the duel claim step, which needs to know if the grid has room. */
-export const boardHasRoom = (cells: Mark[]) => !isFull(cells) && openCells(cells).length > 0;
+export const boardHasRoom = (cells: Mark[]) => openCells(cells).length > 0;

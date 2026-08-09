@@ -38,9 +38,17 @@ export interface Rival {
   colour: string;
 }
 
+export interface ChatMessage {
+  from: 0 | 1;
+  text: string;
+  at: number;
+}
+
 export interface Save {
   version: number;
   name: string;
+  /** Said between moves, on this phone. Trimmed to the last 200. */
+  chat: ChatMessage[];
   /**
    * Your online tag, once claimed. It is how other people find you, and it is
    * the one piece of the profile that has to be unique across everybody.
@@ -69,6 +77,7 @@ export interface Save {
 const freshSave = (): Save => ({
   version: 4,
   name: 'You',
+  chat: [],
   handle: null,
   rival: { name: 'Player 2', colour: 'rose' },
   coins: 250,
@@ -117,6 +126,7 @@ interface SaveStore {
   buyColour: (id: string, price: number) => boolean;
   wearStyle: (id: string) => void;
   buyStyle: (id: string, price: number) => boolean;
+  say: (from: 0 | 1, text: string) => void;
   setCupsNotify: (on: boolean) => void;
   rename: (name: string) => void;
   setHandle: (handle: string) => void;
@@ -308,6 +318,18 @@ export const useSave = create<SaveStore>()(
         });
         return true;
       },
+
+      say: (from, text) =>
+        set((s) => {
+          const clean = text.trim().slice(0, 240);
+          if (!clean) return s;
+          return {
+            save: {
+              ...s.save,
+              chat: [...s.save.chat, { from, text: clean, at: Date.now() }].slice(-200),
+            },
+          };
+        }),
 
       setCupsNotify: (on) => set((s) => ({ save: { ...s.save, cupsNotify: on } })),
       rename: (name) => set((s) => ({ save: { ...s.save, name: name.slice(0, 14) || 'You' } })),

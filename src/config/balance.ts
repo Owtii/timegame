@@ -18,12 +18,26 @@ export const BALANCE = {
     botCoinMultiplier: 0.55,
   },
 
+  /**
+   * Room to say something and still play.
+   *
+   * A turn should not punish you for thinking, so these are long enough to
+   * work a board out and short enough that nobody can sit on the phone. The
+   * last ten seconds count down in figures; run one out and the app plays a
+   * legal move for you rather than stalling the match.
+   */
   clocks: {
-    moveSeconds: 30,
-    bidSeconds: 45,
-    guessSeconds: 30,
-    /** Seconds left when the clock starts counting down in figures. */
+    moveSeconds: 48,
+    bidSeconds: 65,
+    guessSeconds: 48,
     warnAtSeconds: 10,
+    /**
+     * How long a result stays up before it moves on by itself. Generous on
+     * purpose - the bar says when, and the button next to it skips ahead, so
+     * waiting costs nobody anything.
+     */
+    resultSeconds: 5,
+    roundSeconds: 4.5,
   },
 
   timing: {

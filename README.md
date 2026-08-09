@@ -73,6 +73,36 @@ be priced out of the rest of the match. That leaves one hole: if both players
 pass forever, the square never settles. So the **third double pass in a row on
 the same square hands it to whoever named it**.
 
+## Playing one
+
+Two pads, because two ranges want different things. Over **1 to 10** every
+number fits on screen, so one tap is the whole guess - no typing, nothing to
+confirm - and any number the clues have already ruled out is dead to the touch.
+Over **1 to 100** that grid would be unreadable, so it is a keypad, and the note
+under the entry says why a number will not be accepted before you commit to it.
+
+Both clock games end in a reveal rather than a scoreline: the two times stay
+masked, roll up one after the other, and land on a finish line marked
+−1.50 / target / +1.50 with a pin each. Two numbers on their own do not tell you
+who was early and who was late.
+
+**A tap is only asked for where it means something.** Results advance on their
+own with a bar showing when, and the button next to the bar is a skip labelled
+with whatever happens next - never "OK". Tapping a reveal runs its animation
+straight to the end.
+
+**A turn should not punish you for thinking.** 48 seconds for a move or a guess,
+65 for a bid, counting down in figures over the last ten. Run one out and the
+app plays a legal move rather than stalling the match. The clock never runs in
+the clock games, where the timing *is* the game.
+
+**Chat** is in the match topbar and holds everything while it is open - a result
+on screen waits rather than moving on behind the keyboard. One phone means one
+keyboard, so the sender starts as whoever is up and can be switched.
+
+Hand-over screens say why the phone is moving: a fresh round, a replay after
+sudden death, a void, or simply the other person's turn.
+
 ## The bot
 
 The bot always plays as player 2 and never touches a real profile - bot matches

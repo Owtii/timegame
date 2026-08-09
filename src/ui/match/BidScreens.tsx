@@ -4,6 +4,7 @@ import { SQUARE_NAMES } from '../../game/board';
 import type { BidVerdict } from '../../game/bid';
 import type { Mark } from '../../game/types';
 import { Btn } from '../primitives';
+import { AutoAdvance } from './pacing';
 
 /**
  * A bid is a dial, not a typed number.
@@ -377,6 +378,8 @@ export function BidReveal({
   cells,
   balance,
   onNext,
+  paused,
+  seconds,
 }: {
   square: number;
   bids: [number, number];
@@ -386,6 +389,8 @@ export function BidReveal({
   cells: Mark[];
   balance: [number, number];
   onNext: () => void;
+  paused?: boolean;
+  seconds: number;
 }) {
   const [flipped, setFlipped] = useState(false);
 
@@ -549,10 +554,30 @@ export function BidReveal({
         <MiniBoard cells={cells} colours={colours} size={13} />
       </div>
 
-      <div style={{ flex: 'none', marginTop: 'auto', paddingTop: '4rem', paddingBottom: '7rem', zIndex: 1 }}>
-        <Btn onClick={onNext} disabled={!flipped} style={{ height: '15.2rem', fontSize: '4.8rem' }}>
-          NEXT SQUARE
-        </Btn>
+      <div style={{ flex: 1, minHeight: '2rem' }} />
+
+      <div style={{ flex: 'none', paddingTop: '3rem', paddingBottom: '5rem', zIndex: 1 }}>
+        {flipped ? (
+          <AutoAdvance
+            seconds={seconds}
+            label={verdict.winner >= 0 ? 'Next square' : 'Bid again'}
+            tone={verdict.winner >= 0 ? colours[verdict.winner as 0 | 1] : 'var(--action)'}
+            onDone={onNext}
+            paused={paused}
+          />
+        ) : (
+          <span
+            style={{
+              display: 'block',
+              font: '800 2.4rem/1 Nunito',
+              letterSpacing: '.14em',
+              color: 'var(--faint)',
+              textAlign: 'center',
+            }}
+          >
+            HOLDING...
+          </span>
+        )}
       </div>
     </>
   );
