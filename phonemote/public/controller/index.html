@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>phonemote · controller</title>
+<link rel="stylesheet" href="/lib/base.css">
+<link rel="stylesheet" href="/controller/controller.css">
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <h1>phonemote</h1>
+    <p class="sub">Your phone, as a motion controller.</p>
+    <label id="codeRow">Pairing code
+      <input id="code" class="mono" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCDE">
+    </label>
+    <button id="go" class="primary">Connect &amp; enable motion</button>
+    <p class="hint">iOS and Android only release the gyroscope after you tap, and only over HTTPS.</p>
+    <p id="gateErr" class="err" hidden></p>
+  </div>
+</div>
+
+<header id="bar">
+  <span class="pill"><i class="dot" id="netdot"></i><b id="who">connecting…</b></span>
+  <span class="pill mono" id="stats">– Hz · – ms</span>
+  <span class="spacer"></span>
+  <button id="recenter" title="Point at the middle of the screen, then tap">Re-centre</button>
+  <button id="full" title="Fullscreen">⛶</button>
+</header>
+
+<main>
+  <!-- ───────────────────────────── pad ───────────────────────────── -->
+  <section class="view" data-view="pad">
+    <div class="pad">
+      <button class="btn home" data-btn="home">⌂</button>
+
+      <div class="dpad">
+        <button class="btn d up" data-btn="up">▲</button>
+        <button class="btn d left" data-btn="left">◀</button>
+        <button class="btn d right" data-btn="right">▶</button>
+        <button class="btn d down" data-btn="down">▼</button>
+      </div>
+
+      <button class="btn big a" data-btn="a">A</button>
+
+      <div class="stick" id="stick">
+        <div class="knob" id="knob"></div>
+        <span class="stick-label">stick</span>
+      </div>
+
+      <div class="minis">
+        <button class="btn mini" data-btn="one">1</button>
+        <button class="btn mini" data-btn="two">2</button>
+        <button class="btn mini" data-btn="c">C</button>
+        <button class="btn mini" data-btn="z">Z</button>
+        <button class="btn mini" data-btn="minus">–</button>
+        <button class="btn mini" data-btn="plus">+</button>
+      </div>
+
+      <button class="btn trigger b" data-btn="b">B · TRIGGER</button>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── aim ───────────────────────────── -->
+  <section class="view" data-view="aim" hidden>
+    <div class="panel">
+      <h2>Aim</h2>
+      <p class="muted">Hold the phone how you want to hold it, point at the middle of the screen, then re-centre. Do it again any time the cursor wanders.</p>
+      <div class="preview" id="preview">
+        <div class="cross" id="cross"><span></span><span></span></div>
+        <div class="edge-label">your pointer, in screen space</div>
+      </div>
+      <button id="recenter2" class="primary wide">Re-centre here</button>
+      <div class="row">
+        <button id="calGyro" class="wide">Calibrate gyro (lay it down flat first)</button>
+      </div>
+      <div class="seg" id="gripSeg" data-setting="grip">
+        <span class="seg-label">Grip</span>
+        <button data-value="remote">Like a remote</button>
+        <button data-value="flat">Screen up</button>
+      </div>
+      <div class="seg" id="modeSeg" data-setting="pointerMode">
+        <span class="seg-label">Pointer</span>
+        <button data-value="absolute">Aim (Wii)</button>
+        <button data-value="relative">Mouse</button>
+      </div>
+      <p class="muted small" id="gripHelp"></p>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── tune ───────────────────────────── -->
+  <section class="view" data-view="tune" hidden>
+    <div class="panel">
+      <h2>Tune</h2>
+      <div class="sliders" id="sliders"></div>
+      <div class="row">
+        <label class="check"><input type="checkbox" data-setting="invertY"> Invert Y</label>
+        <label class="check"><input type="checkbox" data-setting="autoRecenter"> Drift home when still</label>
+        <label class="check"><input type="checkbox" data-setting="useCompass"> Use compass</label>
+        <label class="check"><input type="checkbox" data-setting="haptics" checked> Button haptics</label>
+      </div>
+      <button id="reset" class="wide">Reset to defaults</button>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── debug ───────────────────────────── -->
+  <section class="view" data-view="debug" hidden>
+    <div class="panel">
+      <h2>Sensors</h2>
+      <canvas id="cube" width="320" height="190"></canvas>
+      <div class="readout mono" id="readout"></div>
+      <h3>Gestures</h3>
+      <div class="log mono" id="log"></div>
+    </div>
+  </section>
+</main>
+
+<nav id="tabs">
+  <button class="active" data-tab="pad">Pad</button>
+  <button data-tab="aim">Aim</button>
+  <button data-tab="tune">Tune</button>
+  <button data-tab="debug">Debug</button>
+</nav>
+
+<script type="module" src="/controller/controller.js"></script>
+</body>
+</html>

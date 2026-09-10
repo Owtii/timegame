@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Target Smash · phonemote</title>
+<link rel="stylesheet" href="/lib/base.css">
+<link rel="stylesheet" href="/game/game.css">
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud">
+  <div id="players"></div>
+  <div id="centre">
+    <div id="wave">WAVE 1</div>
+    <div id="base"></div>
+  </div>
+  <div id="meters">
+    <div class="meter"><span>SLOW-MO</span><div class="bar"><i id="slowbar"></i></div><small>twist the remote</small></div>
+    <div class="pill"><i class="dot" id="netdot"></i><span id="netlabel">connecting…</span></div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="card">
+    <h1>TARGET<span>SMASH</span></h1>
+    <p class="tag">Point your phone at the screen and shoot. Swing it to slash. Shake it to reload.</p>
+
+    <div class="join">
+      <div class="qr">
+        <img id="qr" alt="QR code for the controller page" width="180" height="180">
+        <div class="qrhint">scan with your phone<br>(same WiFi)</div>
+      </div>
+      <div class="joininfo">
+        <div class="kv"><span>address</span><b id="curl" class="mono">—</b></div>
+        <div class="kv"><span>pairing code</span><b id="ccode" class="mono">—</b></div>
+        <ul id="roster"><li class="empty">no controllers yet</li></ul>
+      </div>
+    </div>
+
+    <div class="keys">
+      <span><b>B</b> shoot</span><span><b>swing</b> slash</span><span><b>shake</b> reload</span>
+      <span><b>A</b> bomb</span><span><b>twist</b> slow-mo</span>
+    </div>
+    <button id="start" class="primary">Press A on your phone to start</button>
+    <p class="fallback">No phone handy? <button id="useLocal" class="link">play with mouse + keyboard</button></p>
+  </div>
+</div>
+
+<div id="gameover" hidden>
+  <div class="card">
+    <h1 class="small">GAME OVER</h1>
+    <div id="finals"></div>
+    <button id="again" class="primary">Press A to play again</button>
+  </div>
+</div>
+
+<script type="module" src="/game/game.js"></script>
+</body>
+</html>

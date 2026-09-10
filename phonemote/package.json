@@ -1,0 +1,20 @@
+{
+  "name": "phonemote",
+  "version": "0.1.0",
+  "description": "Turn your phone into a Wii-style motion controller over WiFi, with sensor fusion, IR-style pointing, gesture detection and a test game.",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "bin": { "phonemote": "server/index.js" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "sim": "node tools/sim-controller.js",
+    "test": "node tools/check.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "selfsigned": "^2.4.1",
+    "ws": "^8.18.3"
+  }
+}

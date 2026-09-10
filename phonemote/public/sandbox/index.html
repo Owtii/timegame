@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandbox · phonemote</title>
+<link rel="stylesheet" href="/lib/base.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+  .panel { position: fixed; top: 14px; left: 14px; width: 290px; padding: 12px 14px; border-radius: 14px;
+    background: rgba(9, 13, 22, 0.78); border: 1px solid var(--line); backdrop-filter: blur(8px); font-size: 12px; }
+  .panel h1 { font-size: 15px; margin: 0 0 8px; }
+  .panel p { color: var(--muted); line-height: 1.6; margin: 6px 0; }
+  .panel .readout { font-family: var(--mono); color: var(--muted); white-space: pre; line-height: 1.65; font-size: 11px;
+    border-top: 1px solid var(--line); margin-top: 10px; padding-top: 8px; }
+  .keys { color: var(--muted); line-height: 1.8; }
+  .keys b { color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+  .hint { position: fixed; bottom: 16px; left: 0; right: 0; text-align: center; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div class="panel">
+  <h1>3D sandbox</h1>
+  <p>Your phone is the head. Turn it and the camera turns with it, one-to-one — this is the orientation the fusion filter produces, with nothing mapped to a cursor.</p>
+  <div class="keys">
+    <b>stick</b> walk &nbsp; <b>B</b> shoot a target<br>
+    <b>D-pad</b> strafe &nbsp; <b>A</b> back to the middle
+  </div>
+  <div class="readout" id="readout">waiting for a controller…</div>
+</div>
+<p class="hint">No phone? <a href="/game">Target Smash</a> plays with a mouse. This page needs real orientation data.</p>
+<script type="module" src="/sandbox/sandbox.js"></script>
+</body>
+</html>
