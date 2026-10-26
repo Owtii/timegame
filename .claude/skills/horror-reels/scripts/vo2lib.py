@@ -37,3 +37,27 @@ def align(x, text):
         if starts[o] is None: starts[o] = a
     return starts, al[-1][2]
 
+def align2(x, text):
+    """like align, but each word's start and end (seconds into the clip)"""
+    global DEC
+    if DEC is None: DEC = Decoder(samprate=16000, bestpath=False, loglevel='ERROR')
+    words = [re.sub(r"[^a-z']", '', w.lower()) for w in text.replace('…', ' ').split()]
+    words = [w for w in words if w]
+    toks, owner = [], []
+    for i, w in enumerate(words):
+        sub = ALT.get(w) or ([w] if DEC.lookup_word(w) else None)
+        if sub is None: raise SystemExit(f'not in the dictionary: {w}')
+        for s in sub: toks.append(s); owner.append(i)
+    x16 = ff(x, 'lowpass=f=7600')[::3]
+    raw = (np.clip(x16 / (np.max(np.abs(x16)) + 1e-9) * .9, -1, 1) * 32000).astype(np.int16).tobytes()
+    DEC.set_align_text(' '.join(toks))
+    DEC.start_utt(); DEC.process_raw(raw, full_utt=True); DEC.end_utt()
+    DEC.set_alignment()
+    DEC.start_utt(); DEC.process_raw(raw, full_utt=True); DEC.end_utt()
+    al = [(w.name, w.start / 100, (w.start + w.duration) / 100) for w in DEC.get_alignment() if w.name not in ('<s>', '</s>', '<sil>', 'sil')]
+    if len(al) != len(toks): raise SystemExit(f'alignment mismatch: {len(al)} vs {len(toks)} for "{text}"')
+    starts, ends = [None] * len(words), [None] * len(words)
+    for (n, a, b), o in zip(al, owner):
+        if starts[o] is None: starts[o] = a
+        ends[o] = b
+    return starts, ends

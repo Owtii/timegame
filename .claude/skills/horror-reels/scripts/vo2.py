@@ -1,73 +1,101 @@
 # The Graveyard Shift, Part 2: the narration. One ElevenLabs take of the narrator (Spuds Oxley "Grandpa", the voice of
 # Part 1) reading all 17 lines (the recap's three, the narration, and the two things I say in the moment), cut into its
-# lines at the long pauses. Each line goes where its caption is (sped up a touch only where it would run into the next
-# line), its words are aligned (pocketsphinx) so the captions light up as they're spoken, and the processed audio is
-# saved for sound.py, which turns them into the voice clips of the page's mix.
-# Writes ns2/audio/vo2.json (placement, word times, which caption) and ns2/audio/vo2_<i>.npy (mono, at the mix's rate).
+# lines at the long pauses, and each line cut again into its phrases (at the commas, the full stops, the "…").
+# Every phrase is placed on the moment it describes: a line starts where the picture calls for it, its phrases follow
+# each other with natural pauses (short at a comma, longer at a full stop or a "…"), and a phrase can be pinned so a
+# chosen word lands on a beat (the photo found, his eye caught). The words are aligned (pocketsphinx) so the captions
+# light up as they're spoken, one phrase per caption.
+# Writes ns2/audio/vo2.json (placement on the page's clock, word times, phrases) and ns2/audio/vo2_<i>.npy (mono, at
+# the mix's rate).
 import sys, re, json, numpy as np
 sys.path.insert(0, 'pylib'); sys.path.insert(0, 'ns2')
-from vo2lib import load, segments, SR, ff, fade, align
+from vo2lib import load, segments, SR, ff, align2
 sys.path.insert(0, 'vo'); from synth import SR as MIX_SR
 
 story = open('ns2/story.js').read()
 const = lambda n: float(re.search(r'\b' + n + r'\s*=\s*([\d.]+)', story).group(1))
 R_CUT1, R_CUT2, R_CUT3, R_FREEZE = const('R_CUT1'), const('R_CUT2'), const('R_CUT3'), const('R_FREEZE')
 CUE_TEXTS = re.findall(r'\{ t:[^,]+,\s+text:"(.*?)"', story)   # (every caption, in order: the recap's four, then Part 2's)
-# the take's lines: which caption each one speaks, who, the words as the recogniser hears them, and where it starts
-# ('page': the page's clock, the recap; 'beat': Part 2's beats clock, like the captions) and the most it may be sped up
+# the take's lines, in order: (caption, who, the words as the recogniser hears them, where each phrase starts (caption
+# word index), when (page clock): a time for the phrase's start, (word, time) to land that word on a beat, or None to
+# follow the phrase before with a natural pause; the line's tempo; the latest it may end; optionally its own pauses)
 LINES = [
-    (0,  'narrator', 'two fourteen a m he walked in',                              'page', .35,            1.06),
-    (1,  'narrator', 'he just stared at me',                                       'page', R_CUT1 + .08,   1.05),
-    (3,  'narrator', 'something was behind my chair',                              'page', R_CUT3 + .08,   1.05),
-    (4,  'narrator', "i didn't turn around i grabbed the flashlight and ran",      'beat', 2.05,           1.05),
-    (5,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', 'beat', 6.05, 1.06),
-    (6,  'me',       'the doors are locked',                                       'beat', 13.4,           1.0),
-    (7,  'narrator', 'so i ran into the room right next to it and locked the door', 'beat', 15.3,          1.0),
-    (8,  'narrator', 'when i looked around i found this old photo on the wall',    'beat', 19.9,           1.0),
-    (9,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', 'beat', 24.3, 1.0),
-    (10, 'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', 'beat', 30.9, 1.0),
-    (11, 'narrator', 'then the door burst open and he came in slowly',             'beat', 38.2,           1.0),
-    (12, 'narrator', 'his suit was covered in dark stains now',                    'beat', 43.6,           1.04),
-    (13, 'narrator', 'he stopped right at my locker',                              'beat', 46.25,          1.0),
-    (14, 'narrator', 'then something beside it caught his eye',                    'beat', 48.1,           1.0),
-    (15, 'narrator', 'he was looking for someone and he was getting angry',        'beat', 59.3,           1.0),
-    (17, 'narrator', 'he knew someone was hiding in there',                        'beat', 69.4,           1.0),
-    (18, 'narrator', 'the exit was open this might be my chance',                  'beat', 72.85,          1.05),
+    (0,  'narrator', 'two fourteen a m he walked in', [0, 2], [.35, None], 1.06, R_CUT1 - .05, {'.': .12}),   # (just after the doors bang open)
+    (1,  'narrator', 'he just stared at me', [0], [R_CUT1 + .06], 1.05, R_CUT2 - .1),
+    (3,  'narrator', 'something was behind my chair', [0], [R_CUT3 + .05], 1.03, R_FREEZE - .08),
+    (4,  'narrator', "i didn't turn around i grabbed the flashlight and ran", [0, 4, 8], [9.86, None, None], 1.05, 13.4, {'.': .22, '…': .22}),   # (up out of the chair, over the desk, down the hall; done before the desk crashes)
+    (5,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.55, None, None, None, None], 1.08, 19.6, {',': .1, '.': .22, '…': .25}),   # (the crash, then all the time I'm looking back up the hall)
+    (6,  'me',       'the doors are locked', [0], [21.2], 1.0, 22.6),   # (shoving the bars)
+    (7,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [24.55], 1.0, 27.9),   # ("locked" as the lock turns)
+    (8,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.35, (8, 36.85)], 1.0, 38.1),   # (my beam going round the room; "photo" as it comes back to it)
+    (9,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [38.5, None, None], 1.0, 43.75, {'…': .3, '.': .3}),
+    (10, 'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [44.75, None], 1.0, 51.2),
+    (11, 'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [51.95, None, None], 1.0, 56.2),
+    (12, 'narrator', 'his suit was covered in dark stains now', [0], [56.45], 1.0, 59.25),
+    (13, 'narrator', 'he stopped right at my locker', [0], [59.35], 1.0, 61.3),   # (as he stops there)
+    (14, 'narrator', 'then something beside it caught his eye', [0], [(4, 62.7)], 1.0, 64.5),   # ("caught" as he freezes on the photo)
+    (15, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [73.15, None], 1.0, 77.0),
+    (17, 'narrator', 'he knew someone was hiding in there', [0], [83.3], 1.0, 85.4),
+    (18, 'narrator', 'the exit was open this might be my chance', [0, 4], [86.7, None], 1.06, 89.3, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
 ]
-# the caption's words -> the recogniser's (where they differ: "2:14 AM." is four spoken words)
-WMAP = {0: [0, 2, 4, 5, 6]}
-# the latest each line may end, on its own clock (the recap's lines end before their cut; Part 2's before the next line)
-LATEST = {0: R_CUT1 - .1, 1: R_CUT2 - .1, 3: R_FREEZE - .08, 4: 6.0, 5: 13.35, 12: 46.2, 13: 48.05, 18: 75.45}   # (18: before his first fist on the lockers)
+WMAP = {0: [0, 2, 4, 5, 6]}   # (the caption's words -> the recogniser's, where they differ: "2:14 AM." is four spoken words)
+GAP = {',': .16, '.': .3, '!': .3, '?': .3, '…': .36}   # (the pause after a phrase, by how it ends)
+LEAD, TAIL, TAIL_END = .025, .07, .15   # (kept before a phrase's first sound, and after its last (the line's last phrase: more), for the breath and the decay)
+
+def env(x, hop):
+    return np.sqrt(np.convolve(x ** 2, np.ones(hop) / hop, 'same'))
+def fades(x, a=.008, b=.03):
+    x = x.copy(); na, nb = int(a * SR), int(b * SR); x[:na] *= np.linspace(0, 1, na); x[-nb:] *= np.linspace(1, 0, nb); return x
 
 x = load('ns2/vo2/narr2_A.mp3'); segs, gaps = segments(x, len(LINES))
 out = []
-for k, ((cue, who, words, clock, t0, tmax), (a, b)) in enumerate(zip(LINES, segs)):
+for k, (spec, (a, b)) in enumerate(zip(LINES, segs)):
+    cue, who, words, splits, targets, tempo, latest = spec[:7]; gap = dict(GAP, **(spec[7] if len(spec) > 7 else {}))
     lo = segs[k - 1][1] if k else 0; hi = segs[k + 1][0] if k < len(LINES) - 1 else len(x) / SR
-    a0 = max(lo + .5 * (a - lo), a - .06); b0 = min(b + .5 * (hi - b), b + .22)
+    a0 = max(lo + .5 * (a - lo), a - .06); b0 = min(b + .5 * (hi - b), b + .25)
     piece = x[int(a0 * SR):int(b0 * SR)]
-    if cue == 0:   # "Two-fourteen A.M. … He walked in.": the pause between the two closed up to a breath
-        st, _ = align(piece, words); m_end = st[4] - .02
-        e = np.sqrt(np.convolve(piece ** 2, np.ones(480) / 480, 'same')); thr = np.max(e) * .03
-        g0 = int((st[3] + .12) * SR) + int(np.argmax(e[int((st[3] + .12) * SR):int(m_end * SR)] < thr))   # (where "A.M." has died away)
-        g1 = int(m_end * SR); keep = int(.16 * SR)
-        if g1 - g0 > keep:
-            xf = int(.015 * SR); A, B = piece[:g0 + keep // 2], piece[g1 - keep // 2:]
-            piece = np.concatenate([A[:-xf], A[-xf:] * np.linspace(1, 0, xf) + B[:xf] * np.linspace(0, 1, xf), B[xf:]])
-    starts, end = align(piece, words)
-    room = LATEST.get(cue, 1e9) - t0; tempo = 1.0
-    if end > room: tempo = min(tmax, end / room)
-    if tempo > 1.0005:
-        piece = ff(piece, f'atempo={tempo:.4f}'); starts = [s / tempo for s in starts]; end /= tempo
-    if end > room + .02: print(f'WARNING line {k} (caption {cue}): ends {t0 + end:.2f}, past {LATEST[cue]:.2f}')
-    piece = fade(ff(piece, 'highpass=f=60'))
-    cw = CUE_TEXTS[cue].split(' '); idx = WMAP.get(cue, list(range(len(cw))))
-    assert len(idx) == len(cw) and (cue in WMAP or len(cw) == len(words.split())), (cue, cw, words)
-    w = [round(starts[j], 3) for j in idx]
-    dur = len(piece) / SR
-    y = np.interp(np.arange(0, len(piece), SR / MIX_SR), np.arange(len(piece)), piece) if MIX_SR != SR else piece
+    cw = CUE_TEXTS[cue].split(' '); wm = WMAP.get(cue, list(range(len(cw))))
+    assert cue in WMAP or len(cw) == len(words.split()), (cue, cw, words)
+    st, en = align2(piece, words)
+    e = env(piece, int(.01 * SR)); thr = np.max(e) * .03
+    # cut the line into its phrases, in the quietest spot between them
+    cuts = [0]
+    for s in splits[1:]:
+        j = wm[s]; w0, w1 = int((en[j - 1] - .03) * SR), int((st[j] + .03) * SR)
+        cuts.append(w0 + int(np.argmin(e[w0:w1])) if w1 > w0 else int((en[j - 1] + st[j]) / 2 * SR))
+    cuts.append(len(piece))
+    phrases = []
+    for p in range(len(splits)):
+        seg = piece[cuts[p]:cuts[p + 1]]; es = e[cuts[p]:cuts[p + 1]]; on = np.where(es > thr)[0]
+        i0 = max(0, on[0] - int(LEAD * SR)); i1 = min(len(seg), on[-1] + int((TAIL_END if p == len(splits) - 1 else TAIL) * SR))
+        w_first = splits[p]; w_last = (splits[p + 1] if p + 1 < len(splits) else len(cw)) - 1
+        base = (cuts[p] + i0) / SR
+        y = seg[i0:i1]
+        if tempo > 1.0005: y = ff(y, f'atempo={tempo:.4f}')
+        phrases.append({'y': fades(y), 'first': w_first, 'last': w_last, 'base': base})
+    # place them
+    starts = []
+    for p, ph in enumerate(phrases):
+        tg = targets[p]
+        want = tg[1] - (st[wm[tg[0]]] - ph['base']) / tempo if isinstance(tg, tuple) else tg
+        if p == 0: t = want
+        else:
+            prev_end = starts[-1] + len(phrases[p - 1]['y']) / SR; natural = prev_end + gap.get(cw[phrases[p - 1]['last']][-1], .2)
+            t = natural if want is None else max(want, prev_end + .1)
+        starts.append(t)
+    t0 = starts[0]; t_end = starts[-1] + len(phrases[-1]['y']) / SR
+    line = np.zeros(int((t_end - t0) * SR) + 1)
+    for s, ph in zip(starts, phrases):
+        i = int(round((s - t0) * SR)); line[i:i + len(ph['y'])] += ph['y']
+    line = ff(line, 'highpass=f=60')
+    # the words where they now fall, from the finished line itself
+    ws, we = align2(line, words)
+    w = [round(ws[wm[i]], 3) for i in range(len(cw))]; d = round(we[wm[-1]], 3)
+    ph = [[q['first'], round(we[wm[q['last']]], 3)] for q in phrases]   # (each phrase: its first caption word, and where its last word ends)
+    if t0 + d > latest + .02: print(f'WARNING line {k} (caption {cue}): ends {t0 + d:.2f}, past {latest:.2f}')
+    y = np.interp(np.arange(0, len(line), SR / MIX_SR), np.arange(len(line)), line) if MIX_SR != SR else line
     np.save(f'ns2/audio/vo2_{k}.npy', y.astype(np.float32))
-    out.append({'i': k, 'cue': cue, 'who': who, 'clock': clock, 't': round(t0, 3), 'dur': round(dur, 3), 'tempo': round(tempo, 4), 'w': w, 'd': round(end, 3), 'text': CUE_TEXTS[cue]})
-    print(f'{k:2d} cue {cue:2d} {who:8s} {clock} {t0:6.2f} → {t0 + end:6.2f} (limit {LATEST.get(cue, 0):6.2f}) tempo {tempo:.3f}  "{CUE_TEXTS[cue][:44]}"')
+    out.append({'i': k, 'cue': cue, 'who': who, 'clock': 'page', 't': round(t0, 3), 'dur': round(len(line) / SR, 3), 'tempo': tempo, 'w': w, 'd': d, 'ph': ph, 'text': CUE_TEXTS[cue]})
+    gaps_txt = '  '.join(f'+{s - (starts[i - 1] + len(phrases[i - 1]["y"]) / SR):.2f}' for i, s in enumerate(starts) if i)
+    print(f'{k:2d} cue {cue:2d} {t0:6.2f} → {t0 + d:6.2f} (limit {latest:6.2f})  pauses {gaps_txt or "-":24s} "{CUE_TEXTS[cue][:48]}"')
 json.dump({'lines': out}, open('ns2/audio/vo2.json', 'w'), indent=1)
-# what the recap's shots need, for the voice to fit (each line from its start to its last word, plus a breath)
-print('recap needs: R_CUT1 >=', round(.45 + out[0]['d'] + .2, 2), '| R_CUT2 - R_CUT1 >=', round(.1 + out[1]['d'] + .2, 2), '| R_FREEZE - R_CUT3 >=', round(.1 + out[2]['d'] + .18, 2))

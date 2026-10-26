@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v19, 1:39, narrated) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v20, 1:39, narrated) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -60,7 +60,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 6. **Update the bookkeeping**: total length (`TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:39" label and `aria-valuemax`), test times in `p2_t.cjs` (captions and level windows are page times: page = beat + 11.55 after the room look-round), `end` in `gensteps2.cjs` (past the last beat), the script text `The-Graveyard-Shift_Script_Part1-2.txt`.
 7. **Back up**: `cp -r ns2 ns2_vN_backup` plus the build scripts, and `graveyard-shift_part2_project_vN.tar.gz`.
 8. **Publish** the built HTML to the same artifact URL (omit `capabilities` so the stored db/downloads/user declaration carries forward).
-9. **Migrate the mix**: read `mix/timeline` (note its version), run `scripts/migrate_mix.py <read.json> <out.json> <last_migration.json>`, write it with `if_version`.
+9. **Migrate the mix**: read `mix/timeline` (note its version), run `scripts/migrate_mix.py <read.json> <out.json> <previous backup>/audio/clips.json [shift_at shift]`, check its report (their sounds and edits kept, nothing of theirs dropped), write it with `if_version`.
 10. **Mark notes done**: `update {done:true}` with `if_version` for each, in the same batch as the mix write.
 11. Report back (see "How to act").
 
@@ -81,6 +81,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - The ending freezes as his faceplate comes round to my slits, lit by the tube's last flare.
 - The choice card is matte 3D keycaps (`ns2/choice.css`, designed in `cardlab/`): a flat face on a darker side wall with a soft shadow, light from above, no glow, no gloss, no pill shape; the picked key latches down, the other goes dull but stays solid. The user called the old glossy glowing buttons "very ai design". The exported video draws the same keys (`keycap()` in choice.js); change both together.
 - Narration: the same Grandpa voice as Part 1 (voice NOpBlnGInO9m6vDvFkFC, eleven_v4), my in-the-moment lines in the same voice under my breath; captions light up word by word from the recording. Keep their saved mix edits (swapped sounds, mutes, volumes, sounds they added) through every rebuild.
+- The narration fits the picture phrase by phrase (v20, after "the text with narrator and video is a bit weird and akward sometimes, like sometimes there is weird pauses and sometimes it doesnt fit"): each phrase plays over the thing it describes, pauses are natural (short at commas, a beat at full stops and "…"), a key word can be pinned to its beat, captions come one phrase at a time. Check it with a frame per phrase before publishing.
 - Contrast: darker darks, brighter highlights, subtle dust (not snow), contact shadows.
 - Anything he opens must read from my locker: the opened door shows its inside (bare lighter steel with a stiffener, not another painted locker front) and he never stands between my eye and the opening.
 - The grit off the door at each bang: random clumps from crack points, mixed grit/flakes/dust, lit like everything else (never brighter than the wall the light falls on, never glowing white points).
@@ -95,7 +96,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 ## Gotchas that cost time before
 
 - The mix engine's sample rate is 44.1 kHz (`vo/synth.py` SR), the narration tools work at 48 kHz: index stems with the right one (a 48 kHz index into a 44.1 kHz stem reads the wrong moment and looks like silence).
-- `migrate_mix.py` must carry `cap` on voice clips: the editor hides any default caption whose voice clip is missing its `cap` in the saved mix. It now also keeps the user's swapped sounds, mutes, volumes, moves and their own added clips (pass `shift_at shift` when the page timeline moved, e.g. a longer recap).
+- `migrate_mix.py` must carry `cap` on voice clips: the editor hides any default caption whose voice clip is missing its `cap` in the saved mix. It keeps the user's swapped sounds, mutes, volumes, moves and their own added clips; compare against the **previous build's** `clips.json` (from the last backup, `ns2_vN_backup/audio/clips.json`), not your last migration (that already contains their edits, so nothing looks changed and swaps get lost). Pass `shift_at shift` when the page timeline moved (e.g. a longer recap).
 - Never `pkill -f "node v2f.cjs"` and never `until ! pgrep -f ...` / `while pgrep -f ...` loops: the pattern matches your own shell and kills/hangs it (it happened again in v18: a wait loop spun forever after the renders were done). Wait with `render2.sh` (it uses `wait`), or run the command with `run_in_background` and act on its notification.
 - Headless page loads need `GOTO_MS=240000` (the page is ~6 MB).
 - A `// comment` appended in the middle of a one-line edit swallows the rest of that line's code. Put comments on their own line or at the true end.
