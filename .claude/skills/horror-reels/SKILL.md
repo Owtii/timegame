@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v15, 1:33) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v16, 1:36) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -57,7 +57,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
    GOTO_MS=240000 node p2_t.cjs                   # full test: captions, mix levels, card, collisions
    ```
    Keep the master gain K near 1.8. If it moves noticeably, find the new peak clip (sound.py prints it) and rebalance; if K still changes, rerun `python3 p1recap.py <K>` so the recap stays at Part 1's exact levels.
-6. **Update the bookkeeping**: total length (`TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:33" label and `aria-valuemax`), test times in `p2_t.cjs`, the script text `The-Graveyard-Shift_Script_Part1-2.txt`.
+6. **Update the bookkeeping**: total length (`TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:36" label and `aria-valuemax`), test times in `p2_t.cjs` (captions and level windows are page times: page = beat + 11.55 after the room look-round), `end` in `gensteps2.cjs` (past the last beat), the script text `The-Graveyard-Shift_Script_Part1-2.txt`.
 7. **Back up**: `cp -r ns2 ns2_vN_backup` plus the build scripts, and `graveyard-shift_part2_project_vN.tar.gz`.
 8. **Publish** the built HTML to the same artifact URL (omit `capabilities` so the stored db/downloads/user declaration carries forward).
 9. **Migrate the mix**: read `mix/timeline` (note its version), run `scripts/migrate_mix.py <read.json> <out.json> <last_migration.json>`, write it with `if_version`.
@@ -71,12 +71,14 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - The recap's captions end before each cut; the recap uses Part 1's sounds only.
 - The first bang on the door is the loudest and hardest.
 - Lights "cut off" with real breaker sounds; the lobby flicker shows the overturned desk.
-- At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then turns on the shelves.
+- At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then smashes the desk (fists, a sweep, fists), then crosses to the lockers next to mine and hits them, one, then the one beside mine; his head comes round to my slits and it freezes. (No shelf-wrenching any more.)
+- Before the far wall he goes right, to the shelves and boxes, and really looks them over (up, down at the boxes, leaning in, holds), then turns round looking over the room, then walks to the far wall.
+- The room's dead ceiling tube catches for an instant at each blow (desk and lockers), hangs on stuttering after the last, and flares once more on the freeze frame so his faceplate reads.
 - His breathing is the `respirator` model (in through the filter with a faint whistle, out through a fluttering rubber valve, wet, a low groan, in a small damped cavity), never the old pipe-echo hiss.
 - Captions describe exactly what is on screen while they show, and stay a little mysterious ("something beside it made him freeze", not "he saw the photo").
 - My breathing is the realistic `my_breath` model (uneven, gasps, held breath, shaky, grunts), never a looped hiss; my heart pounds loud when I'm scared.
 - Exit glances at the end: two slow ones, not many fast ones. Room look-rounds: evenly paced sweeps with short holds, no quick high-to-low jumps.
-- The ending freezes just before his faceplate comes round to the locker.
+- The ending freezes as his faceplate comes round to my slits, lit by the tube's last flare.
 - Contrast: darker darks, brighter highlights, subtle dust (not snow), contact shadows.
 
 ## Gotchas that cost time before

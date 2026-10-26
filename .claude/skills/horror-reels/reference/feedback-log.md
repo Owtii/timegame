@@ -21,6 +21,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 62.9 "make the movements more natural, it stil looks weird." (the turn steps were full walking strides kicking a leg up: made small, grounded, slower)
 - P2 79 "the movement looks very weird, fix that." (frog squat, hands at the faceplate, overhead throw: made a stoop, chest-height reading, short throw)
 - P2 76.9 "he should not pick up things he should just watch around and state a bit at the thing that fell then look around start hitting some things" (the whole paper scene was removed: stare, look round, rage)
+- P2 61.3 "make him move a bit more to the right like really watching stuff there and make him turn around watching the room then walking to the other wall" (v16: after the photo he goes right to the shelves and boxes, looks them over with holds for ~2.3 s, turns round looking over the room, then walks to the far wall)
 
 ## Motivation and story logic
 
@@ -31,6 +32,8 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 42.8 "make him not come too close, but make him stand infront of the locker ... then disctracted by something beside the locker with the photo."
 - P2 86.9 "make him turn around the locker a bit then with his face. but right before he wants to turn around, it starts with the questions."
 - P2 80.5 "make him do something but you are just looking at the exit and the guy a little bit scared."
+- P2 72.2 "make him walk to the right and then he sees something fall and he hits another locker or desk in there" (v16: from the board he walks right along the wall to the desk; the box falls behind him; stare, look round; he smashes the desk)
+- P2 86.8 "make him move to other lockers and hit them" (v16: he crosses to the lockers next to mine, hits the first, turns to the one right beside mine and hits it; his head comes round to my slits; freeze)
 
 ## Camera
 

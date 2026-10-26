@@ -17,13 +17,16 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Throwing down: short wind-up at shoulder height, then down. Not an overhead swing.
 - Arms straight out in front reads as a zombie. Keep elbows bent and arms close unless he's reaching for something.
 - Every action needs a reason the viewer can see, but keep it simple: at the box he stares at what fell, looks round the room for whoever might be there, then breaks things. (A sheet-reading scene was tried and the user cut it: "he should not pick up things".)
-- Breaking things: wrench the shelving out from the wall (it tips and slams back), boxes fall off; fists into the shelf; heavier breathing that speeds up.
+- Breaking things: give each blow a clear target the viewer can see from the camera: fists down on the desk, an arm sweeping everything off it (lamp, phone, papers fly; the mug rolls off and breaks), fists again; then hitting the lockers next to mine (the search coming closer to me). Heavier breathing that speeds up. (A shelf-wrenching version was replaced: the user asked for desk and lockers.)
+- "Really watching stuff": a look at something is a sequence with holds (up the shelf, down at the boxes, leaning in a little), 2+ seconds, not one glance.
+- Moving between two close targets (two lockers): plant him between them and turn on the spot from one to the other. A short side-step walk swings his body to face the walking direction and the turn back takes over a second, so blows land mid-turn and the final head turn reads backwards.
 
 **Physical sanity.**
 - He never walks through furniture: run the collision check after any path change. Paths go around open drawers, buckets, boxes that fall during the scene.
 - Feet don't slide: walk speed matches stride (`STRIDE`), and the walk phase carries across segments.
 - Keep the important action in the light. If a spot is dark from the camera's view, move the action (or turn him toward the light) rather than adding an unmotivated lamp.
-- Not too close to the camera: in the locker scene he stops about 1.2 m from the slits; a suit filling the frame reads as a wall.
+- Not too close to the camera: in the locker scene he stops about 1.2 m from the slits; a suit filling the frame reads as a wall. Hitting the lockers beside mine he stands ~0.85 m off their fronts (fists reach that far at full stretch), which keeps him ~1.1 m from my eye.
+- Geometry from inside my locker: anything near the locker wall is at a steep angle (30–45° left) and its impact point is hidden behind the locker's side; frame his head and shoulders, not the fists. Anyone facing the locker wall is also facing me, so his faceplate shows: make the final head turn a lift and a turn of 0.4+ rad toward my eye (which is below his head: pitch ~0.3 down).
 
 ## The camera (first person)
 
@@ -42,14 +45,16 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 
 - Contrast: dark spots darker, bright spots brighter (a luminance S-curve in the grade), on rooms, objects and people.
 - Small details everywhere: fine dust drifting only where light hits it (not snow), grit falling on impacts, contact shadows under furniture and him, dark bands at the foot of walls, grime, cobwebs, papers on the floor that never z-fight.
-- Light tells the story: a failing tube that drops out; a tube jolted by a crash flares and stutters so the place is seen in flashes; dead tubes try to strike again; lights cut off one after another toward you.
+- Light tells the story: a failing tube that drops out; a tube jolted by a crash flares and stutters so the place is seen in flashes; dead tubes try to strike again; lights cut off one after another toward you. In the storage room the dead ceiling tube catches at each of his blows (`RFL`, `roomTube`), with a bounce light off the locker fronts (`roomTubeB`) so the side of him facing my locker isn't black, and it flares on the freeze frame.
+- Check the side of him the camera sees: the doorway light hits his back when he faces the lockers, so near the lockers he is a black shape unless a motivated light (the tube, its bounce) reaches his front.
 - Shadows sell entrances: going through a doorway darkens him; a shadow from behind reads as a human figure (an overlay, no extra light).
 - Faces behind the faceplate: only barely visible, foggy; you can't tell if it's really a human face.
 
 ## Sound
 
 - Realistic, "like in real movies": recorded effects layered (a door slammed, slowed so it booms; metal rattles; sub thumps), with reverb for space. Synthesis only to support.
-- Hits that matter are loud and hard. The first bang out of nowhere is the hardest.
+- Hits that matter are loud and hard. The first bang out of nowhere is the hardest. Fists on the locker right beside mine are the loudest of the ending (thin steel bang, a tinny ring, louvres buzzing, my own door rattling).
+- A desk smash: a heavy wooden thump with the frame jarring and things jumping on it; the sweep: a whoosh, the lamp smashing (shade, bulb pop), the phone clattering, papers; the mug breaking a moment later. Each dead-tube catch: a snap, its buzz for as long as it holds, a tick.
 - Reveals: a reversed swell into a deep boom/braam; a build-up that rises and cuts dead into the drop.
 - Lights cutting off: the tube's buzz strains and flutters, then a breaker CHUNK, the hum dying in a falling whoomp, a spark, glass ticking.
 - A desk going over: lots of noise (frame groan, slam, everything on it scattering).
