@@ -89,6 +89,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 11 "have better sound effects something that really that uses in real movies."
 - P2 14.2 "light sound effects that relaly sounds like light getting cut off."
 - P2 2.4 "use the sound effects I really put and deleted from the last part, dont add ur own sound effects."
+- P2 72.8 "the breathing sound effect is weird it should come from the hazmat suit ... make it a bit more realistic scary breathing of the haxmat guy" (replaced with a respirator model: filter whistle, valve flutter, wet, groan, damped cavity)
 - P2 13.4 "make the breathing sound effect more realistic and add louder heartbeats" (a real breath model replaced the looped hiss; a loud heartbeat from the doors into the room; the locker heart louder)
 
 ## Captions, recap and the choice card
@@ -99,3 +100,5 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P1 48.9 "why is there a random pause here?" (cut dead time).
 - P1 65.3 / 68.9 the card: "2 colors like red and blue but darker" / "delete the icons, only text, centred and with correct padding. make the 'or' just text no border."
 - P2 62.6 "make the questions centred."
+- P2 51.7 "make the text something more accurate to the scene" (the line said he walked up to my locker while he was only just coming in)
+- P2 59.6 "make this text also something more accurate to the scene and keep it little mysterious" ("He stopped right at my locker…" / "Then something beside it made him freeze.")

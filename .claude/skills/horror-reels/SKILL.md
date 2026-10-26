@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v14, 1:33) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v15, 1:33) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -72,6 +72,8 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - The first bang on the door is the loudest and hardest.
 - Lights "cut off" with real breaker sounds; the lobby flicker shows the overturned desk.
 - At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then turns on the shelves.
+- His breathing is the `respirator` model (in through the filter with a faint whistle, out through a fluttering rubber valve, wet, a low groan, in a small damped cavity), never the old pipe-echo hiss.
+- Captions describe exactly what is on screen while they show, and stay a little mysterious ("something beside it made him freeze", not "he saw the photo").
 - My breathing is the realistic `my_breath` model (uneven, gasps, held breath, shaky, grunts), never a looped hiss; my heart pounds loud when I'm scared.
 - Exit glances at the end: two slow ones, not many fast ones. Room look-rounds: evenly paced sweeps with short holds, no quick high-to-low jumps.
 - The ending freezes just before his faceplate comes round to the locker.

@@ -56,7 +56,8 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Lockers: a real thin-steel door (latch, hinge, tinny clang).
 - My breathing (close to the mic): use `my_breath` with a schedule from `breath_phases`: uneven cycles, in-breath hiss rising, rounder out-breath with sometimes voice in it; a gasp at a shock, then held breath, then a shaky out; a catch of breath at each bang; grunts on effort; slowing when safe. Never a regular looped hiss.
 - My heart: recorded heartbeat, loud and fast whenever I'm scared (after the run, in the locker), slowing as I calm.
-- His breathing in the hood: hollow, slow, deep, wet rattle and a low groan on the out-breath; heavier and faster as he gets angry; held when he's reading something.
+- His breathing through the respirator: use `respirator(d, seed, cycles, mad)`. A real mask sounds like air pulled through a filter (faint whistle, inlet valve tick) and pushed out through a rubber valve (a wet flutter, a heavy muffled puff, sometimes a groan), inside a small damped cavity. Avoid feedback combs/pipe echoes: they sound fake. Keep it present in quiet moments; ease it under big crashes so it doesn't become the mix peak.
+- (Older description) His breathing in the hood: hollow, slow, deep, wet rattle and a low groan on the out-breath; heavier and faster as he gets angry; held when he's reading something.
 - His boots: heavy and loud; turning steps softer.
 - Scary call cut-off: a click and the long flat beep, and show "call ended".
 - No jump-scare stinger when the moment should be casual; a near-scream that cuts off on the reveal when it should be a jump scare.
@@ -67,6 +68,7 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 
 - The narrator tells it afterwards, plainly (white). What I say in the moment is italic gold (`who:'me'`). The guard's remembered warning is green (`who:'phone'`).
 - Captions never linger past their shot's cut or onto a transition.
+- A caption must match what the viewer sees while it is on screen (not describe what happens a few seconds later), and keep a little mystery: hint ("something beside it") rather than spell out.
 - Lines are short and natural; the user rewrites lines they don't like ("this might be my chance", not "...like or just stay").
 - Every part ends on a choice card with two options (dark red vs dark blue buttons, text only, centred, "or" as plain text).
 - The recap at the start: tiny "PREVIOUSLY / PART 1" tag, the earlier part's key shots, its own sound, its question with the picked answer.
