@@ -33,6 +33,8 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 86.9 "make him turn around the locker a bit then with his face. but right before he wants to turn around, it starts with the questions."
 - P2 80.5 "make him do something but you are just looking at the exit and the guy a little bit scared."
 - P2 72.2 "make him walk to the right and then he sees something fall and he hits another locker or desk in there" (v16: from the board he walks right along the wall to the desk; the box falls behind him; stare, look round; he smashes the desk)
+- P2 84.5 "this movement of him is very weird change that. dont make him do too weird movements. it feels very robotic" (v17: the double-arm overhead slams and the jumping-jack sweep were replaced; see craft.md)
+- P2 88.4 "why is so close to him, he should be busy with lockers somewhere right of the camera not on the left." (v17: a second row of lockers on the east wall by the desk; he turns on those, across the room on my right)
 - P2 86.8 "make him move to other lockers and hit them" (v16: he crosses to the lockers next to mine, hits the first, turns to the one right beside mine and hits it; his head comes round to my slits; freeze)
 
 ## Camera
@@ -72,6 +74,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 35 "make the locker also better design and have smaller gaps so you can see barely."
 - P2 17.7 "bring more details and make it really look like you lock the door."
 - P2 24.7 / 22.1 / 28.5 photos: "make a picture of a 3d moduled person" / "more random people not only the hazmat suit" / "no text, and make his face not really shown cuz of a shadow".
+- P2 43 "the partials are weird when they drop from the door its too organized" (v17: the door grit became clumps from crack points, mixed grit/flakes/dust, staggered)
 - P1 30.1 "his hands its glitching through the yellow suit"; P1 35.2 "little glitch/twitch on his shoulder"; P1 60.8 "why does the table move? ... make the paper on the desk not glitch through each other."
 - P2 52 "there is a weird cut around this moment"; P2 67.4 "he walks through the desk. fix that, make sure that never happends ever again."
 

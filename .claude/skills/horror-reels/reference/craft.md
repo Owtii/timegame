@@ -26,6 +26,7 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Feet don't slide: walk speed matches stride (`STRIDE`), and the walk phase carries across segments.
 - Keep the important action in the light. If a spot is dark from the camera's view, move the action (or turn him toward the light) rather than adding an unmotivated lamp.
 - Not too close to the camera: in the locker scene he stops about 1.2 m from the slits; a suit filling the frame reads as a wall. Hitting the lockers beside mine he stands ~0.85 m off their fronts (fists reach that far at full stretch), which keeps him ~1.1 m from my eye.
+- Where the action happens relative to my hiding place matters to the user: he should be "busy with lockers somewhere right of the camera", at a distance, not right beside my locker on the left. Things the viewer must watch go in the band ~10–30° either side of straight ahead and 2–3 m away (from my locker: the south half of the room); frame him a little off-centre toward where he is so the room shows.
 - Geometry from inside my locker: anything near the locker wall is at a steep angle (30–45° left) and its impact point is hidden behind the locker's side; frame his head and shoulders, not the fists. Anyone facing the locker wall is also facing me, so his faceplate shows: make the final head turn a lift and a turn of 0.4+ rad toward my eye (which is below his head: pitch ~0.3 down).
 
 ## The camera (first person)
@@ -45,6 +46,7 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 
 - Contrast: dark spots darker, bright spots brighter (a luminance S-curve in the grade), on rooms, objects and people.
 - Small details everywhere: fine dust drifting only where light hits it (not snow), grit falling on impacts, contact shadows under furniture and him, dark bands at the foot of walls, grime, cobwebs, papers on the floor that never z-fight.
+- Debris must look random, never "organized": no lines or sheets of particles moving together. Spawn from a few crack points (clumps), mix kinds (heavy grit falling fast under gravity with drag, paint flakes fluttering, fine dust hanging and spreading), stagger the release (most at the impact, some trickling late), vary size and brightness per particle.
 - Light tells the story: a failing tube that drops out; a tube jolted by a crash flares and stutters so the place is seen in flashes; dead tubes try to strike again; lights cut off one after another toward you. In the storage room the dead ceiling tube catches at each of his blows (`RFL`, `roomTube`), with a bounce light off the locker fronts (`roomTubeB`) so the side of him facing my locker isn't black, and it flares on the freeze frame.
 - Check the side of him the camera sees: the doorway light hits his back when he faces the lockers, so near the lockers he is a black shape unless a motivated light (the tube, its bounce) reaches his front.
 - Shadows sell entrances: going through a doorway darkens him; a shadow from behind reads as a human figure (an overlay, no extra light).
