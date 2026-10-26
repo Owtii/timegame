@@ -8,7 +8,7 @@ Always update a reel **in place**, at the same artifact URL. Never publish a sep
 | The Day the Phones Jammed | https://claude.ai/artifact/RN2HBbKnuBAkLfQKUfUGEC | 1:00 | Finished (explainer) | `phones-jammed-3d.html` (hand-edited page) + `vo/` (sound) |
 | The 13th Floor | https://claude.ai/artifact/171jML4Snda7dxDHRjChNy | 1:14 | Finished and archived: don't touch unless asked | `f13/`, `build13.py` |
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | 1:11 | Done; notes may still arrive | `ns/`, `buildns.py` |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:32 | Active (v22, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:27 | Active (v23, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
 | The Graveyard Shift, Part 3 | not made yet | | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN | start from `ns2/` |
 
 ## The Day the Phones Jammed
@@ -53,8 +53,8 @@ The RUN choice:
 2. I vault the desk and sprint down the hall. Behind me my desk is thrown upside down and the lights die.
 3. The doors are locked. I lock myself in the storage room B-108 and find an old photo of the man from the morning shift in that suit, "I'M SORRY" under it.
 4. Bangs on the door. I hide in a locker. The door bursts and he comes in slowly.
-5. He stops at my locker, then something beside it catches his eye (the photo). He searches the shelves.
-6. A box falls. He stares, looks round, and smashes the desk, then hammers the lockers across the room and yanks one open: empty.
+5. He stops at my locker, then something beside it catches his eye (the photo). He backs away, then turns away looking round the room and crosses to the desk, still looking.
+6. While he is looking, a box falls behind him. He stares, looks round, and smashes the desk, then yanks open one of the lockers across the room: empty.
 7. His head turns slowly toward my locker as the exit stands open. Freeze before the faceplate is fully round. RUN FOR THE EXIT or STAY HIDDEN.
 
 **Clocks (v20):**
@@ -62,22 +62,22 @@ The RUN choice:
 - Part 2's own clock is `ts = page - OFF` with `OFF = RECAP_END - 2.0 = 7.85`.
 - `INSERTS = [[14.7, 1.6], [18.6, 4.35]]`: the look-round at the locked doors and the room look-round.
 - So: page = beat + 7.85 before beat 14.7, beat + 9.45 between 14.7 and 18.6, and **beat + 13.8 after 18.6**. Recompute if the inserts change.
-- `TOTAL = 92.4` (1:32). The card holds 6.5 s after `END_CUT` (page 85.9).
+- `TOTAL = 87.75` (1:27). The card holds 6.5 s after `END_CUT` (page 81.25).
 - Notes written before v19 used the 7.6 s recap, so their times are 2.25 s earlier than today's (OFF was 5.6).
 
 **Beats** (in `ns2/story.js`):
 - The run and the room: LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, SLAM, LOCKED, PHOTO, BAMS[], LOCKER0, LOCKER_SHUT.
 - His entrance and the locker: BURST, ENTER1, APPROACH0, AT_LOCKER, HUNCH0, GLANCE, NOTICE, AWAY0.
-- The search: RIGHT0/1 (the shelves), BACK1 (turns round looking over the room), WALKO (along the wall to the desk), FALL, TURN0, LOOKB, AT_BOX, LOOKRM.
-- The rage and the end: DESK0 + DESK_HITS[] (the two-hand slam, the sweep at DESK_SWEEP_AT), LOCK0, LOCK1 + LOCK_HITS[[t, locker]] (the east-wall lockers), HEADME, END_CUT = LOCK1 + 2.5.
+- The search: WALKO (he turns away from the photo looking round the room and crosses to the desk, still looking), FALL (while he is still looking), TURN0, LOOKB, AT_BOX, LOOKRM.
+- The rage and the end: DESK0 + DESK_HITS[] (the two-hand slam, the sweep at DESK_SWEEP_AT), LOCK0, LOCK1 (at the east-wall lockers; `LOCK_HITS` is empty now, so no hammering), OPEN0/OPEN1 (the grab and the yank), LOOKIN, HEADME, END_CUT = LOCK1 + 2.45.
 - The room tube's flashes: RFL, RTUBE_ON, RTUBE_LAST.
 
 **What the user has settled** (don't regress):
 - He never picks things up.
 - At the box: stare, look round (head first, slow, holds), round on the desk, slam both hands on its edge, hang breathing, sweep it clear with one arm.
-- Then the lockers on the east wall, right of my locker and across the room. Hammer one (other hand braced, elbow bent), hit the next twice, yank it open (latch, creak, it bangs on its hinges, the tube flashes): empty. He steps straight back out of my line of sight and stares in. His head turns slowly over his shoulder toward my locker, and it freezes before the faceplate is fully round.
+- Then he turns to the lockers on the east wall (right of my locker, across the room) and yanks one open: latch, creak, it bangs on its hinges, the tube flashes. It's empty. He steps straight back out of my line of sight and stares in, and his head turns slowly over his shoulder toward my locker. It freezes before the faceplate is fully round, and the question comes. No hammering on the lockers: the user cut it in v23 ("cut the part him hitting the lockers, and just make him open the locker").
 - Never the lockers right beside mine.
-- After the photo he goes right to the shelves and really looks them over, turns round looking over the room, then walks along the wall to the desk. The far-wall act (tearing photos off the board, a punch, standing there heaving) was cut in v22: the user found the ending too long, with silent stretches. Keep the narration gaps at the end short.
+- After the photo he backs away, then turns away looking round the room and crosses to the desk, still looking. The box falls while he is looking (v23: "make him look around and while he is doing the thing must fall"). The shelf search (v16–v22) and the far-wall act (cut in v22) are gone. Keep the narration gaps at the end short: the user has asked twice for a shorter ending.
 - The dead ceiling tube catches at each blow, stutters after the last, and flares on the freeze.
 - His breathing is the respirator model, kept low (the user lowered it 7 dB). My breathing is the realistic breath model, and my heart pounds when scared.
 - Exit glances at the end: two slow ones.
@@ -101,7 +101,7 @@ GOTO_MS=240000 node p2_t.cjs
 If K moves noticeably, find the new peak clip and rebalance. If it still changes, rerun `python3 p1recap.py <K>` so the recap stays at Part 1's exact levels.
 
 **Bookkeeping when the length changes:**
-- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the length label ("1:32") and `aria-valuemax`.
+- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the length label ("1:27") and `aria-valuemax`.
 - The test's times in `p2_t.cjs`, and `end` in `gensteps2.cjs`.
 - The script file `The-Graveyard-Shift_Script_Part1-2.txt`.
 

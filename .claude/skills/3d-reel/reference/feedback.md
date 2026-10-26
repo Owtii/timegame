@@ -855,6 +855,15 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 
 (v22: the far-wall photo-tearing act was cut. The film went from 1:39 to 1:32, and the last lines were re-placed so no gap at the end runs much over 3.5 s.)
 
+**2026-10-26 22:44** (with two new timed notes in Part 2, written at 22:40 and 22:41)
+
+> check the notes, so a bit more cutting to make it shorter. then the questions has to come after the last notes.
+
+- **1:05.6** make him look around and while he is doing the thing must fall
+- **1:22.6** cut the part  him hitting the lockers, and just make him open the locker.
+
+(v23: after the photo he turns away looking round the room and crosses to the desk still looking. The box falls during that look, replacing the shelf search. At the lockers he yanks one open with no hammering, and the question comes right after his head starts to turn. The film went from 1:32 to 1:27.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -949,7 +958,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (75 notes)
+### The Graveyard Shift, Part 2 (77 notes)
 
 *2026-10-25*
 
@@ -1030,3 +1039,5 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **1:28.4** why is so close to him, he should be busy with lockers somewhere right of the camera not on the left.
 - **1:29.8** make him open one of the lockers.
 - **1:01.8** it says it freeze but then walks, so the text dont make sense
+- **1:22.6** cut the part  him hitting the lockers, and just make him open the locker.
+- **1:05.6** make him look around and while he is doing the thing must fall
