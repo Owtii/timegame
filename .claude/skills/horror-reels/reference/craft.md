@@ -16,7 +16,7 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Reading: the sheet held at chest height in both hands, head bowed over it. Hands up at the faceplate reads as covering his face.
 - Throwing down: short wind-up at shoulder height, then down. Not an overhead swing.
 - Arms straight out in front reads as a zombie. Keep elbows bent and arms close unless he's reaching for something.
-- Every action needs a reason the viewer can see: he gets angry because of something (a sheet from the box with a photo and a red stamp), then breaks things. Not random hitting.
+- Every action needs a reason the viewer can see, but keep it simple: at the box he stares at what fell, looks round the room for whoever might be there, then breaks things. (A sheet-reading scene was tried and the user cut it: "he should not pick up things".)
 - Breaking things: wrench the shelving out from the wall (it tips and slams back), boxes fall off; fists into the shelf; heavier breathing that speeds up.
 
 **Physical sanity.**
@@ -30,7 +30,7 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Smooth, always. Moves ease through the gaussian smoothing; snaps only where a real jolt happens (getting up, a slam, a fall).
 - Not too much looking around. Scared POV = a few slow glances with holds, plus a very slight tremble, not darting.
 - Turning round fast while scared: still a smooth turn, ideally while backing up, so it reads as "backing up and looking behind".
-- A quick glance needs a short hold or the smoothing erases it.
+- A quick glance needs a short hold or the smoothing erases it. But a string of short darting glances (high, then low, then across) reads as jerky: pace a look-round as even sweeps (about 120°/s, holds of 0.2–0.3 s), each next target near the last, never a big jump in height.
 - Don't zoom too much. The user asked for a general 0.9x zoom-out; push-ins are small (a few degrees) and motivated (fear, focus, a reveal).
 - Show the way out when it matters (the exit through the doorway: stairs, green EXIT sign), and zoom on it a little.
 - Through locker slits: narrow gaps; the eye sits at the middle of the slits so the far shelves are visible.
@@ -54,6 +54,8 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Lights cutting off: the tube's buzz strains and flutters, then a breaker CHUNK, the hum dying in a falling whoomp, a spark, glass ticking.
 - A desk going over: lots of noise (frame groan, slam, everything on it scattering).
 - Lockers: a real thin-steel door (latch, hinge, tinny clang).
+- My breathing (close to the mic): use `my_breath` with a schedule from `breath_phases`: uneven cycles, in-breath hiss rising, rounder out-breath with sometimes voice in it; a gasp at a shock, then held breath, then a shaky out; a catch of breath at each bang; grunts on effort; slowing when safe. Never a regular looped hiss.
+- My heart: recorded heartbeat, loud and fast whenever I'm scared (after the run, in the locker), slowing as I calm.
 - His breathing in the hood: hollow, slow, deep, wet rattle and a low groan on the out-breath; heavier and faster as he gets angry; held when he's reading something.
 - His boots: heavy and loud; turning steps softer.
 - Scary call cut-off: a click and the long flat beep, and show "call ended".

@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v13, 1:33) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v14, 1:33) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -43,7 +43,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 
 1. **Read open notes** (Part 2 and Part 1):
    `ArtifactData query` on collection `notes` with `where: [["done","==",false]]`. Each note is `{created, done, t, text}`; `t` is the **page time** in seconds where they paused.
-2. **Map page time to the scene** (Part 2): page = recap until `RECAP_END` (7.6); then Part 2's own clock `ts = page - OFF` (OFF 5.6) and the beats clock `warp(ts)` which freezes during `INSERTS`. With the current inserts `[[14.7,1.6],[18.6,3.6]]`: beats = page-5.6 below beats 14.7, page-7.2 between 14.7 and 18.6, page-10.8 from 18.6. Recompute if INSERTS change.
+2. **Map page time to the scene** (Part 2): page = recap until `RECAP_END` (7.6); then Part 2's own clock `ts = page - OFF` (OFF 5.6) and the beats clock `warp(ts)` which freezes during `INSERTS`. With the current inserts `[[14.7,1.6],[18.6,4.35]]`: beats = page-5.6 below beats 14.7, page-7.2 between 14.7 and 18.6, page-11.55 from 18.6. Recompute if INSERTS change.
 3. **Look first**: render frames around `t` (real camera + side view) to see what they saw.
 4. **Implement** (story beats in `story.js`, camera in `env.js`, his motion in `updates.js`, props in `room.js`/`sets.js`, sound in `sound2_body.py`). Follow `reference/craft.md`.
 5. **Rebuild and verify** (from the scratchpad project dir):
@@ -71,8 +71,9 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - The recap's captions end before each cut; the recap uses Part 1's sounds only.
 - The first bang on the door is the loudest and hardest.
 - Lights "cut off" with real breaker sounds; the lobby flicker shows the overturned desk.
-- He reads the sheet at chest height with his head bowed, not with his hands at his faceplate.
-- Exit glances at the end: two slow ones, not many fast ones.
+- At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then turns on the shelves.
+- My breathing is the realistic `my_breath` model (uneven, gasps, held breath, shaky, grunts), never a looped hiss; my heart pounds loud when I'm scared.
+- Exit glances at the end: two slow ones, not many fast ones. Room look-rounds: evenly paced sweeps with short holds, no quick high-to-low jumps.
 - The ending freezes just before his faceplate comes round to the locker.
 - Contrast: darker darks, brighter highlights, subtle dust (not snow), contact shadows.
 

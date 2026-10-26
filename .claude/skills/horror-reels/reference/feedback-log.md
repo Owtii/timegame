@@ -20,6 +20,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 61.9 "make him turn around with his foot too, not just turn around magically."
 - P2 62.9 "make the movements more natural, it stil looks weird." (the turn steps were full walking strides kicking a leg up: made small, grounded, slower)
 - P2 79 "the movement looks very weird, fix that." (frog squat, hands at the faceplate, overhead throw: made a stoop, chest-height reading, short throw)
+- P2 76.9 "he should not pick up things he should just watch around and state a bit at the thing that fell then look around start hitting some things" (the whole paper scene was removed: stare, look round, rage)
 
 ## Motivation and story logic
 
@@ -53,6 +54,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 30.2 "make him walk and watch around with his flashlight."; P2 31.7 "double look at the photo in a smooth way and walk a littlbe bit forward."
 - P2 43.7 "when goes inside [the locker] make it more smooth with no weird akward pose ... shutting the door with him smoothly."
 - P2 83.8 "looking around too much... make it less and smooth and little slower."
+- P2 26 "make the camera movements at these moments 26 - 28 better and smoother more natural." (the room look-round's darting glances became even sweeps with short holds)
 
 ## Light, look and detail
 
@@ -87,6 +89,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 11 "have better sound effects something that really that uses in real movies."
 - P2 14.2 "light sound effects that relaly sounds like light getting cut off."
 - P2 2.4 "use the sound effects I really put and deleted from the last part, dont add ur own sound effects."
+- P2 13.4 "make the breathing sound effect more realistic and add louder heartbeats" (a real breath model replaced the looped hiss; a loud heartbeat from the doors into the room; the locker heart louder)
 
 ## Captions, recap and the choice card
 
