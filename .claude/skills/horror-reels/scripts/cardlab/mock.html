@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
+<style>
+:root{--fg:#E9E4DA;--ink:#0b0c0d;--display:"Archivo","Arial Black",system-ui,sans-serif;--body:"Archivo",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+html,body{margin:0;background:#000}
+.stage{position:relative;width:540px;aspect-ratio:9/16;overflow:hidden;container-type:inline-size;background:#000 center/cover no-repeat;font-family:var(--body)}
+</style>
+<link rel="stylesheet" id="cardcss" href="CARD_CSS">
+</head><body><div class="stage" id="stage">
+          <div class="title2" id="title2" aria-hidden="true" hidden><span class="k">The Graveyard Shift</span><span class="p">Part 2</span></div>
+          <div class="rtag" id="rtag" aria-hidden="true" hidden>Previously<b>Part 1</b></div>
+          <div class="rcard" id="rcard" aria-hidden="true" hidden><h3>What would you do?</h3><div class="opts"><span class="rb turn">Turn<br>around</span><span class="or">or</span><span class="rb run">Run</span></div><p class="rchose">You chose: run<b>Part 2</b></p></div>
+          <div class="choice" id="choice" hidden role="group" aria-label="The question">
+            <div class="qgrp" data-q="q2" role="group" aria-labelledby="q2h"><h3 id="q2h">What would you do?</h3><div class="opts"><button type="button" data-k="run" aria-pressed="false">Run for<br>the exit</button><div class="or" aria-hidden="true">or</div><button type="button" data-k="hide" aria-pressed="false">Stay<br>hidden</button></div></div>
+            <p class="res" id="choiceRes" role="status"></p>
+          </div>
+</div>
+<script>
+const q = new URLSearchParams(location.search), st = q.get('state') || 'end';
+const stage = document.getElementById('stage');
+stage.style.width = (q.get('w') || 540) + 'px';
+stage.style.backgroundImage = `url(${st.startsWith('recap') ? 'bg_recap.png' : 'bg_end.png'})`;
+const choice = document.getElementById('choice'), rcard = document.getElementById('rcard'), rtag = document.getElementById('rtag'), res = document.getElementById('choiceRes');
+if (st.startsWith('end')){ choice.hidden = false; res.textContent = 'Comment RUN or HIDE · Part 3 is whatever wins';
+  if (st === 'endpicked'){ const g = choice.querySelector('.qgrp'); g.classList.add('picked'); g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === 'hide'))); res.textContent = 'You chose to stay hidden. Part 3 is coming soon.'; }
+  if (st === 'endhover') choice.querySelector('button[data-k="run"]').classList.add('hov'); }
+else { rcard.hidden = false; if (st === 'recappicked') rcard.classList.add('picked'); }
+</script></body></html>

@@ -73,13 +73,17 @@ Everything here comes from the user's notes (see feedback-log.md). Follow it by 
 - Footsteps and sounds must match the picture exactly (regenerate step times after any motion change).
 - The recap uses Part 1's own sounds only.
 
+- Narration over the mix: the voice sits on top of a ducked room. Beds dip under it, the hits never do; when a line has to run over loud action (the run, the rattled doors, the bangs on the door), lift that line a couple of dB rather than the whole voice (a louder voice becomes the mix peak and turns every scare down). Measure, don't guess (`vo_snr.py`).
+- Don't start a line on top of a big hit: let the hit land, come in on its tail (the recap's first line starts 0.1 s after the doors bang open, and that bang never dips).
+- A spoken recap needs time: each line gets its own shot, long enough for the words plus a breath (the v19 recap grew from 7.6 to 9.85 s). Don't speed the narrator past ~1.06x; trim pauses inside a line instead.
+
 ## Story and captions
 
 - The narrator tells it afterwards, plainly (white). What I say in the moment is italic gold (`who:'me'`). The guard's remembered warning is green (`who:'phone'`).
 - Captions never linger past their shot's cut or onto a transition.
 - A caption must match what the viewer sees while it is on screen (not describe what happens a few seconds later), and keep a little mystery: hint ("something beside it") rather than spell out.
 - Lines are short and natural; the user rewrites lines they don't like ("this might be my chance", not "...like or just stay").
-- Every part ends on a choice card with two options (dark red vs dark blue buttons, text only, centred, "or" as plain text).
+- Every part ends on a choice card with two options (dark red vs dark blue, text only, centred, "or" as plain text), drawn as clean matte 3D keycaps: solid colour, visible thickness, soft shadow, light from above. No glows, no glossy gradients, no pill shapes ("very ai design").
 - The recap at the start: tiny "PREVIOUSLY / PART 1" tag, the earlier part's key shots, its own sound, its question with the picked answer.
 
 ## Before you publish, look

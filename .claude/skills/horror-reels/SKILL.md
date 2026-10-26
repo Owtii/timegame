@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v18, 1:37) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v19, 1:39, narrated) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -22,7 +22,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 
 ## Standing rules (the user's own words, keep them)
 
-- **No narration until they say so.** "dont add voice narrator yet till, I give u the permission to do it. because I need to see first then generate to save credits." Captions only. When narration is wanted, give a credit estimate first.
+- **Narration only when they say so, priced first.** "dont add voice narrator yet till, I give u the permission to do it. because I need to see first then generate to save credits." Part 2 got its narrator in v19 when they said "bring the voice narrator in" (one take, 17 lines, 1,344 credits). For a new part: captions only until they ask; then price it with `estimate_only` and say the number before generating. Re-record single lines rather than the whole take.
 - **ElevenLabs credits:** quote the cost before generating any sound effect (about 100 credits per effect, two takes) and only generate on a yes. Prefer the recorded library you already have (see system.md, "Sound library") and synthesis; say when no credits were used.
 - **Never show the player's hands or legs.** First person, camera only.
 - **The recap at the start of a part uses that part's predecessor's own sound mix.** "dont add ur own sound effects" to the recap.
@@ -57,7 +57,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
    GOTO_MS=240000 node p2_t.cjs                   # full test: captions, mix levels, card, collisions
    ```
    Keep the master gain K near 1.8. If it moves noticeably, find the new peak clip (sound.py prints it) and rebalance; if K still changes, rerun `python3 p1recap.py <K>` so the recap stays at Part 1's exact levels.
-6. **Update the bookkeeping**: total length (`TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:37" label and `aria-valuemax`), test times in `p2_t.cjs` (captions and level windows are page times: page = beat + 11.55 after the room look-round), `end` in `gensteps2.cjs` (past the last beat), the script text `The-Graveyard-Shift_Script_Part1-2.txt`.
+6. **Update the bookkeeping**: total length (`TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:39" label and `aria-valuemax`), test times in `p2_t.cjs` (captions and level windows are page times: page = beat + 11.55 after the room look-round), `end` in `gensteps2.cjs` (past the last beat), the script text `The-Graveyard-Shift_Script_Part1-2.txt`.
 7. **Back up**: `cp -r ns2 ns2_vN_backup` plus the build scripts, and `graveyard-shift_part2_project_vN.tar.gz`.
 8. **Publish** the built HTML to the same artifact URL (omit `capabilities` so the stored db/downloads/user declaration carries forward).
 9. **Migrate the mix**: read `mix/timeline` (note its version), run `scripts/migrate_mix.py <read.json> <out.json> <last_migration.json>`, write it with `if_version`.
@@ -79,6 +79,8 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - My breathing is the realistic `my_breath` model (uneven, gasps, held breath, shaky, grunts), never a looped hiss; my heart pounds loud when I'm scared.
 - Exit glances at the end: two slow ones, not many fast ones. Room look-rounds: evenly paced sweeps with short holds, no quick high-to-low jumps.
 - The ending freezes as his faceplate comes round to my slits, lit by the tube's last flare.
+- The choice card is matte 3D keycaps (`ns2/choice.css`, designed in `cardlab/`): a flat face on a darker side wall with a soft shadow, light from above, no glow, no gloss, no pill shape; the picked key latches down, the other goes dull but stays solid. The user called the old glossy glowing buttons "very ai design". The exported video draws the same keys (`keycap()` in choice.js); change both together.
+- Narration: the same Grandpa voice as Part 1 (voice NOpBlnGInO9m6vDvFkFC, eleven_v4), my in-the-moment lines in the same voice under my breath; captions light up word by word from the recording. Keep their saved mix edits (swapped sounds, mutes, volumes, sounds they added) through every rebuild.
 - Contrast: darker darks, brighter highlights, subtle dust (not snow), contact shadows.
 - Anything he opens must read from my locker: the opened door shows its inside (bare lighter steel with a stiffener, not another painted locker front) and he never stands between my eye and the opening.
 - The grit off the door at each bang: random clumps from crack points, mixed grit/flakes/dust, lit like everything else (never brighter than the wall the light falls on, never glowing white points).
@@ -87,10 +89,13 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 
 - This machine has 4 CPUs: a workflow runs only 2 agents at a time, and every preview render is software WebGL (~1 min page load). Several parallel agents that each render and iterate take an hour or more. The user noticed and asked why; say up front roughly how long it will take, and cut stages (e.g. merge the judges' winner yourself instead of a refine round) when they are waiting.
 - What worked: 3 choreographers each in a private copy (`mkwork.sh NAME` makes `wk_NAME/` with its own `ns2/` and links to the rest), each rendering and iterating; independent judges reading their sheets (two of three agreeing is enough); then an independent review of every note against fresh sheets (`review_render.sh` writes `review/*.png`). The reviewers caught real problems (a head turned past what a neck can, zombie-straight arms, glowing grit, captions over the wrong shot) that looked fine at a glance.
+- For design work, give the agents a harness that renders in seconds, not the 3D page: the v19 card panel (3 designers on `cardlab/`, 2 judges) took ~17 minutes and both judges agreed. Then apply the judges' fixes yourself.
 - Give agents the exact constraints they must keep (which files, DESK_HITS count, the sweep time and that sound reads it) and tell them that motion they can't change (the path's turn) is a root cause to report.
 
 ## Gotchas that cost time before
 
+- The mix engine's sample rate is 44.1 kHz (`vo/synth.py` SR), the narration tools work at 48 kHz: index stems with the right one (a 48 kHz index into a 44.1 kHz stem reads the wrong moment and looks like silence).
+- `migrate_mix.py` must carry `cap` on voice clips: the editor hides any default caption whose voice clip is missing its `cap` in the saved mix. It now also keeps the user's swapped sounds, mutes, volumes, moves and their own added clips (pass `shift_at shift` when the page timeline moved, e.g. a longer recap).
 - Never `pkill -f "node v2f.cjs"` and never `until ! pgrep -f ...` / `while pgrep -f ...` loops: the pattern matches your own shell and kills/hangs it (it happened again in v18: a wait loop spun forever after the renders were done). Wait with `render2.sh` (it uses `wait`), or run the command with `run_in_background` and act on its notification.
 - Headless page loads need `GOTO_MS=240000` (the page is ~6 MB).
 - A `// comment` appended in the middle of a one-line edit swallows the rest of that line's code. Put comments on their own line or at the true end.

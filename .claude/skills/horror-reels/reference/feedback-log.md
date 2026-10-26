@@ -110,3 +110,4 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 51.7 "make the text something more accurate to the scene" (the line said he walked up to my locker while he was only just coming in)
 - P2 59.6 "make this text also something more accurate to the scene and keep it little mysterious" ("He stopped right at my locker…" / "Then something beside it made him freeze.")
 - P2 61.8 "it says it freeze but then walks, so the text dont make sense" (now "Then something beside it caught his eye…")
+- P2 (v19, a direct request) "bring the voice narrator in, and make the buttons and color at the end a little bit other design, it looks very ai design, make it more clean 3d type of design." (Grandpa narrator for every line, my lines in the same voice; the card redone as matte keycaps, chosen by a design panel)

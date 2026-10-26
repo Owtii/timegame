@@ -16,15 +16,15 @@ Part 1 is built the same way by `buildns.py` from `ns/`. The 13th Floor by `buil
 
 ## Clocks (Part 2)
 
-- **Page clock**: what the player shows. `0..RECAP_END` (7.6) is the recap of Part 1; after it, Part 2.
-- **Part 2's own clock** `ts = page - OFF` (OFF = 5.6). Held moments ("inserts") run on this clock: the world holds still while my eyes move.
+- **Page clock**: what the player shows. `0..RECAP_END` (9.85 since v19; was 7.6) is the recap of Part 1; after it, Part 2. Recap shots: `R_CUT1` 2.65, `R_CUT2` 4.4, `R_CUT3` 5.9, `R_FREEZE` 7.95, `R_PICK` 8.75 (each long enough for its spoken line; `p1recap.py` SHOTS must match, shot 4 ending where Part 1 freezes, 64.85).
+- **Part 2's own clock** `ts = page - OFF` (OFF = RECAP_END - 2.0 = 7.85). Page = beat + 13.8 after the room look-round (beat + 5.95 + OFF). Held moments ("inserts") run on this clock: the world holds still while my eyes move.
 - **Beats clock** `t = warp(ts)`: `INSERTS = [[14.7, 1.6], [18.6, 4.35]]` (at beats 14.7 the look-round at the locked doors, at 18.6 the room look-round). `toNew(beat)` converts a beat to Part 2's clock; `END_ABS = toNew(END_CUT) + OFF`.
 - Everything in the story (`story.js` constants, HZ segments, camera keys in `CAM_DEF`, sound clip times via `clip(...)`) is on the beats clock and maps automatically. Things written directly on Part 2's clock (`INSERT_KEYS`, `WALKS`, the walk-bob base `ts - 23.6`, `WALK_TS`, any `clip(..., rec=True)` at `ts + OFF`) must be shifted by hand when an insert changes length.
 
 ## story.js: the beats and captions
 
 Named beats for everything (LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, SLAM, LOCKED, PHOTO, BAMS[], LOCKER0, LOCKER_SHUT, BURST, ENTER1, APPROACH0, AT_LOCKER, HUNCH0, GLANCE, NOTICE, AWAY0, RIGHT0/1 (to the shelves), BACK1, WALK0, AWAY1, RIP1/2, PUNCH, QUIET, WALKO (to the desk), FALL, TURN0, LOOKB, AT_BOX, LOOKRM, DESK0 + DESK_HITS[], LOCK0, LOCK1 + LOCK_HITS[[t, locker]], HEADME, END_CUT = LOCK1 + 2.5). `RFL`/`RTUBE_ON`/`RTUBE_LAST`: the room tube's flashes. `DESK_HITS` = [the two-hand slam, the sweep] and `DESK_SWEEP_AT` (read by sound too); `LOCK_HITS` = [[time, index into LOCKERS_E]]. Also:
-- `CUES`: captions `{t, text, who?, wps?}` (narrator plain, `who:'me'` italic gold, `who:'phone'` green). Recap cues carry their own word timings `w`, duration `d` and `cut` (gone before the shot's cut). Part 2 cues are timed from the text at `wps` words/second. No recorded voice yet (`VO_CUES = []`).
+- `CUES`: captions `{t, text, who?, wps?}` (narrator plain, `who:'me'` italic gold, `who:'phone'` green). Recap cues carry their own word timings `w`, duration `d` and `cut` (gone before the shot's cut). `VO_CUES` is filled at build time from `ns2/audio/vo2.json` (one entry per caption, null for the phone lines): each recorded line sets its caption's start, word times and length, so the words light up as he says them.
 - `CHAPTERS` (the player's chapter list), `FLICK` (lobby tube dropouts), `LFL` (the lobby flicker/restrike segments `[from, to, level]`), `POPS` (lights cutting off), `breathT(t)` (his breath period; the sound and his chest both use it).
 - `mk_sound2.py` reads these constants by regex for the sound build; add any new beat name you need in sound to its `B = {...}` list (and list constants to the parse lines). The regex only reads plain numbers: a beat written as an expression (`END_CUT = LOCK1 + 2.5`, `HEADME = LOCK1 + 1.95`) must be derived in Python (mk_sound2 derives END_CUT; sound2_body defines HEADME).
 
@@ -56,12 +56,14 @@ Named beats for everything (LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, 
 - Mixing: non-recap clips summed, `fxScale` normalization, `tanh(1.35x)` soft clip, master `K = .95 / peak` (keep ≈1.8; the build prints the peak time and which clips make it). Writes `ns2/audio/clips.json` and a check mix `ns2/audio/check_mix.mp3` (measure RMS/peaks around a moment with numpy + ffmpeg).
 - **Sound library** (recorded, free to reuse): `f13/el/raw/*.mp3`: braam, door_creak, fluoro (tube buzz), handle, heartbeat, heavy_steps, keys_lock, lift_close/open/ding, light_on (switch + tube strike), phone_buzz, riser, run (sprint + breath), scratch, shower, slam_lock (door slam, bolt, chain), steps_carpet, stinger, wet_steps, whispers; each with a `_2` take. `ns2/el/scream_1/2.mp3`. Use `cut(name, a, b)`, `speed(x, k)`, `loop_to(x, d)`, `raw(name)`.
 - Footsteps: his boots from `ns2/audio/steps.json` (written by `gensteps2.cjs` from his walk phase; turn steps flagged `turn:1` and played softer); my steps from `run_t` / `WALK_TS`.
-- The narration voices exist from Part 1 (ElevenLabs "Grandpa" narrator, the phone guard) but Part 2 has none until the user allows it.
+- **Narration** (v19): one ElevenLabs take `ns2/vo2/narr2_A.mp3` (Grandpa, NOpBlnGInO9m6vDvFkFC, eleven_v4, lines separated by `[long pause]`, delivery tags per line). `ns2/vo2.py` (helpers in `vo2lib.py`, copies in `scripts/`) splits it at the long pauses, aligns each line's words with pocketsphinx (`pylib/`), places it at its caption (`'page'` clock for the recap, `'beat'` for Part 2), speeds a line up to ~1.06x only where it would run into the next, and writes `ns2/audio/vo2.json` + `vo2_<i>.npy`; it prints what the recap shots need.
+- In `sound2_body.py` the narration is mixed at `VPEAK` (.36: its loudest word as loud as the biggest hits, so K stays ≈1.8 and the scares keep their level), with per-line lifts `VLIFT` (by caption index) for lines over loud action. Three ducking tiers under the voice: plain clips dip 70% (`duck[0]`), `nd` beds (heart, boots, drones, breathing) dip `NDK` = 60% (`master.nduck`, engine bus `g.ndk`), `HARD` hits and stings (bams, burst, crash, pops, strikes, locker hits, the recap's door bang and the guard) never dip (engine bus `g.hard`). Voice clips are `v00..v16` on the voice track with `cap: ['c', captionIndex]`.
+- `scripts/vo_snr.py` measures each line against everything under it (speech frames only; stems at 44.1 kHz): aim for ≥ 6 dB, accept less only over a hit the line is about.
 
 ## The page's database (artifact `db` capability)
 
 - `notes`: `{created, done, t, text}`; the user's timed notes. Mark done with `update {done:true}` + `if_version`.
-- `mix/timeline`: the saved sound mix `{clips:[{id,key,label,t,track,ln?}], lanes, v, updated}`. Migrate after each sound rebuild (`scripts/migrate_mix.py`).
+- `mix/timeline`: the saved sound mix `{clips:[{id,key,label,t,track,ln?,mute?,vol?,cap?...}], lanes, v, updated}`. The user edits it (lanes, mutes, volumes, swapping a clip's sound for a library one, adding their own clips with random ids). Migrate after each sound rebuild: `scripts/migrate_mix.py <read.json> <out.json> <last_migration.json> [shift_at shift]` keeps all of that; read the version first and diff it against your last migration to see what they changed.
 - `votes` (the choice card answers), `sfxRequests` (sound requests from the library panel).
 
 ## Tests and tools (in `scripts/`, run from the project dir)
@@ -72,5 +74,6 @@ Named beats for everything (LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, 
 - `coll.cjs`: collision report (must print `collisions: 0`).
 - `projprobe.cjs`: where he, the east lockers and the camera land on screen at page times (`TIMES=..`); use it to make sure what the viewer must see isn't behind him.
 - `gensteps2.cjs`: his footstep times (end time must cover the film).
+- `cardlab/` (copies in `scripts/cardlab/`): a fast harness for the choice card. `capbg.cjs` grabs the frozen frames without the cards; `mock.html` is the card markup over them with the real fonts (`fonts.css` from Google Fonts, downloaded); `node cardlab/shot.cjs <dir>` renders `<dir>/card.css` in four states (end, end picked, recap, recap picked; `W=390` for phone width) in seconds, no 3D page load. The shipped CSS is `ns2/choice.css`.
 - `p2_t.cjs` (in the project): full test: recap card, captions at set times, mix levels per scene, the choice card, collisions. Update its times when the film's length or beats move.
 - `te_common.cjs`: Playwright setup (local three.js from `npmthree/`, mp4-muxer from `npmmux/`, fonts blocked); `chromium.launch` with the pre-installed browser.

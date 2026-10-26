@@ -1,0 +1,82 @@
+@property --d{syntax:"<length>";inherits:true;initial-value:0px}
+@property --top{syntax:"<color>";inherits:true;initial-value:transparent}
+@property --face{syntax:"<color>";inherits:true;initial-value:transparent}
+@property --low{syntax:"<color>";inherits:true;initial-value:transparent}
+@property --side{syntax:"<color>";inherits:true;initial-value:transparent}
+@property --side2{syntax:"<color>";inherits:true;initial-value:transparent}
+/* End-of-reel choice card: matte keycaps.
+   Each button = top face (::after) standing on a darker side wall (::before) of depth --d,
+   with a soft contact shadow under the wall. Pressing moves the face down by (--D - --d)
+   while the wall shrinks to --d, so the base stays planted on the surface. */
+.choice{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0;text-align:center;color:var(--fg)}
+.choice[hidden]{display:none}
+.choice .qgrp{display:flex;flex-direction:column;align-items:center}
+.choice .qn{margin:0 0 1.6cqw;font:700 2.8cqw/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:rgba(233,228,218,.6);text-shadow:0 0 2cqw rgba(14,16,18,.9)}
+.choice h3,.rcard h3{margin:0 0 7.4cqw;max-width:86%;font:800 8.6cqw/1.08 var(--display);font-stretch:125%;text-transform:uppercase;letter-spacing:-.012em;text-wrap:balance;color:#ECE6DB;text-shadow:0 .35cqw 0 rgba(8,9,10,.7),0 0 4cqw rgba(8,9,10,.6)}
+.choice .opts,.rcard .opts{display:flex;align-items:center;justify-content:center;padding-bottom:3.1cqw}
+
+/* ---- the keycap ---- */
+.choice button[data-k],.rcard .rb{
+  --D:3.1cqw;--d:var(--D);
+  --top:#7a262c;--face:#6a1d22;--low:#5f191d;
+  --side:#4a1313;--side2:#300b0b;
+  --ink:#F1E7DC;
+  position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;
+  width:37cqw;height:20cqw;padding:0 3cqw;box-sizing:border-box;margin:0;border:0;border-radius:2.6cqw;
+  background:none;color:var(--ink);text-align:center;
+  font:800 4.3cqw/1.12 var(--display);font-stretch:125%;letter-spacing:.03em;text-transform:uppercase;
+  text-shadow:0 -.2cqw 0 rgba(0,0,0,.32),0 .2cqw 0 rgba(255,255,255,.06);
+  transform:translateY(calc(var(--D) - var(--d)));
+  transition:--d .07s ease-out,--top .2s,--face .2s,--low .2s,--side .2s,--side2 .2s,color .2s;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
+.choice button[data-k="trapped"],.choice button[data-k="hide"],.rcard .rb.run{
+  --top:#26446f;--face:#1e3762;--low:#1a3058;
+  --side:#122444;--side2:#0b172e;
+  --ink:#E7EBF2}
+/* side wall + contact shadow */
+.choice button[data-k]::before,.rcard .rb::before{
+  content:"";position:absolute;z-index:-2;left:0;right:0;top:0;bottom:calc(-1 * var(--d));border-radius:inherit;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.28)),linear-gradient(90deg,var(--side2),var(--side) 9%,var(--side) 91%,var(--side2));
+  box-shadow:0 0 0 .14cqw rgba(0,0,0,.5),0 .5cqw .7cqw rgba(0,0,0,.45),0 1.8cqw 3.6cqw -.6cqw rgba(0,0,0,.6);
+  transition:box-shadow .07s ease-out}
+/* top face */
+.choice button[data-k]::after,.rcard .rb::after{
+  content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;
+  background:linear-gradient(180deg,var(--top),var(--face) 38%,var(--low));
+  box-shadow:inset 0 .3cqw 0 rgba(255,255,255,.16),inset 0 -.3cqw 0 rgba(0,0,0,.16),inset 0 0 0 .1cqw rgba(0,0,0,.18);
+  transition:filter .12s}
+
+@media (hover:hover) and (pointer:fine){.choice button[data-k]:hover::after{filter:brightness(1.07)}}
+.choice button[data-k]:active{--d:.45cqw}
+.choice button[data-k]:active::before{box-shadow:0 0 0 .14cqw rgba(0,0,0,.5),0 .3cqw .4cqw rgba(0,0,0,.45),0 .8cqw 1.6cqw -.4cqw rgba(0,0,0,.5)}
+.choice button:focus-visible{outline:none}
+.choice button:focus-visible::before{outline:.4cqw solid rgba(236,230,218,.85);outline-offset:.9cqw}
+
+/* picked: latched down, face a shade lighter; the other one goes dull (stays solid) */
+.choice button[data-k][aria-pressed="true"],.rcard.picked .rb.run{--d:.5cqw;--top:#8f2a2e;--face:#842125;--low:#761d21;--ink:#FFF8F0}
+.choice button[data-k="trapped"][aria-pressed="true"],.choice button[data-k="hide"][aria-pressed="true"],.rcard.picked .rb.run{--top:#30528c;--face:#2a4a80;--low:#254274;--ink:#F6F8FC}
+.choice button[data-k][aria-pressed="true"]::before,.rcard.picked .rb.run::before{box-shadow:0 0 0 .14cqw rgba(0,0,0,.5),0 .3cqw .5cqw rgba(0,0,0,.45),0 1cqw 2cqw -.4cqw rgba(0,0,0,.55)}
+.choice .qgrp.picked button[aria-pressed="false"],.rcard.picked .rb.turn{--top:#3b2729;--face:#352325;--low:#2f1f21;--side:#1e1314;--side2:#140d0e;--ink:#857677}
+.choice .qgrp.picked button[data-k="trapped"][aria-pressed="false"],.choice .qgrp.picked button[data-k="hide"][aria-pressed="false"]{--top:#2a3142;--face:#252c3c;--low:#212736;--side:#141a26;--side2:#0d1119;--ink:#6d7484}
+
+.choice .or,.rcard .or{flex:none;width:9cqw;text-align:center;font:700 3cqw/1 var(--mono);letter-spacing:.12em;text-indent:.12em;text-transform:uppercase;color:rgba(233,228,218,.7);text-shadow:0 0 2cqw rgba(8,9,10,.9)}
+.choice .res{position:absolute;left:8cqw;right:8cqw;top:calc(50% + 27cqw);margin:0;font:500 3.3cqw/1.35 var(--body);color:rgba(236,230,219,.82);text-shadow:0 0 2cqw rgba(8,9,10,.9)}
+
+.title2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4cqw;padding-bottom:6%;text-align:center;pointer-events:none}
+.title2[hidden]{display:none}
+.rtag{position:absolute;left:0;right:0;top:6.5%;display:flex;flex-direction:column;align-items:center;gap:1.1cqw;font:700 2.5cqw/1 var(--mono);letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;color:rgba(233,228,218,.72);text-shadow:0 0 2.4cqw rgba(0,0,0,.9);pointer-events:none}
+.rtag[hidden],.rcard[hidden]{display:none}
+.rtag b{font:800 4.6cqw/1 var(--display);font-stretch:125%;letter-spacing:.03em;text-indent:0;color:#E9E4DA}
+.rcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--fg);pointer-events:none}
+.rcard .rchose{margin:6.4cqw 0 0;font:600 3.6cqw/1 var(--mono);letter-spacing:.16em;text-indent:.16em;text-transform:uppercase;color:rgba(236,230,219,.7);text-shadow:0 0 2cqw rgba(8,9,10,.9);opacity:0;transition:opacity .25s}
+.rcard .rchose b{display:block;margin-top:2.6cqw;font:800 5.5cqw/1 var(--display);font-stretch:125%;letter-spacing:-.01em;text-indent:0;color:#ECE6DB}
+.rcard.picked .rchose{opacity:1}
+.title2 .k{font:700 3.2cqw/1 var(--mono);letter-spacing:.25em;text-transform:uppercase;color:rgba(233,228,218,.55)}
+.title2 .p{font:800 13cqw/1 var(--display);font-stretch:125%;letter-spacing:-.015em;text-transform:uppercase;color:#E9E4DA}
+.title2 .c{font:700 4.2cqw/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:#c8382c}
+.subs.me{color:rgba(246,226,180,.45);font-style:italic}
+.subs.me .on{color:#f6e2b4}
+
+/* the recap's press is scripted: slower, so it reads in the video */
+.rcard .rb{transition:--d .16s cubic-bezier(.3,.7,.4,1),--top .25s,--face .25s,--low .25s,--side .25s,--side2 .25s,color .25s}
+.rcard .rb::before{transition:box-shadow .16s cubic-bezier(.3,.7,.4,1)}
