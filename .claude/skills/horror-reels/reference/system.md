@@ -43,7 +43,7 @@ Named beats for everything (LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, 
 - **Pose parameters** (`poseHaz`): `phase, walk` (gait), `lean` (torso pitch forward), `dip` (body height), `bodyZ` (hips back), `knee`, `hip` (extra flex both legs), `headYaw/headPitch/headRoll`, `twist` (torso yaw), `hipTurn`, `armHang`, `aim` (head holds its aim against body sway), `reachL/reachR = [pitch, roll, elbow, weight, wrist]`. Arm pitch is relative to the torso: world forward angle = −(pitch + torsoTilt), torsoTilt ≈ 0.09 + lean. Elbow negative bends. Roll positive = arm out, negative = across the body. Joint heights: hip 1.03, knee 0.58, ankle 0.13; shoulder 1.65, elbow 1.29, wrist 0.96 (thigh/shin 0.45 m, upper arm 0.36, forearm 0.33).
 - Look keys (`LOOKS`, `LOOKP`, `LOOKS2`) and arm keys (`MAD_RP/RE/LP/LE/TW`, `RAGE_*`) are eased with `keyed(K, t)` (smoothstep between keys; times must strictly increase).
 - `updInside(t)`: all lights (lobby tube `tubeAt` + flicker/restrikes, corridor tubes with `popK` cut-offs, B-108 doorway spill `roomSpill` and fill `roomBounce`, torch, red stairwell light), doors (`b108At`, `farDoorAt`, `lockerAt`), the desk flip, falling photos (`updFalls`), the falling box (`updBox`), the storage-room desk smash (`updDesk`: items jump at each blow, lamp/phone/papers fly at the sweep, the mug falls; handles in `deskBits` from room.js; his hands are placed on desk points by a small arm IK, `dskArm`, with keyed channels through `spk`, a Hermite interpolator where 'hit' keys arrive at speed), the east-wall lockers (`lockersE`, `LOCKERS_E`) jolting when hit (`updLockerHits`), the room tube (`rflAt` → `roomTube`, `roomTubeB`, `roomTubeMat` glow).
-- `_fig` (on `window.reel`) is the debug/test hook: `view(t, P, L, fov, hide, lit)` renders any time from any camera (lit = hemi intensity for inspection), `collide()` lists moments his body overlaps room furniture, `haz(t)`, `pose(t)`, `cam(t)`.
+- `_fig` (on `window.reel`) is the debug/test hook: `view(t, P, L, fov, hide, lit)` renders any time from any camera (lit = hemi intensity for inspection), `collide()` lists moments his body overlaps room furniture, `haz(t)` (beat time), `pose(t)`, `cam(t)`, `objs` (camera, scene, lockers, lockersE...). `reel.seek` and `view` take page time.
 
 ## Sets and props
 
@@ -70,6 +70,7 @@ Named beats for everything (LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, 
 - `v2f.cjs` + `render2.sh NAME "times" "times"`: real-camera frames `p2_<t>.png` and contact sheets (`sheet2.py`, `PFX=p2_`).
 - `dbgpose.cjs`: lit stills from any camera (`CAM=x,y,z LOOK=x,y,z FOV=..`, `TIMES=..`), frames `dp_<t>.png`.
 - `coll.cjs`: collision report (must print `collisions: 0`).
+- `projprobe.cjs`: where he, the east lockers and the camera land on screen at page times (`TIMES=..`); use it to make sure what the viewer must see isn't behind him.
 - `gensteps2.cjs`: his footstep times (end time must cover the film).
 - `p2_t.cjs` (in the project): full test: recap card, captions at set times, mix levels per scene, the choice card, collisions. Update its times when the film's length or beats move.
 - `te_common.cjs`: Playwright setup (local three.js from `npmthree/`, mp4-muxer from `npmmux/`, fonts blocked); `chromium.launch` with the pre-installed browser.

@@ -36,6 +36,7 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 84.5 "this movement of him is very weird change that. dont make him do too weird movements. it feels very robotic" (v17: the double-arm overhead slams and the jumping-jack sweep were replaced; see craft.md)
 - P2 88.4 "why is so close to him, he should be busy with lockers somewhere right of the camera not on the left." (v17: a second row of lockers on the east wall by the desk; he turns on those, across the room on my right)
 - P2 86.8 "make him move to other lockers and hit them" (v16: he crosses to the lockers next to mine, hits the first, turns to the one right beside mine and hits it; his head comes round to my slits; freeze)
+- P2 89.8 "make him open one of the lockers." (after hitting the second locker he yanks it open, finds it empty, steps back staring in, then his head comes round toward my locker before the freeze)
 
 ## Camera
 
@@ -108,3 +109,4 @@ Their timed notes, grouped by theme (page time in seconds, then their words, lig
 - P2 62.6 "make the questions centred."
 - P2 51.7 "make the text something more accurate to the scene" (the line said he walked up to my locker while he was only just coming in)
 - P2 59.6 "make this text also something more accurate to the scene and keep it little mysterious" ("He stopped right at my locker…" / "Then something beside it made him freeze.")
+- P2 61.8 "it says it freeze but then walks, so the text dont make sense" (now "Then something beside it caught his eye…")
