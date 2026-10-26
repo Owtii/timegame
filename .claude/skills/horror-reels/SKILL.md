@@ -14,7 +14,7 @@ Read `reference/system.md` before touching the code, `reference/craft.md` before
 | Reel | Artifact | Status |
 |---|---|---|
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | done, notes may still arrive |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v16, 1:36) |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | active (v17, 1:36) |
 | The Graveyard Shift, Part 3 | not made yet | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN |
 | The 13th Floor | archived | finished project, don't touch unless asked |
 
@@ -71,7 +71,7 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - The recap's captions end before each cut; the recap uses Part 1's sounds only.
 - The first bang on the door is the loudest and hardest.
 - Lights "cut off" with real breaker sounds; the lobby flicker shows the overturned desk.
-- At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then smashes the desk (fists, a sweep, fists), then crosses to the lockers next to mine and hits them, one, then the one beside mine; his head comes round to my slits and it freezes. (No shelf-wrenching any more.)
+- At the fallen box he does NOT pick anything up: he stares at it, looks round the room (head first, slow, holds), then rounds on the desk (head first, the body after, arms kept in), slams both hands down on its edge, hangs over it breathing, and sweeps it clear with one arm (no overhead double-fist slams, no flung arms, no extra fist blow). Then he turns off the desk and steps in to the row of lockers beside it (east wall, right of my locker, across the room), hammers one door (other hand braced, elbow bent, upright), turns to the next, goes still, and his head turns slowly over his shoulder toward my locker; it freezes before the faceplate is fully round. Never the lockers right beside mine.
 - Before the far wall he goes right, to the shelves and boxes, and really looks them over (up, down at the boxes, leaning in, holds), then turns round looking over the room, then walks to the far wall.
 - The room's dead ceiling tube catches for an instant at each blow (desk and lockers), hangs on stuttering after the last, and flares once more on the freeze frame so his faceplate reads.
 - His breathing is the `respirator` model (in through the filter with a faint whistle, out through a fluttering rubber valve, wet, a low groan, in a small damped cavity), never the old pipe-echo hiss.
@@ -80,6 +80,13 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - Exit glances at the end: two slow ones, not many fast ones. Room look-rounds: evenly paced sweeps with short holds, no quick high-to-low jumps.
 - The ending freezes as his faceplate comes round to my slits, lit by the tube's last flare.
 - Contrast: darker darks, brighter highlights, subtle dust (not snow), contact shadows.
+- The grit off the door at each bang: random clumps from crack points, mixed grit/flakes/dust, lit like everything else (never brighter than the wall the light falls on, never glowing white points).
+
+## Using agents (when the user or ultracode asks for it)
+
+- This machine has 4 CPUs: a workflow runs only 2 agents at a time, and every preview render is software WebGL (~1 min page load). Several parallel agents that each render and iterate take an hour or more. The user noticed and asked why; say up front roughly how long it will take, and cut stages (e.g. merge the judges' winner yourself instead of a refine round) when they are waiting.
+- What worked: 3 choreographers each in a private copy (`mkwork.sh NAME` makes `wk_NAME/` with its own `ns2/` and links to the rest), each rendering and iterating; independent judges reading their sheets (two of three agreeing is enough); then an independent review of every note against fresh sheets (`review_render.sh` writes `review/*.png`). The reviewers caught real problems (a head turned past what a neck can, zombie-straight arms, glowing grit, captions over the wrong shot) that looked fine at a glance.
+- Give agents the exact constraints they must keep (which files, DESK_HITS count, the sweep time and that sound reads it) and tell them that motion they can't change (the path's turn) is a root cause to report.
 
 ## Gotchas that cost time before
 
@@ -88,6 +95,8 @@ Always update an artifact **in place** (same URL). Never publish a separate arti
 - A `// comment` appended in the middle of a one-line edit swallows the rest of that line's code. Put comments on their own line or at the true end.
 - `const` helpers used inside an IIFE above their definition throw a TDZ error; define small helpers locally.
 - Keyed animation arrays must have strictly increasing times (duplicate times divide by zero and produce NaN poses).
+- A body pose block that sets headYaw from a world target must clamp it (about ±1.3 rad) or the head turns owl-like before the body catches up. And if the body is still on a path turn while the hands should land somewhere, fix the path turn (an earlier start, `dur` on the HZ segment) rather than compensating in the pose block; that keeps footstep sounds (gensteps) matching the feet.
+- Additive-blended particle points look like glowing stars unless their brightness is scaled to the scene (lit ~0.4x, tiny base).
 - Anything on Part 2's own clock (`INSERT_KEYS`, `WALKS`, the walk-bob base, `WALK_TS` in sound, `s_stop_room`) must shift when an insert grows; beat-keyed things shift automatically.
 - New props in his path: rerun `coll.cjs`. Moving the action out of the doorway light makes him unreadable; move the action into the light rather than adding fake light.
 - Sound peaks: a new loud clip can become the mix peak and lower everything via K. Check `peak at ...` after every sound build.

@@ -11,6 +11,8 @@ Copies of the tools used to test and inspect the reels. Copy them into the proje
 | `dbgpose.cjs` | `CAM=x,y,z LOOK=x,y,z FOV=55 TIMES=... GOTO_MS=240000 node dbgpose.cjs`: lit stills from any camera, `dp_<t>.png`. Use it to see his pose clearly. |
 | `coll.cjs` | `GOTO_MS=240000 node coll.cjs`: every moment he walks into furniture (must print `collisions: 0`). |
 | `gensteps2.cjs` | `GOTO_MS=240000 node gensteps2.cjs`: his footstep times into `ns2/audio/steps.json` (turn steps flagged). Keep `end` past the film's last beat. |
+| `mkwork.sh` | `./mkwork.sh NAME`: a private working copy `wk_NAME/` (own `ns2/`, everything else linked) for an agent to edit, build and render in without touching the main project. |
+| `review_render.sh` | renders the review sheets into `review/` (grit, desk, lockers real + lit, continuity); edit its time lists for the beats being reviewed. |
 | `migrate_mix.py` | `python3 migrate_mix.py <timeline read from the DB> <out.json> [<last migration>]`: carries the user's saved mix (lanes) onto a rebuilt `clips.json`. |
 
 Never kill these with `pkill -f "node v2f.cjs"` and never wait on them with `until ! pgrep -f ...`: both patterns match your own shell.
