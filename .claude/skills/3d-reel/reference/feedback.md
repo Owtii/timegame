@@ -845,6 +845,16 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 
 > the text with narrator and video is a bit weird and akward sometimes, like sometimes there is weird pauses and sometimes it doesnt fit really good.
 
+**2026-10-26 22:11** (after the repository)
+
+> make the end part a bit smaller because there are some extra seconds with no narrations and it just weird akward silence with visuals.
+>
+> just cut some extra acts of the hazmat suit.
+>
+> dont make anything rushed, let them have natural movements and natural camera movements.
+
+(v22: the far-wall photo-tearing act was cut. The film went from 1:39 to 1:32, and the last lines were re-placed so no gap at the end runs much over 3.5 s.)
+
 ### This repository
 
 **2026-10-26 21:28**

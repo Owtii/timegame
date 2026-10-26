@@ -8,7 +8,7 @@ Always update a reel **in place**, at the same artifact URL. Never publish a sep
 | The Day the Phones Jammed | https://claude.ai/artifact/RN2HBbKnuBAkLfQKUfUGEC | 1:00 | Finished (explainer) | `phones-jammed-3d.html` (hand-edited page) + `vo/` (sound) |
 | The 13th Floor | https://claude.ai/artifact/171jML4Snda7dxDHRjChNy | 1:14 | Finished and archived: don't touch unless asked | `f13/`, `build13.py` |
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | 1:11 | Done; notes may still arrive | `ns/`, `buildns.py` |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:39 | Active (v21, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:32 | Active (v22, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
 | The Graveyard Shift, Part 3 | not made yet | | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN | start from `ns2/` |
 
 ## The Day the Phones Jammed
@@ -62,13 +62,13 @@ The RUN choice:
 - Part 2's own clock is `ts = page - OFF` with `OFF = RECAP_END - 2.0 = 7.85`.
 - `INSERTS = [[14.7, 1.6], [18.6, 4.35]]`: the look-round at the locked doors and the room look-round.
 - So: page = beat + 7.85 before beat 14.7, beat + 9.45 between 14.7 and 18.6, and **beat + 13.8 after 18.6**. Recompute if the inserts change.
-- `TOTAL = 99.45` (1:39).
+- `TOTAL = 92.4` (1:32). The card holds 6.5 s after `END_CUT` (page 85.9).
 - Notes written before v19 used the 7.6 s recap, so their times are 2.25 s earlier than today's (OFF was 5.6).
 
 **Beats** (in `ns2/story.js`):
 - The run and the room: LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, SLAM, LOCKED, PHOTO, BAMS[], LOCKER0, LOCKER_SHUT.
 - His entrance and the locker: BURST, ENTER1, APPROACH0, AT_LOCKER, HUNCH0, GLANCE, NOTICE, AWAY0.
-- The search: RIGHT0/1 (the shelves), BACK1, WALK0, AWAY1, RIP1/2, PUNCH, QUIET, WALKO (to the desk), FALL, TURN0, LOOKB, AT_BOX, LOOKRM.
+- The search: RIGHT0/1 (the shelves), BACK1 (turns round looking over the room), WALKO (along the wall to the desk), FALL, TURN0, LOOKB, AT_BOX, LOOKRM.
 - The rage and the end: DESK0 + DESK_HITS[] (the two-hand slam, the sweep at DESK_SWEEP_AT), LOCK0, LOCK1 + LOCK_HITS[[t, locker]] (the east-wall lockers), HEADME, END_CUT = LOCK1 + 2.5.
 - The room tube's flashes: RFL, RTUBE_ON, RTUBE_LAST.
 
@@ -77,7 +77,7 @@ The RUN choice:
 - At the box: stare, look round (head first, slow, holds), round on the desk, slam both hands on its edge, hang breathing, sweep it clear with one arm.
 - Then the lockers on the east wall, right of my locker and across the room. Hammer one (other hand braced, elbow bent), hit the next twice, yank it open (latch, creak, it bangs on its hinges, the tube flashes): empty. He steps straight back out of my line of sight and stares in. His head turns slowly over his shoulder toward my locker, and it freezes before the faceplate is fully round.
 - Never the lockers right beside mine.
-- Before the far wall he goes right to the shelves and really looks them over, then turns round looking over the room.
+- After the photo he goes right to the shelves and really looks them over, turns round looking over the room, then walks along the wall to the desk. The far-wall act (tearing photos off the board, a punch, standing there heaving) was cut in v22: the user found the ending too long, with silent stretches. Keep the narration gaps at the end short.
 - The dead ceiling tube catches at each blow, stutters after the last, and flares on the freeze.
 - His breathing is the respirator model, kept low (the user lowered it 7 dB). My breathing is the realistic breath model, and my heart pounds when scared.
 - Exit glances at the end: two slow ones.
@@ -101,7 +101,7 @@ GOTO_MS=240000 node p2_t.cjs
 If K moves noticeably, find the new peak clip and rebalance. If it still changes, rerun `python3 p1recap.py <K>` so the recap stays at Part 1's exact levels.
 
 **Bookkeeping when the length changes:**
-- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the "1:39" label and `aria-valuemax`.
+- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the length label ("1:32") and `aria-valuemax`.
 - The test's times in `p2_t.cjs`, and `end` in `gensteps2.cjs`.
 - The script file `The-Graveyard-Shift_Script_Part1-2.txt`.
 

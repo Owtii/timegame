@@ -37,7 +37,7 @@ Part 2's module order:
 
 Replacements use `must(s, old, new)`, which aborts the build unless the anchor is found exactly once. The build also writes `<reel>_main_check.js` (the main script alone) for `node --check`.
 
-The build sets the length (`TOTAL`), the "1:39" label and the scrubber's `aria-valuemax`. Change all three when the length changes. Also keep the page's own words current: lede, credit, chapter descriptions.
+The build sets the length (`TOTAL`), the length label ("1:32") and the scrubber's `aria-valuemax`. Change all three when the length changes. Also keep the page's own words current: lede, credit, chapter descriptions.
 
 **Starting a new reel:** copy the newest reel's folder (`ns2/`) and its build script, rename them, and replace the story, sets, figure and sound. Keep the shell, the studio modules, `engine.js`, `export.js` and `choice.*` as they are. See SKILL.md, "A new reel".
 

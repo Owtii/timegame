@@ -8,6 +8,15 @@ Everything here comes from the user's notes (see `feedback.md`). Follow it by de
 2. **Natural.** It moves the way a real person, camera or object would, with weight, reasons and the right speed.
 3. **Readable.** From the actual camera, at a glance: lit, not hidden behind something, not cluttered, and matching the caption.
 
+## Pacing at the end of a narrated reel
+
+- **No long silent stretches.** "There are some extra seconds with no narrations and it just weird akward silence with visuals." Once a reel is narrated, a gap longer than about 4 s with no voice reads as dead air. That's true even when the figure is busy, unless a clear event fills the gap (a crash, a reveal).
+- **Cut a whole act; never speed things up.** "Just cut some extra acts... dont make anything rushed, let them have natural movements and natural camera movements."
+  - Find the act that repeats something: in Part 2 it was a second rage, tearing photos off the far wall, before the desk smash. Remove it whole.
+  - Join the two sides with a short, natural move (a walk along the wall).
+  - Shift everything after it by the same amount, so every remaining turn, look and camera move keeps its timing.
+  - Then re-place the narration so the lines cover the new gaps.
+
 ## Camera (first person)
 
 - **One continuous path.** "The camera movement must feel like it has one path and smooth and not switch quickly to another focus of object." Plan a shot's moves as one curve through its targets. Ease every move: the reels average the path with a gaussian over ±0.4 s. Keep snaps for real jolts only (getting up, a slam, a fall), inside marked rush windows.
