@@ -8,7 +8,7 @@ Always update a reel **in place**, at the same artifact URL. Never publish a sep
 | The Day the Phones Jammed | https://claude.ai/artifact/RN2HBbKnuBAkLfQKUfUGEC | 1:00 | Finished (explainer) | `phones-jammed-3d.html` (hand-edited page) + `vo/` (sound) |
 | The 13th Floor | https://claude.ai/artifact/171jML4Snda7dxDHRjChNy | 1:14 | Finished and archived: don't touch unless asked | `f13/`, `build13.py` |
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | 1:11 | Done; notes may still arrive | `ns/`, `buildns.py` |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:27 | Active (v24, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:23 | Active (v25, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
 | The Graveyard Shift, Part 3 | not made yet | | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN | start from `ns2/` |
 
 ## The Day the Phones Jammed
@@ -49,7 +49,7 @@ First night on the night shift at a basement security counter. A man in a worn y
 ## The Graveyard Shift, Part 2
 
 The RUN choice:
-1. A 9.85 s recap of Part 1 (its own sounds, a tiny "Previously · Part 1" tag, "You chose: run").
+1. The question hook (5.6 s, v25): Part 1's last seconds with its own sound, "What would you do if someone was behind you… and you only had two options?", the keys TURN AROUND (and find out) and RUN (and escape), RUN pressed.
 2. I vault the desk and sprint down the hall. Behind me my desk is thrown upside down and the lights die.
 3. The doors are locked. I lock myself in the storage room B-108 and find an old photo of the man from the morning shift in that suit, "I'M SORRY" under it.
 4. Bangs on the door. I hide in a locker. The door bursts and he comes in slowly.
@@ -57,13 +57,13 @@ The RUN choice:
 6. While he is looking, a box falls behind him. He stares, looks round, and smashes the desk, then yanks open one of the lockers across the room: empty.
 7. His head turns slowly toward my locker as the exit stands open. Freeze before the faceplate is fully round. RUN FOR THE EXIT or STAY HIDDEN.
 
-**Clocks (v20):**
-- `RECAP_END = 9.85`. Recap shots: doors 0.25, `R_CUT1` 2.75, `R_CUT2` 4.4, `R_CUT3` 5.9, `R_FREEZE` 7.95, `R_PICK` 8.75. These must match `p1recap.py` SHOTS.
-- Part 2's own clock is `ts = page - OFF` with `OFF = RECAP_END - 2.0 = 7.85`.
+**Clocks (v25):**
+- `RECAP_END = 5.6`: the opening. Part 1's last seconds run 0 to `R_FREEZE` 2.05 (Part 1's 62.8 to 64.85), the question card holds to the pick at `R_PICK` 4.5. These must match `p1recap.py` SHOTS. The question's word times are `HOOK_Q`, `HOOK_Q2` and `HOOK_SUB` in `story.js`.
+- Part 2's own clock is `ts = page - OFF` with `OFF = RECAP_END - 2.0 = 3.6`.
 - `INSERTS = [[14.7, 1.6], [18.6, 4.35]]`: the look-round at the locked doors and the room look-round.
-- So: page = beat + 7.85 before beat 14.7, beat + 9.45 between 14.7 and 18.6, and **beat + 13.8 after 18.6**. Recompute if the inserts change.
-- `TOTAL = 87.75` (1:27). The card holds 6.5 s after `END_CUT` (page 81.25).
-- Notes written before v19 used the 7.6 s recap, so their times are 2.25 s earlier than today's (OFF was 5.6).
+- So: page = beat + 3.6 before beat 14.7, beat + 5.2 between 14.7 and 18.6, and **beat + 9.55 after 18.6**. Recompute if the inserts change.
+- `TOTAL = 83.5` (1:23). The card holds 6.5 s after `END_CUT` (page 77.0).
+- **Notes written before v25 are 4.25 s later than today's times** (the recap was 9.85 s). Notes written before v19 used the 7.6 s recap: 2.25 s earlier than v19–v24's.
 
 **Beats** (in `ns2/story.js`):
 - The run and the room: LIGHT_ON, VAULT0/1, CRASH, LOOK0/1, DOORS, ROOM_IN, SLAM, LOCKED, PHOTO, BAMS[], LOCKER0, LOCKER_SHUT.
@@ -81,14 +81,14 @@ The RUN choice:
 - The dead ceiling tube catches at each blow, stutters after the last, and flares on the freeze.
 - His breathing is the respirator model, kept low (the user lowered it 7 dB). My breathing is the realistic breath model, and my heart pounds when scared.
 - Exit glances at the end: two slow ones.
-- The desk crash (13.45) is loud and sounds like a real desk going over. It has 0.4 s alone before "Behind me, I heard a crash" (13.85); my footsteps dip under it, and my heart starts pounding just after (v24).
+- The desk crash (page 9.2 since v25) is loud and sounds like a real desk going over. It has 0.4 s alone before "Behind me, I heard a crash" (9.6); my footsteps dip under it, and my heart starts pounding just after (v24).
 - The desk sweep: his right hand reaches behind the things at the back of the desk and drags them off to his right, with the elbow comfortably bent, never at full stretch (v24: "his arms glitches").
 - The locker: he turns off the desk (head first, feet stepping round), steps in, puts his hand on the handle and keeps it there as the door swings open toward him, then lets go and his arm drops. Then he steps back (v24: "he opens it weirdly with his arms").
 - The frozen frame behind the question is blurred as softly as Part 1's (blur 40; v24).
-- The opening (0 to 5 s) must become a hook ("the first part must also be a hook"). Suggestions were sent with v24; wait for the user's pick before changing it.
+- The opening is the user's own hook (v25, "what would you do if someone was behind you, and you had only two options turn around and find out or run and escape"): Part 1's last seconds under that question, the keys, RUN pressed, straight into the run. Text only: they said "dont use credits yet". A narrated version (the narrator reading the question) needs their go-ahead and credits.
 - Narration: Grandpa for everything, phrase-synced (see `narration.md`).
 
-**Saved data:** their mix (the door burst muted with a stinger in its place, two heartbeats added, the respirator −7 dB), 81 done notes (mix version 19 after v24). No saved camera, effects or look.
+**Saved data:** their mix (the door burst muted with a stinger in its place, two heartbeats added, the respirator −7 dB), 81 done notes (mix version 20 after v25). No saved camera, effects or look.
 
 **Build and test:**
 
@@ -103,17 +103,17 @@ GOTO_MS=240000 node coll.cjs                          # collisions: 0
 GOTO_MS=240000 node p2_t.cjs
 ```
 
-If K moves noticeably, find the new peak clip and rebalance. If it still changes, rerun `python3 p1recap.py <K>` so the recap stays at Part 1's exact levels.
+If K moves noticeably, find the new peak clip and rebalance. If it still changes, rerun `python3 p1recap.py <K>` so the opening stays at Part 1's exact levels.
 
 **Bookkeeping when the length changes:**
-- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the length label ("1:27") and `aria-valuemax`.
+- `TOTAL` in `buildns2.py` and `mk_sound2.py`, the length label ("1:23") and `aria-valuemax`.
 - The test's times in `p2_t.cjs`, and `end` in `gensteps2.cjs`.
 - The script file `The-Graveyard-Shift_Script_Part1-2.txt`.
 
 ## Part 3 (when the user asks)
 
 - Start from Part 2's folder (`ns2/` to `ns3/`) and its scripts.
-- The recap is Part 2's key shots with Part 2's own mix (as `p1recap.py` did for Part 1), the question with the picked answer, then straight in.
+- The opening is Part 2's question put to the viewer, over Part 2's last seconds with Part 2's own mix (as `p1recap.py` does for Part 1): "What would you do…", the two keys with what each means, the picked answer pressed, then straight in.
 - Same places, same suit (dirtier), same narrator.
 - Captions only until the user approves the narration.
 - End on a new one-question choice.

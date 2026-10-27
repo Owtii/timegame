@@ -1,5 +1,5 @@
 # The Graveyard Shift, Part 2: the narration. One ElevenLabs take of the narrator (Spuds Oxley "Grandpa", the voice of
-# Part 1) reading all 17 lines (the recap's three, the narration, and the two things I say in the moment), cut into its
+# Part 1) reading all 17 lines (the old recap's three, unused since v25; the narration; the two things I say in the moment), cut into its
 # lines at the long pauses, and each line cut again into its phrases (at the commas, the full stops, the "…").
 # Every phrase is placed on the moment it describes: a line starts where the picture calls for it, its phrases follow
 # each other with natural pauses (short at a comma, longer at a full stop or a "…"), and a phrase can be pinned so a
@@ -13,32 +13,31 @@ from vo2lib import load, segments, SR, ff, align2
 sys.path.insert(0, 'vo'); from synth import SR as MIX_SR
 
 story = open('ns2/story.js').read()
-const = lambda n: float(re.search(r'\b' + n + r'\s*=\s*([\d.]+)', story).group(1))
-R_CUT1, R_CUT2, R_CUT3, R_FREEZE = const('R_CUT1'), const('R_CUT2'), const('R_CUT3'), const('R_FREEZE')
-CUE_TEXTS = re.findall(r'\{ t:[^,]+,\s+text:"(.*?)"', story)   # (every caption, in order: the recap's four, then Part 2's)
+CUE_TEXTS = re.findall(r'\{ t:[^,]+,\s+text:"(.*?)"', story)   # (every caption, in order)
 # the take's lines, in order: (caption, who, the words as the recogniser hears them, where each phrase starts (caption
 # word index), when (page clock): a time for the phrase's start, (word, time) to land that word on a beat, or None to
-# follow the phrase before with a natural pause; the line's tempo; the latest it may end; optionally its own pauses)
+# follow the phrase before with a natural pause; the line's tempo; the latest it may end; optionally its own pauses).
+# A line with no caption (None) is in the take but not in the film (the old recap's three lines)
 LINES = [
-    (0,  'narrator', 'two fourteen a m he walked in', [0, 2], [.35, None], 1.06, R_CUT1 - .05, {'.': .12}),   # (just after the doors bang open)
-    (1,  'narrator', 'he just stared at me', [0], [R_CUT1 + .06], 1.05, R_CUT2 - .1),
-    (3,  'narrator', 'something was behind my chair', [0], [R_CUT3 + .05], 1.03, R_FREEZE - .08),
-    (4,  'narrator', "i didn't turn around i grabbed the flashlight and ran", [0, 4, 8], [9.86, None, None], 1.05, 13.4, {'.': .22, '…': .22}),   # (up out of the chair, over the desk, down the hall; done before the desk crashes)
-    (5,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.55, None, None, None, None], 1.08, 19.6, {',': .1, '.': .22, '…': .25}),   # (the crash, then all the time I'm looking back up the hall)
-    (6,  'me',       'the doors are locked', [0], [21.2], 1.0, 22.6),   # (shoving the bars)
-    (7,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [24.55], 1.0, 27.9),   # ("locked" as the lock turns)
-    (8,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.35, (8, 36.85)], 1.0, 38.1),   # (my beam going round the room; "photo" as it comes back to it)
-    (9,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [38.5, None, None], 1.0, 43.75, {'…': .3, '.': .3}),
-    (10, 'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [44.75, None], 1.0, 51.2),
-    (11, 'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [51.95, None, None], 1.0, 56.2),
-    (12, 'narrator', 'his suit was covered in dark stains now', [0], [56.45], 1.0, 59.25),
-    (13, 'narrator', 'he stopped right at my locker', [0], [59.35], 1.0, 61.3),   # (as he stops there)
-    (14, 'narrator', 'then something beside it caught his eye', [0], [(4, 62.7)], 1.0, 64.5),   # ("caught" as he freezes on the photo)
-    (15, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [73.15, None], 1.0, 77.0),
-    (17, 'narrator', 'he knew someone was hiding in there', [0], [83.3], 1.0, 85.4),
-    (18, 'narrator', 'the exit was open this might be my chance', [0, 4], [86.7, None], 1.06, 89.3, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
+    (None, 'narrator', 'two fourteen a m he walked in', [0], [0], 1.0, 0),
+    (None, 'narrator', 'he just stared at me', [0], [0], 1.0, 0),
+    (None, 'narrator', 'something was behind my chair', [0], [0], 1.0, 0),
+    (0,  'narrator', "i didn't turn around i grabbed the flashlight and ran", [0, 4, 8], [5.61, None, None], 1.05, 9.15, {'.': .22, '…': .22}),   # (up out of the chair, over the desk, down the hall; done before the desk crashes)
+    (1,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [9.60, None, None, None, None], 1.08, 15.45, {',': .07, '.': .16, '…': .18}),   # (the crash, then all the time I'm looking back up the hall)
+    (2,  'me',       'the doors are locked', [0], [16.95], 1.0, 18.35),   # (shoving the bars)
+    (3,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [20.30], 1.0, 23.65),   # ("locked" as the lock turns)
+    (4,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [30.10, (8, 32.60)], 1.0, 33.85),   # (my beam going round the room; "photo" as it comes back to it)
+    (5,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [34.25, None, None], 1.0, 39.50, {'…': .3, '.': .3}),
+    (6,  'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [40.50, None], 1.0, 46.95),
+    (7,  'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [47.70, None, None], 1.0, 51.95),
+    (8,  'narrator', 'his suit was covered in dark stains now', [0], [52.20], 1.0, 55.00),
+    (9,  'narrator', 'he stopped right at my locker', [0], [55.10], 1.0, 57.05),   # (as he stops there)
+    (10, 'narrator', 'then something beside it caught his eye', [0], [(4, 58.45)], 1.0, 60.25),   # ("caught" as he freezes on the photo)
+    (11, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [60.65, None], 1.0, 64.15),
+    (13, 'narrator', 'he knew someone was hiding in there', [0], [68.75], 1.0, 70.85),
+    (14, 'narrator', 'the exit was open this might be my chance', [0, 4], [72.15, None], 1.06, 74.75, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
 ]
-WMAP = {0: [0, 2, 4, 5, 6]}   # (the caption's words -> the recogniser's, where they differ: "2:14 AM." is four spoken words)
+WMAP = {}   # (a caption's words -> the recogniser's, where they differ)
 GAP = {',': .16, '.': .3, '!': .3, '?': .3, '…': .36}   # (the pause after a phrase, by how it ends)
 LEAD, TAIL, TAIL_END = .025, .07, .15   # (kept before a phrase's first sound, and after its last (the line's last phrase: more), for the breath and the decay)
 
@@ -51,6 +50,7 @@ x = load('ns2/vo2/narr2_A.mp3'); segs, gaps = segments(x, len(LINES))
 out = []
 for k, (spec, (a, b)) in enumerate(zip(LINES, segs)):
     cue, who, words, splits, targets, tempo, latest = spec[:7]; gap = dict(GAP, **(spec[7] if len(spec) > 7 else {}))
+    if cue is None: continue   # (in the take, not in the film)
     lo = segs[k - 1][1] if k else 0; hi = segs[k + 1][0] if k < len(LINES) - 1 else len(x) / SR
     a0 = max(lo + .5 * (a - lo), a - .06); b0 = min(b + .5 * (hi - b), b + .25)
     piece = x[int(a0 * SR):int(b0 * SR)]

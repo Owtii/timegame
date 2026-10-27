@@ -757,7 +757,7 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 >
 > what should also be option. give me a suggestion
 
-### The Graveyard Shift, Part 2 (1:39, the RUN choice)
+### The Graveyard Shift, Part 2 (1:23 now, the RUN choice)
 
 **2026-10-24 22:09**
 
@@ -881,6 +881,12 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **The locker:** his turn off the desk no longer gets cut short, his head no longer snaps, and his hand stays on the handle as the door swings open, then lets go and drops.
 - **The question:** the frozen frame behind it is now as soft as Part 1's.
 - **The opening hook:** suggestions given; waiting for the pick.)
+
+**2026-10-27 12:33** (after the five hook suggestions)
+
+> no make something like: what would you do if someone was behind you, and you had only two options turn around and find out or run and escape, something like this but dont yse credits yet
+
+(v25: the recap of Part 1 is gone: the doors at 2:14, his stare, the call, the "Previously · Part 1" tag and its three narrator lines. Part 2 now opens on Part 1's last seconds under the question "What would you do if someone was behind you… and you only had two options?", its words lighting up one by one. The frame holds and blurs, the keys TURN AROUND (and find out) and RUN (and escape) come up, RUN is pressed, and the run starts at 5.6 s. Text only, no credits spent. The film went from 1:27 to 1:23; everything after the opening is 4.25 s earlier.)
 
 ### This repository
 

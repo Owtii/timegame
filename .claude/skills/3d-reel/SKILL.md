@@ -56,7 +56,7 @@ The session scratchpad is ephemeral. In a new session, clone the repository, cop
    - Never repeat a generation call to retry.
    - If the credits look wrong, the connector is on the wrong account, or a free account is blocked: tell them plainly and stop.
 3. **Never show the player's hands or legs.** First person: the camera is the eyes, and objects react on their own.
-4. **A recap uses the earlier part's own sound.** "dont add ur own sound effects."
+4. **Footage from an earlier part keeps its own sound** (an opening or a recap). "dont add ur own sound effects."
 5. **Their saved edits are theirs.** After every rebuild, carry them over: the sound mix (lanes, mutes, volumes, swapped sounds, sounds they added) with `scripts/migrate_mix.py`; camera keys; effect layers (re-time them if the film moved); and look settings. Say so in the report.
 6. **Update in place.** Same artifact URL for every version. A new artifact only for a new reel or a new part. On a redeploy, omit `capabilities` so the stored ones carry over.
 7. **"Dont change anything yet, give me suggestions" means suggestions only.** Give clear numbered options and wait. They answer like "use 2".
@@ -116,7 +116,7 @@ The session scratchpad is ephemeral. In a new session, clone the repository, cop
 5. **Look before publishing** (`testing.md`) and run the checklists in `rules.md`. Then publish as a **new** artifact with `capabilities` `db`, `downloads` and `user`, and send the link.
 6. From then on, it's the notes loop.
 
-A new part of a series follows the series rules in `story.md`: a short recap with the earlier part's own sound, the same places, one question at the end. Part 3 has notes in `projects.md`.
+A new part of a series follows the series rules in `story.md`: it opens on the earlier part's question put to the viewer, over that part's last seconds and its own sound (no "Previously" recap); the same places; one question at the end. Part 3 has notes in `projects.md`.
 
 ## What "good" means (their quality bar)
 
@@ -131,7 +131,7 @@ These come up again and again across 260 messages and notes (evidence in `feedba
 7. **Detailed:** more detail in rooms, buildings and props; dust and grit; darker darks and brighter brights.
 8. **Logical:** every action has a visible reason, people behave as a normal person would, and captions say exactly what's on screen.
 9. **First person:** no hands, no legs.
-10. **Paced:** the first 1 to 5 seconds hook (every reel and every part, the recap included), no dead pauses, exact timing changes honoured to the tenth of a second, endings that cut to black.
+10. **Paced:** the first 1 to 5 seconds hook (every reel and every part; a series part opens on the last part's question), no dead pauses, exact timing changes honoured to the tenth of a second, endings that cut to black.
 
 ## Don't regress (things already settled across the reels)
 
@@ -164,7 +164,7 @@ These come up again and again across 260 messages and notes (evidence in `feedba
 - **Mix migration:** compare against the **previous build's** `clips.json`, not your last migration (that already contains their edits, so their swaps get lost). Carry `cap` on voice clips, or their captions vanish.
 - **Sample rates:** the mix engine is 44.1 kHz and the narration tools are 48 kHz. A 48 kHz index into a 44.1 kHz stem looks like silence.
 - **The mix peak:** a new loud clip can become the peak and turn everything down through the master gain. Check `peak at …` after every sound build.
-- **Things on the story clock:** they must be shifted by hand when an insert or the recap changes length. Beat-keyed things shift on their own.
+- **Things on the story clock:** they must be shifted by hand when an insert or the opening changes length. Beat-keyed things shift on their own.
 - **Building code:** a `// comment` dropped mid-line swallows the rest of the line; `const` helpers inside an IIFE above their definition throw; keyed arrays need strictly increasing times; a head yaw from a world target must be clamped (about ±1.3 rad).
 - **Arms that glitch:** an IK target near full stretch flips the elbow, and a pose control switched on without easing jumps in one frame. `scripts/armprobe.cjs` finds both; `rules.md` has the limits.
 - **Stale page text:** read the page's own text after a big change. Part 2's credit kept saying "no narration recorded yet" after the narration went in.

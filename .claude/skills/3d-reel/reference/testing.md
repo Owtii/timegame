@@ -28,9 +28,10 @@ All tools are in `scripts/` (copies) and in `projects/workspace/` (where they ru
 | `mkwork.sh` | `./mkwork.sh NAME`: a private working copy `wk_NAME/` (its own `ns2/`, everything else linked) for an agent to edit, build and render in. |
 | `review_render.sh` | Renders the review sheets into `review/` for an independent visual review. |
 | `cardlab/` | The choice card in seconds, without the 3D page: `capbg.cjs` grabs the frozen frames; `mock.html` + `shot.cjs <dir>` renders a card design in four states. |
+| `te_fonts.cjs` | Like `te_common.cjs`, but serves the reel's own fonts (Archivo, JetBrains Mono, from `cardlab/fonts`) instead of blocking them. Use it whenever text on the picture is being judged: with the fallback fonts, lines wrap differently. |
 
 Full tests per reel, in `projects/workspace/`:
-- `p2_t.cjs` (Part 2): the recap card, captions at set times, mix levels per scene, the choice card, collisions and phone width.
+- `p2_t.cjs` (Part 2): the opening's question card (words lit, keys up, RUN pressed, gone by 6 s), captions at set times, mix levels per scene, the choice card, collisions and phone width.
 - `ns_t1.cjs` (Part 1).
 - Studio regressions:
   - Sound editor: `te1`–`te9` (drag, lanes, live playback, the phone layout, the database round trip with a stand-in runtime), `tdrag`, `timp` (imports), `taud` (offline mix levels).

@@ -227,7 +227,7 @@ The file named in brackets, under `projects/workspace/`, is a working example.
   - One phrase at a time; words light up as spoken (unspoken words at 42–45% opacity).
   - A caption ends at least 0.1 s before a cut or a transition.
 - **Fades:** the film fades in from black over 0.25 s. At the end the picture holds and dims to 64% over 0.45 s under the question.
-- **Keycaps:** a key presses in 0.07 s (ease-out) and its colours change over 0.2 s. A press scripted into a video (the recap) is slower: 0.16 s, cubic-bezier(.3, .7, .4, 1).
+- **Keycaps:** a key presses in 0.07 s (ease-out) and its colours change over 0.2 s. A press scripted into a video (the opening's RUN) is slower: 0.16 s, cubic-bezier(.3, .7, .4, 1).
 - **3D words** (explainers):
   - They drop in letter by letter: 0.45 s each with a small overshoot (ease-out-back), 0.04–0.05 s apart.
   - They leave by shrinking over 0.3–0.7 s.
@@ -236,6 +236,7 @@ The file named in brackets, under `projects/workspace/`, is a working example.
   - Closed, each lid's solid part reaches 30% of the frame past the middle, so the corners shut too.
   - A blink can hide a cut.
 - **A recap cut:** a 0.04–0.05 s flicker of black under a burst of static.
+- **The opening question** (a series part): its words light at speaking pace, about 5 a second with a beat after "do" (0.12, 0.30, 0.46, 0.62, then 0.95 …); unlit words at 42%. The rest of it and the keys fade up 0.12–0.35 s after the hold; what each key means lights 0.35 s after the question ends, left then right 0.45 s apart; the pick 0.6 s later; the card fades 0.75–0.95 s after the pick.
 - **The end:** a hard cut to black, held at least 1 s, then the card.
 
 ## 2. Design
@@ -366,6 +367,12 @@ For reference, the B-108 storage room has:
   - **Labels:** Archivo 800 at 4.3%, tracking 0.03 em. "or" is JetBrains Mono 700 at 3%, 70% opacity.
   - **Matte only:** a 16% white highlight along the top edge, 16% black along the bottom, and a three-layer soft shadow under the side wall. No glow, no gloss, no pill shape, no icons.
   - **Picked:** latched down, its face a shade lighter (#842125 / #2a4a80). The other goes dull but stays solid (#352325 / #252c3c, text #857677 / #6d7484).
+- **The opening question card** (`.rcard` in `choice.css`; the video draws it in `drawRecap`, `choice.js`, from positions measured off the page):
+  - Question: Archivo 800 at 7.6%, line height 1.06, #ECE6DB, broken by hand: WHAT WOULD / YOU DO / IF SOMEONE WAS / BEHIND YOU…
+  - Its second half: Archivo 800 at 4.4%, two lines (…AND YOU ONLY HAD / TWO OPTIONS?).
+  - The keys as on the choice card; under each, what it means in JetBrains Mono 700 at 3.4%, tracking 0.12 em (AND FIND OUT, AND ESCAPE). After the pick the other key's line drops to 40%.
+  - Picked: YOU CHOSE: RUN (mono 600 at 3.6%) and PART 2 (Archivo 800 at 5.5%) below.
+  - The held frame behind it blurs to 40, like the end's.
 - **Nothing else on the picture** unless asked: no part counter, no "watch again", no viewfinder corners, no info text.
 
 ## 3. Style: which look, and its exact settings
@@ -579,6 +586,7 @@ The user exports every frame, up to 4K.
 - [ ] Something striking on screen within the first second, with a sound within 0.2 s.
 - [ ] Words on screen in the first second: a question, a stake or danger.
 - [ ] Something loud or strange within 3 s. Nothing slow, calm or explanatory first; a recap comes second.
+- [ ] A series part opens on the last part's question, put to the viewer, not on a "Previously" recap.
 
 **The place**
 - [ ] It's a real kind of place with a reason to exist, laid out the way that place really is.

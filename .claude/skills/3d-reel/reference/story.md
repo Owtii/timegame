@@ -25,12 +25,17 @@ The first seconds decide everything. They asked for "a very catchy hook" on the 
 - The hook raises a question and hints at danger without explaining it. Part 1 settled on: **"Everyone warned me about the night shift. Nobody warned me about my coworker."** The reason was so people won't know at first that the coworker is a weird entity, while sensing he isn't safe.
 - It's short and has no pause inside it ("make the hook now a little less long... because it has weird pause in between and at the end").
 - It comes with a cinematic opening shot ("make the beginning a cinematic shot for the hook"), not a static frame.
-- **The first 1 to 5 seconds must hold the viewer, every reel and every part, the recap included** ("the first part must also be a hook, so the viewer keeps watching the first 1 to 5 sec"). In the first seconds:
+- **The first 1 to 5 seconds must hold the viewer, every reel and every part** ("the first part must also be a hook, so the viewer keeps watching the first 1 to 5 sec"). In the first seconds:
   - a striking image within the first second: never more than a moment of black, never a calm establishing shot;
   - a sound within the first 0.2 s, and something loud or strange within 3 s;
   - words on screen within the first second: a question, a stake or a hint of danger;
   - nothing that explains first. A recap can come second, after the jolt.
-- For a series part, the recap must hook too: open on its scariest beat, or on the picked answer, not on calm setup. Offer the user options before changing an opening ("give suggestions first").
+- Offer the user options before changing an opening ("give suggestions first"), and expect them to write their own: for Part 2 they turned down a "Previously · Part 1" recap and five cold opens and wrote the hook themselves.
+- **A series part opens on the last part's question, put to the viewer** (v25, the user's words: "what would you do if someone was behind you, and you had only two options turn around and find out or run and escape"). Part 2's first 5.6 s:
+  - 0 s: Part 1's last seconds, its own picture and sound (his steps and breath behind my chair, his shadow over the desk), with the question on screen, its words lighting up as if spoken: "What would you do if someone was behind you…";
+  - 2 s: the picture holds on Part 1's last frame and blurs; "…and you only had two options?" and the two keys come up, each with what it means under it ("and find out", "and escape");
+  - 4.5 s: the answer the viewers picked is pressed ("You chose: run · Part 2"), and at 5.6 s the held frame comes back to life, straight into the action.
+  - Text only until they approve a voice for it ("dont use credits yet").
 
 ## The explainer shape (The Day the Phones Jammed)
 
@@ -67,11 +72,10 @@ The first seconds decide everything. They asked for "a very catchy hook" on the 
   2. The background blurs and a quiet horror tone holds attention.
   3. The choice card shows **one** question ("at the end only one question"): "What would you do?" with two short options, such as TURN AROUND or RUN, or RUN FOR THE EXIT or STAY HIDDEN.
   4. Hold it about 2 s longer than feels necessary ("make the question on the end a bit longer 2sec longer").
-- **The start of the next part:**
-  1. A very short recap with a tiny "Previously · Part 1" tag ("something small, so u understand"). No "previously on…" banner and no red dot.
-  2. A few key shots from the last part, each long enough for its line, using **the last part's own sound** ("dont add ur own sound effects").
-  3. Then the question with the picked answer ("You chose: run"), and straight into the action.
-  4. Keep the recap short: "make the first part w part 1 a little less just a quick good hook".
+- **The start of the next part** (v25, the user's hook; see **Hooks** above):
+  1. The last part's question put to the viewer ("What would you do if someone was behind you… and you only had two options?") over the last part's final seconds, using **the last part's own sound** ("dont add ur own sound effects").
+  2. The two choices as keys with what each means, then the picked answer ("You chose: run"), and straight into the action. About 5.5 s.
+  3. Before v25 it was a short recap of key shots with a tiny "Previously · Part 1" tag ("something small, so u understand"; "make the first part w part 1 a little less just a quick good hook"). The user then asked for a hook in the first 1 to 5 seconds and wrote the question themselves, so no recap.
 - **Continuity:** the next part uses the same places, props and look ("dont change rooms or visuals that is different from part1"). Only the story changes, plus what time has done, like a suit more stained and dirty.
 - **Character logic across parts:** keep a hidden logic the viewer can sense. Here the man in the suit is an entity that left his body and is searching for it, getting angrier because he can't find it, and he never talks. His actions in every part come from that.
 - **When asked "what could he do besides run or turn around?"**, offer options that fit the logic (hide, call someone, fight, follow him) and let them choose.

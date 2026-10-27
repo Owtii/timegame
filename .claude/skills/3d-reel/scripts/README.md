@@ -5,6 +5,7 @@ These are copies of the tools used to build, test and inspect the reels. They ru
 | Script | What it does |
 |---|---|
 | `te_common.cjs` | Shared Playwright setup: local copies of the CDN libraries, fonts blocked, a stand-in for the claude.ai runtime when asked. |
+| `te_fonts.cjs` | The same setup, but with the reel's own fonts (Archivo, JetBrains Mono, from `cardlab/fonts`) served instead of blocked. Use it to judge any text on the picture: with fallback fonts, lines wrap differently. |
 | `errs.cjs` | Loads the page and prints its errors (`no errors` when clean). |
 | `v2f.cjs` | `TIMES=a,b,c GOTO_MS=240000 node v2f.cjs`: real-camera frames `p2_<t>.png` (`DSF=2` for high resolution). |
 | `render2.sh` | `./render2.sh NAME "t1,t2,…" "t3,t4,…"`: two `v2f` batches in parallel, then contact sheets `NAME_sheet_a.png` / `NAME_sheet_b.png`. |
@@ -22,7 +23,7 @@ These are copies of the tools used to build, test and inspect the reels. They ru
 | `migrate_mix.py` | `python3 migrate_mix.py <timeline read from the DB> <out.json> <previous build's clips.json> [shift_at shift]`: carries the user's saved mix onto a rebuilt `clips.json` (their lanes, mutes, volumes, trims, fades, pans, swapped sounds, moves and their own clips). |
 | `mkwork.sh` | `./mkwork.sh NAME`: a private working copy `wk_NAME/` (its own `ns2/`, everything else linked) for an agent to edit, build and render in. |
 | `review_render.sh` | Renders the review sheets into `review/` for an independent review. Edit its time lists for the beats being reviewed. |
-| `p2_t.cjs` | Part 2's full test: recap card, captions, sound editor, camera editor, offline mix levels per scene, the choice card, collisions, phone width. |
+| `p2_t.cjs` | Part 2's full test: the opening's question card (words lit, keys, RUN pressed), captions, sound editor, camera editor, offline mix levels per scene, the choice card, collisions, phone width. |
 | `ns_t1.cjs` | Part 1's full test. |
 | `cardlab/` | The choice card without the 3D page. `capbg.cjs` grabs the frozen frames without the cards; `mock.html` is the card markup over them with the real fonts (`fonts.css` + `fonts/`); `node cardlab/shot.cjs <dir>` renders `<dir>/card.css` in four states (`W=390` for phone width) in seconds. The shipped CSS is `choice.css`. |
 
