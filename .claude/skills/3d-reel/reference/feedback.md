@@ -960,6 +960,16 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **Shorter look:** once the lights are back, about 1.2 s of my eyes darting left and right, then I turn to the doors (2.05 s cut, page 19.0). The film went from 1:29 to 1:27; everything after 19.0 is 2.05 s earlier.
 - **Narration:** still muted; nothing spent.)
 
+**2026-10-27 19:24**
+
+> put now the voices and text in it, but dont use credits yet, and let everything match the scenes.
+
+(v31:
+- **The narration is back** from the recorded take: every narrator line, my two lines and the guard's remembered warning, with their captions lighting word by word. No credits: the opening's question stays on screen only (it was never recorded; about 120 credits a take).
+- **The look back, fitted to the new picture:** "Behind me, I heard a crash." as I reach the doors and come round; "When I looked back," while I stare at him; "nobody was there…" starting in the pitch dark, "there" as the lights come back on; "…just my desk thrown upside down." over the empty lobby. For it the look is held 2 s (the cut is 1.25 s instead of 2.05: the top of the user's "1-2 sec"), and I turn to the doors on its last word. Everything after page 19.0 is 0.8 s later; 1:28.
+- **Every other line checked against a frame at its key word:** "locked" on the lock, "photo" as the beam comes back to it, "came in" as he does, "stopped right at my locker" as he stops, "caught" as he freezes on the photo, "the exit was open" as my eyes go to it.
+- **Clear over the bangs:** the line about the door being broken down starts after the second bang, is lifted 5 dB, and the bangs under it duck like the rest (the first two stay full); a few other lines over loud action lifted 1–3 dB. The master held at its level.)
+
 ### This repository
 
 **2026-10-26 21:28**

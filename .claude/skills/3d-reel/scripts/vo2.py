@@ -23,19 +23,19 @@ LINES = [
     (None, 'narrator', 'he just stared at me', [0], [0], 1.0, 0),
     (None, 'narrator', 'something was behind my chair', [0], [0], 1.0, 0),
     (0,  'narrator', "i didn't turn around i grabbed the flashlight and ran", [0, 4, 8], [9.61, None, None], 1.05, 13.15, {'.': .22, '…': .22}),   # (up out of the chair, over the desk, down the hall; done before the desk crashes)
-    (1,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.60, None, None, 17.85, None], 1.1, 21.15, {',': .07, '.': .16, '…': .18}),   # (the crash, then all the time I'm looking back up the hall; "nobody was there…" once the lights come back on, the lobby empty)
-    (2,  'me',       'the doors are locked', [0], [21.25], 1.0, 22.65),   # (shoving the bars)
-    (3,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [24.25], 1.0, 27.60),   # ("locked" as the lock turns)
-    (4,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.05, (8, 36.55)], 1.0, 37.80),   # (my beam going round the room; "photo" as it comes back to it)
-    (5,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [38.20, None, None], 1.0, 43.45, {'…': .3, '.': .3}),
-    (6,  'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [44.45, None], 1.0, 50.90),
-    (7,  'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [51.65, None, None], 1.0, 55.90),
-    (8,  'narrator', 'his suit was covered in dark stains now', [0], [56.15], 1.0, 58.95),
-    (9,  'narrator', 'he stopped right at my locker', [0], [59.05], 1.0, 61.00),   # (as he stops there)
-    (10, 'narrator', 'then something beside it caught his eye', [0], [(4, 62.40)], 1.0, 64.20),   # ("caught" as he freezes on the photo)
-    (11, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [64.60, None], 1.0, 68.10),
-    (13, 'narrator', 'he knew someone was hiding in there', [0], [72.70], 1.0, 74.80),
-    (14, 'narrator', 'the exit was open this might be my chance', [0, 4], [76.10, None], 1.06, 78.70, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
+    (1,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.60, None, None, 17.30, None], 1.14, 20.2, {',': .07, '.': .16, '…': .1}),   # (the crash as I reach the doors and come round; "When I looked back," while I stare at him; "nobody was there…" from the pitch dark, "there" as the lights come back on; the desk over the empty lobby, ending as I turn to the doors)
+    (2,  'me',       'the doors are locked', [0], [22.05], 1.0, 23.45),   # (shoving the bars)
+    (3,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [25.05], 1.0, 28.40),   # ("locked" as the lock turns)
+    (4,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.85, (8, 37.35)], 1.0, 38.60),   # (my beam going round the room; "photo" as it comes back to it)
+    (5,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [39.00, None, None], 1.0, 44.25, {'…': .3, '.': .3}),
+    (6,  'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [45.80, None], 1.0, 51.70),
+    (7,  'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [52.45, None, None], 1.0, 56.70),
+    (8,  'narrator', 'his suit was covered in dark stains now', [0], [56.95], 1.0, 59.75),
+    (9,  'narrator', 'he stopped right at my locker', [0], [59.85], 1.0, 61.80),   # (as he stops there)
+    (10, 'narrator', 'then something beside it caught his eye', [0], [(4, 63.20)], 1.0, 65.00),   # ("caught" as he freezes on the photo)
+    (11, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [65.40, None], 1.0, 68.90),
+    (13, 'narrator', 'he knew someone was hiding in there', [0], [73.50], 1.0, 75.60),
+    (14, 'narrator', 'the exit was open this might be my chance', [0, 4], [76.90, None], 1.06, 79.50, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
 ]
 WMAP = {}   # (a caption's words -> the recogniser's, where they differ)
 GAP = {',': .16, '.': .3, '!': .3, '?': .3, '…': .36}   # (the pause after a phrase, by how it ends)

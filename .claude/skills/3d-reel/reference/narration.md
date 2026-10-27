@@ -78,6 +78,7 @@ Check it with one frame per phrase before publishing (what is on screen while ea
 - A spoken recap needs time. Each line gets its own shot, long enough for the words and a breath (Part 2's recap grew from 7.6 to 9.85 s, before the question hook replaced it in v25).
 - **A line written for the picture before it is recorded** (Part 2's hook, v26–v27): the words on screen carry their planned times (`HOOK_Q`…`HOOK_Q4`), and the pictures are cut to them. When the take comes, place each phrase at its planned start (tempo up to about 1.1 if it runs long), then light the words from the alignment.
 - **The narration can leave the film for a while** (v28: "get the voice memo out for a moment till we fix every scenes"): keep its clips in the mix, muted (`VOICE_ON = False` in the sound build, and muted in the user's saved mix), with every recorded voice line, the remembered phone line included. A muted voice clip plays nothing, hides its caption and ducks nothing; the master is set with the voice in, so nothing moves when it comes back. Keep its placements roughly in step with the picture meanwhile; when it returns, re-place it against the final picture.
+- **When it comes back** (v31: "put now the voices and text in it, but dont use credits yet, and let everything match the scenes"): switch it on in the build and unmute it in the saved mix, then re-place every line against the picture as it is now, with a frame at each key word. If the picture has moved under a line, re-pin its phrases rather than the whole line: a phrase can start in the dark before a reveal so its key word lands as the light comes back ("nobody" in the dark, "there" as the lights return), and a hold can be stretched a little, within the user's own numbers, so a phrase about what is on screen ends before the camera leaves it. No new take, no credits.
 - **A line can leave the film without a new take.** Keep it in `vo2.py`'s LINES with its caption set to None, so the take still splits into the right number of lines; it is cut from nothing and placed nowhere. Renumber the captions of the lines after it (and `VLIFT`, which is keyed by caption).
 
 ## Mixing the voice
@@ -86,6 +87,8 @@ Check it with one frame per phrase before publishing (what is on screen while ea
 - Raise whispered lines to the level of the rest.
 - A line over loud action gets its own small lift, never the whole voice.
 - Don't start a line on top of a big hit. Let the hit land and come in on its tail.
+- **A line over a run of hits** (Part 2's bangs on the door, v31): start it after the first, loudest ones, lift it (5 dB there), and let the hits under it duck like any other effect (take them out of `nd`); the first hits keep their full weight. It went from 30% to 82% of its words clear.
+- **Hold the master.** A lift can make a voice-plus-hit moment the mix's new peak and turn the whole film down; Part 2's master is held at 1.765 (`K = min(1.765, .995 / peak)`), coming down only if the mix would clip.
 - Measure each line against everything under it (`scripts/vo_snr.py`), aiming for 6 dB or more.
 
 ## Captions and the voice
