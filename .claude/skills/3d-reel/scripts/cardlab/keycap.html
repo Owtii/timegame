@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@500;600;700&display=swap">
+<style>
+:root{--display:"Archivo","Arial Black",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--fg:#E9E4DA}
+@property --lift{syntax:"<length>";inherits:true;initial-value:0px}
+body{margin:0;background:#111;display:flex;gap:16px;padding:16px;font-family:var(--display)}
+.stage{position:relative;width:400px;height:711px;container-type:inline-size;background:#1c2224 url(bg6.png) center/cover;overflow:hidden}
+.card{position:absolute;left:0;right:0;top:calc(50% - 20cqw);display:flex;flex-direction:column;align-items:center;color:var(--fg)}
+.card h3{margin:0 0 6cqw;font:800 6.4cqw/1.1 var(--display);font-stretch:125%;text-transform:uppercase;letter-spacing:-.005em;color:#ECE6DB;text-align:center;
+  text-shadow:0 .3cqw 0 rgba(8,9,10,.6),0 0 3cqw rgba(8,9,10,.55)}
+.row{display:flex;align-items:flex-start;justify-content:center}
+.or{width:9cqw;height:15.4cqw;display:flex;align-items:center;justify-content:center;font:700 3cqw/1 var(--mono);letter-spacing:.14em;text-indent:.14em;text-transform:uppercase;color:rgba(233,228,218,.62);text-shadow:0 0 2cqw rgba(8,9,10,.9)}
+/* a keycap under a light from above: its face (the element) is a shallow dish, darker in its upper half and turning to
+   the light lower down, with both rims catching the light; it stands on its walls (::before), thin at the sides and
+   deeper at the front, darker than the face; a tight contact shadow at its foot and a soft one under that. Pressed, the
+   cap goes down into the plate: the face drops by --D - --d while the front wall shrinks to --d, so its foot stays put */
+.key{--D:3.2cqw;--d:var(--D);--sx:1.1cqw;
+  position:relative;isolation:isolate;width:34cqw;height:15.4cqw;margin:0 var(--sx);box-sizing:border-box;border-radius:2.4cqw;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font:800 4.4cqw/1.06 var(--display);font-stretch:125%;letter-spacing:.06em;text-indent:.06em;text-transform:uppercase;color:var(--ink);
+  background:none;
+  transform:translateY(calc(var(--D) - var(--d)));transition:--d .16s cubic-bezier(.3,.7,.4,1)}
+.key::after{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 12%,transparent 88%,rgba(0,0,0,.12)),linear-gradient(180deg,var(--rt) 0,var(--rt) .25cqw,var(--u) 1.6cqw,var(--m) 50%,var(--l) calc(100% - 1.2cqw),var(--rb) calc(100% - .3cqw),var(--rb) 100%)}
+.key::before{content:"";position:absolute;z-index:-2;left:calc(-1 * var(--sx));right:calc(-1 * var(--sx));top:.4cqw;bottom:calc(-1 * var(--d));border-radius:3.3cqw 3.3cqw 3.6cqw 3.6cqw;
+  background:linear-gradient(90deg,var(--sd) 0,var(--sd) 1.2%,transparent 9%,transparent 91%,var(--sd) 98.8%,var(--sd)),linear-gradient(180deg,var(--wt) 0,var(--wt) calc(100% - var(--d) - .2cqw),var(--wb) 100%);
+  box-shadow:0 0 0 .1cqw rgba(0,0,0,.5),0 .3cqw .5cqw rgba(0,0,0,.55),0 1.4cqw 2.4cqw -.6cqw rgba(0,0,0,.45)}
+.key span{position:relative;top:.35cqw;text-shadow:0 .1cqw .12cqw rgba(0,0,0,.3)}
+.red{--rt:#a6524d;--u:#7b1e1f;--m:#832625;--l:#8f312f;--rb:#9f4945;--wt:#5e1717;--wb:#3c0708;--sd:#250102;--ink:#F7EDE6}
+.blue{--rt:#526ea2;--u:#26437a;--m:#2c4a82;--l:#36548c;--rb:#4b679b;--wt:#1c335d;--wb:#0c1d3c;--sd:#040e25;--ink:#EEF2F9}
+.picked .blue{--d:.7cqw;--rt:#5f7cb0;--u:#324f88;--m:#385790;--l:#42619a;--rb:#5774a9;--wt:#283f6a;--wb:#172848;--sd:#0c1930;--ink:#FAFCFF}
+.picked .red{--rt:#59413e;--u:#3c2321;--m:#412826;--l:#482e2c;--rb:#543c39;--wt:#2c1a18;--wb:#1a0c0b;--sd:#0d0404;--ink:#9d8e8b}
+.chose{margin-top:8.4cqw;text-align:center;font:600 3.4cqw/1 var(--mono);letter-spacing:.2em;text-indent:.2em;text-transform:uppercase;color:rgba(236,230,219,.7);text-shadow:0 0 2cqw rgba(8,9,10,.9)}
+.chose b{display:block;margin-top:2.4cqw;font:800 6cqw/1 var(--display);font-stretch:125%;letter-spacing:-.01em;text-indent:0;color:#ECE6DB}
+.card:not(.picked) .chose{visibility:hidden}
+</style></head><body>
+<div class="stage"><div class="card"><h3>…and you only<br>had two options?</h3><div class="row"><div class="key red"><span>Turn<br>around</span></div><div class="or">or</div><div class="key blue"><span>Run</span></div></div><p class="chose">Run chosen<b>Part 2</b></p></div></div>
+<div class="stage"><div class="card picked"><h3>…and you only<br>had two options?</h3><div class="row"><div class="key red"><span>Turn<br>around</span></div><div class="or">or</div><div class="key blue"><span>Run</span></div></div><p class="chose">Run chosen<b>Part 2</b></p></div></div>
+</body></html>

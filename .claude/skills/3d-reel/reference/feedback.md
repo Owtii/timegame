@@ -921,6 +921,27 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **The figure:** v27's flat black cutout under a bright light, in a moment added after the lights died, is gone. Now, as I come round at the doors, far back in the lobby, behind the overturned desk, a dark figure in his shape stands in the flicker of its tube. His own model in a dark matte skin that the room's light still shades, his outline thinning to nothing (feathered), a faint dark haze close round him. The lobby is darker than before (its lights at 55%, the corridor's tube nearest it sagging), so he belongs to it. The picture holds 2 s while I stare, pushing in slowly. The tube blows in a last flash with him in it; dark; the next flash shows the lobby empty. A hit, a gasp, my eyes darting, panic.
 - The film went from 1:30 to 1:29; everything after the hold is 0.6 s earlier than v27.)
 
+**2026-10-27 16:46** (with eight new timed notes in Part 2, written from 16:38 to 16:45)
+
+> check notes.
+
+- **0:00.9** make it a text like he is speaking, so after one sentence other sentence must come and the past sentence should go. Like: What would you do? then: if someone was behind you...
+- **0:01.0** And change the hook a littlbe bit like make it better by giving a little bit more context, you are working alone and someone is behind u.
+- **0:03.9** make this text part of the 2 buttons, and give the 2 buttons better design, like make it 3d but not just ai design. think about the correct spacing, padding, centering, goood border radius, correct color grading, right font size, not too much shado apply correct shadow.
+- **0:06.0** and find out and escape should be gone.
+- **0:06.0** background should have a little glitching and buzzing effect like part1 background when the questions came up. and a little bit camera movement.
+- **0:09.3** make the run chosen part 2 a little bit longer so you understand run has been chosen. like 0.6s longer
+- **0:15.1** make him taller and the room must be much darker already and not too bright, so you can barely see him but because he is so dark and tall, you still see his silhoutte. the silhoutte must have more feather and have shadows working with the ground and back and standing on the right place and not overlapping or standing in the desk, but infront of behind it.
+- **0:15.1** with feather I mean like on after effects you apply more feather it softens the edges more.
+
+(v29:
+- **The hook, a phrase at a time:** "What would you do…" / "…if you were working alone at night…" / "…and someone was standing behind you?", each going as the next comes, its words lighting as he says them. The freeze moved to 3.35 s, on "standing".
+- **The card:** the end of the question, "…and you only had two options?", sits right over the two keys as one card and rises with them at 4.5 s; no sublabels. Each key brightens a moment as he names it ("Turn around… or run?"). RUN is pressed at 7.85 s (0.6 s earlier), so RUN CHOSEN / PART 2 holds 0.6 s longer; Part 2 still begins at 9.6 s.
+- **The keys, redesigned:** real keycaps under a light from above: a dished face (darker at the top, lighter low down), a lit rim along the top and the front, darker front and side walls, a tight contact shadow and a soft one under it. Concentric corners, colours graded in even steps of lightness (deep red, deep blue, no glow), labels centred optically. The end card's keys match.
+- **The frozen frame:** small glitches now and then (torn rows and a colour split, a short electrical zap each), a faint buzz in picture and sound, a slow push-in with the eyes wandering a little; a harder glitch as Part 2 comes to life covers the camera's jump back. (Part 1's question frame turned out to be completely still, so this was built new.)
+- **The figure:** 15% taller, the lobby much darker (its tube at 35%, the panels in front of him nearly off, the room's reflections dimmed), his edges feathered the way After Effects feathers a mask, in the open floor of the lobby, clear of the desk, his shadow pooled on the floor at his feet; in the tube's death flash it lies black in front of him.
+- **Narration:** still muted, the hook still not recorded; nothing spent.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -1023,7 +1044,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (83 notes)
+### The Graveyard Shift, Part 2 (91 notes)
 
 *2026-10-25*
 
@@ -1114,3 +1135,11 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:13.8** make the crash, sound effect loud and really a desk falling to the ground
 - **0:14.3** here there should be a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy, so he really stands there far behind the room, just standing there scary, when the lights go off he gets away but everyone gets dark.
 - **0:18.5** this looks very stupid and ugly, make it really match everything.
+- **0:00.9** make it a text like he is speaking, so after one sentence other sentence must come and the past sentence should go. Like: What would you do? then: if someone was behind you...
+- **0:01.0** And change the hook a littlbe bit like make it better by giving a little bit more context, you are working alone and someone is behind u.
+- **0:03.9** make this text part of the 2 buttons, and give the 2 buttons better design, like make it 3d but not just ai design. think about the correct spacing, padding, centering, goood border radius, correct color grading, right font size, not too much shado apply correct shadow.
+- **0:06.0** and find out and escape should be gone.
+- **0:06.0** background should have a little glitching and buzzing effect like part1 background when the questions came up. and a little bit camera movement.
+- **0:09.3** make the run chosen part 2 a little bit longer so you understand run has been chosen. like 0.6s longer
+- **0:15.1** make him taller and the room must be much darker already and not too bright, so you can barely see him but because he is so dark and tall, you still see his silhoutte. the silhoutte must have more feather and have shadows working with the ground and back and standing on the right place and not overlapping or standing in the desk, but infront of behind it.
+- **0:15.1** with feather I mean like on after effects you apply more feather it softens the edges more.

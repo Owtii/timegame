@@ -148,7 +148,7 @@ These come up again and again across 260 messages and notes (evidence in `feedba
 - **Figures:**
   - One seamless body with real proportions: no robot joints, no parts poking through, never walking through furniture (run the collision check).
   - The face behind glass stays foggy and blurred everywhere it shows.
-- **The choice card:** matte 3D keycaps, dark red and dark blue, text only, centred, "or" plain, one question, held long enough. The exported video draws the same card.
+- **The choice card:** real 3D keycaps (a dished face, lit rims, darker walls, a tight contact shadow), deep red and deep blue, text only, centred, "or" plain; the question sits right over them as one card; one question, held long enough. The exported video draws the same card.
 - **Narration:**
   - The same narrator within a series. Lines fit the picture phrase by phrase, with natural short pauses and key words on their beats.
   - Captions show one phrase at a time and words light up as spoken.

@@ -26,5 +26,8 @@ These are copies of the tools used to build, test and inspect the reels. They ru
 | `p2_t.cjs` | Part 2's full test: the opening (the questions one after the other, the keys, RUN pressed), captions, sound editor, camera editor, offline mix levels per scene, the choice card, collisions, phone width. |
 | `ns_t1.cjs` | Part 1's full test. |
 | `cardlab/` | The choice card without the 3D page. `capbg.cjs` grabs the frozen frames without the cards; `mock.html` is the card markup over them with the real fonts (`fonts.css` + `fonts/`); `node cardlab/shot.cjs <dir>` renders `<dir>/card.css` in four states (`W=390` for phone width) in seconds. The shipped CSS is `choice.css`. |
+| `cardlab/keycap.html`, `cardlab/palette.py` | The keycap design (v29) on its own: the two keys and the card in both states, at double scale in seconds. `palette.py` grades the keys' colours in even OKLCH steps and writes them as JSON for `choice.css` and `choice.js`. |
+| `card_measure.cjs` | Where every line of the opening's card and the end's question sits on the page, in % of the frame's width from its middle, measured against the stage's inner box: the numbers for `HOOK_LAYOUT`, `CHOICE_LAYOUT` and `KEY_TY` in `choice.js`. |
+| `card_compare.cjs` | The page and the exported video's drawing of the card at the same times (`TIMES=…`), saved side by side to lay one over the other. |
 
 Never stop these with `pkill -f "node v2f.cjs"`, and never wait on them with `until ! pgrep -f …`: both patterns match your own shell.

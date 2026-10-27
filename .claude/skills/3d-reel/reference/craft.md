@@ -109,7 +109,7 @@ Everything here comes from the user's notes (see `feedback.md`). Follow it by de
   - A dead ceiling tube catches at each of his blows and flares on the freeze frame so his faceplate reads.
   - The bathroom light snaps on mid-sentence.
 - **Flicker for meaning:** "make the light flicker to dark and light" in the hallway with the figure, and "it gets a bit darker and light flickers a bit" during the stare.
-- **Seen but not known:** a figure meant to be unidentifiable is his own shape in a dark, lit, matte skin with a feathered outline, far back in a dim, flickering room that matches him, still, held a moment while I stare; when the light dies he is gone, and the next flash shows the place empty (v28, see `rules.md` 1.3). Not a flat black cutout under a bright light (v27: "very stupid and ugly").
+- **Seen but not known:** a figure meant to be unidentifiable is his own shape, taller, near-black with his edges feathered like a mask, standing clear of everything in a much darker, flickering room, his shadow on the floor at his feet; held a moment while I stare; when the light dies he is gone, and the next flash shows the place empty (v29, see `rules.md` 1.3). Not a flat black cutout under a bright light (v27: "very stupid and ugly").
 - **Check the side of him the camera sees.** A doorway light behind him makes him a black shape unless a motivated light (a tube, its bounce off the lockers) reaches his front.
 - **Shadows sell entrances:** going through a doorway darkens him ("bring little shadows on it so it really feels like he is entering the door"). The shadow of someone behind you is a real, soft-edged shadow of a person.
 - **No unmotivated light:** "dont add extra light because it got more bright on the end."
@@ -146,15 +146,16 @@ Everything here comes from the user's notes (see `feedback.md`). Follow it by de
 - Text placement and size are adjustable per section in the Look and Text studio. Keep captions clear of the platform buttons.
 - No stray UI on the picture: they deleted a "Part 1 of 3" tag, a "watch again" text, an info text at the top, and a small camera-corner graphic ("delete the little 90degree thing looking like a camera thing").
 
-## The choice card (end of a series part)
+## The choice card (end of a series part, and the opening's keys)
 
-- Two options as **clean matte 3D keycaps**: a flat face on a darker side wall, a soft shadow, light from above.
-  - Dark red against dark blue, text only, centred, and "or" as plain text.
-  - No glow, no gloss, no pill shapes, no icons or emoji. The user called glossy glowing buttons "very ai design".
+- Two options as **real keycaps under a light from above** (v29): a dished face with lit rims, darker walls, a tight contact shadow and a soft one under it; concentric corners; colours graded in even steps of lightness; labels centred optically. The full spec is in `rules.md`.
+  - Deep red against deep blue, text only, and "or" as plain text.
+  - No glow, no gloss, no pill shapes, no icons or emoji. The user called glossy glowing buttons "very ai design", and in v29 asked for "3d but not just ai design… correct spacing, padding, centering, goood border radius, correct color grading, right font size, not too much shado apply correct shadow".
+- The question belongs to the keys: it sits right over them as one card and they come in together (v29: "make this text part of the 2 buttons").
 - The picked key latches down; the other goes dull but stays solid.
-- The background is the frozen last frame, blurred. A quiet horror tone holds under it.
-- One question, held about 2 s longer than feels necessary.
-- The page draws it in CSS (`choice.css`) and the exported video draws it on canvas (`keycap()` in `choice.js`). Change both together. Design it in `scripts/cardlab/`, which renders in seconds.
+- The background is the frozen last frame, blurred and never dead: small glitches, a faint buzz, a slow drift (see `rules.md`). A quiet horror tone holds under it.
+- One question, held about 2 s longer than feels necessary; the chosen answer (RUN CHOSEN / PART 2) holds over a second.
+- The page draws it in CSS (`choice.css`) and the exported video draws it on canvas (`keycap()` in `choice.js`). Change both together, then lay one over the other to check they match (`scripts/card_compare.cjs`). Design it in `scripts/cardlab/`, which renders in seconds.
 
 ## Before you publish
 

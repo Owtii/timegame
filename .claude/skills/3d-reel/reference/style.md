@@ -109,7 +109,7 @@ Where it ended:
   - A hard cut to black for the end.
 - **Captions:** the narrator in white, my own in-the-moment words in italic gold, a phone voice in green. Words light up as they're spoken.
 - **The choice card:**
-  - Matte 3D keycaps in dark red and dark blue: text only, centred, with "or" as plain text.
+  - Real 3D keycaps (a dished face, lit rims, darker walls, a tight contact shadow) in deep red and deep blue: text only, centred, with "or" as plain text; the question sits right over them as one card.
   - The question is "What would you do?".
   - No "Part 1 of 3" label, no "watch again", no emoji.
   - The picked key latches down and the other goes dull. Details are in `craft.md`.

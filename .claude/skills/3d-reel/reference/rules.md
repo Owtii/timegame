@@ -202,12 +202,14 @@ The file named in brackets, under `projects/workspace/`, is a working example.
 - walking through furniture (run the collision check after any path change);
 - hands or boots poking through the suit, or a twitch.
 
-- **A figure seen but not known** (v27–v28: "a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy"):
-  - His own model in a dark matte skin (albedo about 0.05, rough) that the scene's lights still shade, so he sits in the room's light like everything else. Never flat unlit black: v27's black cutout under a bright light was "very stupid and ugly, make it really match everything".
-  - Feathered: the skin thins toward his outline (alpha from |normal · view| .1 to .8), with a faint dark haze close round him (soft black sprites just behind, about 35%). Decals hidden. You see the hood and the shape, never the visor, the face or the suit.
-  - Far back in a dim room, in its flicker, standing still but breathing; the room darker while he is there (its lights at about 55%, a nearby tube sagging), so he matches it.
+- **A figure seen but not known** (v27–v29: "a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy"; "make him taller and the room must be much darker already and not too bright, so you can barely see him but because he is so dark and tall, you still see his silhoutte"):
+  - His own shape, taller than he is (115%), standing in the open, clear of every prop (v29: "not overlapping or standing in the desk, but infront of behind it"). Never flat black under a bright light: v27's cutout was "very stupid and ugly, make it really match everything".
+  - Feathered the way After Effects feathers a mask (v29: "like on after effects you apply more feather it softens the edges more"): the scene renders with his skin writing only his shadow; a pass then draws him alone in near-black into a half-size target, blurs it (two 17-tap passes, reach about 1.2% of the frame's height) and lays it over the picture before the bloom and the grade, so he takes the film's look. A skin fading toward its outline (v28) isn't soft enough.
+  - The room much darker while he is there: its light at about 35%, the lights between him and the camera at 18%, and every material's environment reflections dimmed with them (in v28 they kept the room bright with the lights down).
+  - Grounded: the floors take his shadow while he is there (they took none before), from the light behind him raised well above the ceiling for it (4.2 m), so the shadow pools at his feet and runs a little toward the camera instead of smearing across the floor. Through the light's death flash the light stays on him and the lights in front stay low, so the flash shows his shadow black on the floor.
+  - Barely visible but readable: a dark silhouette against a slightly less dark room and a lit patch of floor.
   - A hold while I stare (about 2 s, the world still, the light still flickering), pushing in slowly. When the light dies he is gone; its next flash shows the place empty. A hit on that flash, then panic: a gasp, panicked breathing, the eyes darting left and right.
-  - Compile his skin at load (once), so his first frame never stutters.
+  - Compile his skins at load (once), so his first frame never stutters.
 
 ### 1.4 Light that moves
 
@@ -372,21 +374,28 @@ For reference, the B-108 storage room has:
   - The top edge sits at 71% of the frame's height, clear of the platform buttons.
   - A dark text shadow, no box behind the words.
   - Narrator #E9E4DA; me italic #F6E2B4; phone italic #CFEADB.
-- **The choice card.** `choice.css` draws it on the page and `keycap()` in `choice.js` draws it in the video. Sizes are in % of the frame's width.
-  - **Question:** Archivo 800 at 8.6%, at most 86% wide, #ECE6DB.
-  - **Keys:** 37% × 20%, corner radius 2.6%, 3.1% deep (0.5% when latched).
-  - **Red key:** top #7a262c, face #6a1d22, bottom #5f191d, side walls #4a1313 / #300b0b, text #F1E7DC.
-  - **Blue key:** top #26446f, face #1e3762, bottom #1a3058, side walls #122444 / #0b172e, text #E7EBF2.
-  - **Labels:** Archivo 800 at 4.3%, tracking 0.03 em. "or" is JetBrains Mono 700 at 3%, 70% opacity.
-  - **Matte only:** a 16% white highlight along the top edge, 16% black along the bottom, and a three-layer soft shadow under the side wall. No glow, no gloss, no pill shape, no icons.
-  - **Picked:** latched down, its face a shade lighter (#842125 / #2a4a80). The other goes dull but stays solid (#352325 / #252c3c, text #857677 / #6d7484).
-- **The opening question card** (`.rcard` in `choice.css`; the video draws it in `drawRecap`, `choice.js`, from positions measured off the page with the real fonts):
-  - First question: Archivo 800 at 7.6%, line height 1.06, #ECE6DB, broken by hand: WHAT WOULD / YOU DO / IF SOMEONE WAS / BEHIND YOU…; its top at 39.5% of the width from the top (about 22% of the height).
-  - Second question, the same size in its place (top at 43.5%): …AND YOU / ONLY HAD / TWO OPTIONS?
-  - The keys: the end card's keys (above), their tops at 74% of the width from the top; OR between them.
-  - Under each key its sublabel, AND FIND OUT / AND ESCAPE: JetBrains Mono 700 at 3.4%, tracking 0.12 em, #E9E4DA, 42% until he says it.
-  - RUN CHOSEN (mono 600 at 3.6%, tracking 0.16 em, 70%) with PART 2 under it (Archivo 800 at 5.5%), centred, top at 113%.
-  - The held frame behind it blurred to 40, as soft as the end's.
+- **The choice card.** `choice.css` draws it on the page and `keycap()` in `choice.js` draws it in the video, in the same colours (`CAP`). Sizes are in % of the frame's width.
+  - **Question:** Archivo 800 at 8.6%, at most 86% wide, #ECE6DB, 6.6% over the keys.
+  - **Keys** (v29: "make it 3d but not just ai design. think about the correct spacing, padding, centering, goood border radius, correct color grading, right font size, not too much shado apply correct shadow"): real keycaps under a light from above.
+    - The face 34% × 15.4%, corners 2.4%; it stands on walls 1.1% wide at each side and 3.2% deep at the front (0.7% latched down), their corners 3.3% at the top and 3.6% at the foot, concentric with the face. 9% between the keys, "or" centred in the gap and on the faces.
+    - The face is a shallow dish: a lit rim along the top (0.25%), darker in its upper half, turning lighter low down, a lit rim along the front edge (0.3%), its sides 12% darker toward the edges.
+    - The walls are darker than the face: the front wall darkening to its foot, the side walls darker still.
+    - Shadow: a tight contact shadow (0 0.3% 0.5%, 55% black), a soft one under it (0 1.4% 2.4% −0.6%, 45%) and a 0.1% hairline. Nothing else: no glow, no gloss.
+    - Colours graded in even steps of OKLCH lightness (`scripts/cardlab/palette.py`; the prototype is `scripts/cardlab/keycap.html`): rims .54 and .515, dish .39 → .415 → .45, front wall .325 → .235, side walls .17; red hue 25 at chroma .128, blue hue 262 at .10, the chroma easing off in the walls. Red face #832625, blue face #2c4a82. Latched: each step .045 lighter. The other key dulled: lightness × .74, chroma × .3.
+    - Labels: Archivo 800 expanded at 4.4% (4% for the end's longer labels), tracking 0.06 em, line height 1.06, centred on the face and 0.35% below its middle (capitals sit high otherwise), a faint dark shadow under the letters; ink #F7EDE6 on red, #EEF2F9 on blue. "or" is JetBrains Mono 700 at 3%, 62% opacity.
+    - Build: the face is the key's `::after` and the walls its `::before`, inside an isolated key. A `::before` at z-index −1 paints over the element's own background, so the face can never be the element's background (v29's first try hid the face under the walls).
+- **The opening question card** (`.rcard` in `choice.css`; the video draws it in `drawRecap`, `choice.js`, from positions measured off the page with the real fonts by `scripts/card_measure.cjs`, against the stage's inner box, not its border):
+  - The phrases, one at a time: Archivo 800 at 7.4%, line height 1.08, #ECE6DB, broken by hand (WHAT WOULD / YOU DO…; …IF YOU WERE / WORKING ALONE / AT NIGHT…; …AND SOMEONE / WAS STANDING / BEHIND YOU?), each centred on the same line, 74% of the width from the top. Each comes in 0.12 s before its first word, rising 1.6% over 0.25 s, and goes, drifting up 1.6% over 0.16 s, 0.3 s before the next one's first word: never two at once. Its words sit at 42% until he says them.
+  - The card: the end of the question (…AND YOU ONLY / HAD TWO OPTIONS?, Archivo 800 at 6.4%, line height 1.1) 6% over the keys, one block centred in the frame; it rises 2.4% and grows from 97% over 0.45 s. No sublabels under the keys (v29: "and find out and escape should be gone").
+  - Each key brightens 16% as he names it (0.1 s up, settling over about 1 s).
+  - RUN CHOSEN (mono 600 at 3.4%, tracking 0.2 em, 70%) with PART 2 under it (Archivo 800 at 6%), centred, its top at 116% of the width; it holds 1.2 s before the card goes (v29: "a little bit longer so you understand run has been chosen").
+  - The held frame behind it is blurred to 40, as soft as the end's, and never dead (below).
+- **A frozen frame behind a question glitches, buzzes and drifts** (v29: "background should have a little glitching and buzzing effect … and a little bit camera movement"):
+  - Small glitches every 0.8–1 s, 0.07–0.12 s each: Glitch at amount .3–.38 with Tears only at .94 (torn rows; its inverted blocks look like grey UI rectangles) and a horizontal colour split of 20× the amount in px, fading.
+  - A faint buzz in the picture: Light Flicker at 0.07, 26 steps a second.
+  - Each glitch has a short electrical zap (a tube's buzz chopped 45 times a second and bit-crushed, a click in front), its peaks about 10 dB over the bed; a faint buzz under the question tone.
+  - A slow push-in that carries on from the one before the freeze (the lens 2.2° narrower by the end), the eyes wandering a little (0.12 m across and 0.05 m up and down where they look).
+  - A harder glitch (0.2 s, amount .45, Tears only .85) as the next part comes to life covers the camera's jump back from the drift.
 - **Nothing else on the picture** unless asked: no part counter, no "watch again", no viewfinder corners, no info text.
 
 ## 3. Style: which look, and its exact settings
