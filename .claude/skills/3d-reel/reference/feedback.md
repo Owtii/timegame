@@ -757,7 +757,7 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 >
 > what should also be option. give me a suggestion
 
-### The Graveyard Shift, Part 2 (1:30, the RUN choice)
+### The Graveyard Shift, Part 2 (1:29, the RUN choice)
 
 **2026-10-24 22:09**
 
@@ -907,6 +907,20 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **The figure:** in the look back, after the lights die, the lobby tube catches and holds for a second. A black shape in his form stands at the end of the hall, still, so you can't tell it's him. The light drops out, catches again, and he's gone. A hit, a gasp, my eyes darting, panicked breathing, then the locked doors. The narrator's "nobody was there…" now waits until he's gone.
 - **Narration:** the hook still isn't recorded; nothing spent. The film went from 1:27 to 1:30; everything after page 17.5 is 2.6 s later.)
 
+**2026-10-27 15:40** (with two new timed notes in Part 2, written at 15:39 and 15:40)
+
+> and get the voice memo out for a moment till we fix every scenes.
+>
+> check notes
+
+- **0:14.3** here there should be a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy, so he really stands there far behind the room, just standing there scary, when the lights go off he gets away but everyone gets dark.
+- **0:18.5** this looks very stupid and ugly, make it really match everything.
+
+(v28:
+- **The narration is out for now:** every narrator line, my two lines and the guard's remembered warning are muted in the mix, so no voice, no captions and no ducking. The take and its placements are kept; it comes back with one switch, or clip by clip in the sound editor.
+- **The figure:** v27's flat black cutout under a bright light, in a moment added after the lights died, is gone. Now, as I come round at the doors, far back in the lobby, behind the overturned desk, a dark figure in his shape stands in the flicker of its tube. His own model in a dark matte skin that the room's light still shades, his outline thinning to nothing (feathered), a faint dark haze close round him. The lobby is darker than before (its lights at 55%, the corridor's tube nearest it sagging), so he belongs to it. The picture holds 2 s while I stare, pushing in slowly. The tube blows in a last flash with him in it; dark; the next flash shows the lobby empty. A hit, a gasp, my eyes darting, panic.
+- The film went from 1:30 to 1:29; everything after the hold is 0.6 s earlier than v27.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -1009,7 +1023,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (81 notes)
+### The Graveyard Shift, Part 2 (83 notes)
 
 *2026-10-25*
 
@@ -1098,3 +1112,5 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **1:15.9** his arms glitches, fix that
 - **1:20.3** he opens it weirdly with his arms, fix it
 - **0:13.8** make the crash, sound effect loud and really a desk falling to the ground
+- **0:14.3** here there should be a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy, so he really stands there far behind the room, just standing there scary, when the lights go off he gets away but everyone gets dark.
+- **0:18.5** this looks very stupid and ugly, make it really match everything.

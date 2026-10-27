@@ -109,7 +109,7 @@ Everything here comes from the user's notes (see `feedback.md`). Follow it by de
   - A dead ceiling tube catches at each of his blows and flares on the freeze frame so his faceplate reads.
   - The bathroom light snaps on mid-sentence.
 - **Flicker for meaning:** "make the light flicker to dark and light" in the hallway with the figure, and "it gets a bit darker and light flickers a bit" during the stare.
-- **Seen but not known:** a figure meant to be unidentifiable is his own shape in flat black against the only light, still, for about a second; then the light drops and comes back, and he is gone (v27, see `rules.md` 1.3).
+- **Seen but not known:** a figure meant to be unidentifiable is his own shape in a dark, lit, matte skin with a feathered outline, far back in a dim, flickering room that matches him, still, held a moment while I stare; when the light dies he is gone, and the next flash shows the place empty (v28, see `rules.md` 1.3). Not a flat black cutout under a bright light (v27: "very stupid and ugly").
 - **Check the side of him the camera sees.** A doorway light behind him makes him a black shape unless a motivated light (a tube, its bounce off the lockers) reaches his front.
 - **Shadows sell entrances:** going through a doorway darkens him ("bring little shadows on it so it really feels like he is entering the door"). The shadow of someone behind you is a real, soft-edged shadow of a person.
 - **No unmotivated light:** "dont add extra light because it got more bright on the end."

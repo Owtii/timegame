@@ -16,7 +16,9 @@ const { open } = require('./te_common.cjs');
   log('opening at 5.6:', JSON.stringify(await hook(5.6)), '| 8.3:', JSON.stringify(await hook(8.3)), '| 8.7:', JSON.stringify(await hook(8.7)));
   await p.evaluate(() => window.reel.seek(10.0)); await p.waitForTimeout(300);
   log('card/title at 10.0 hidden:', await p.$eval('#rcard', e => e.hidden), await p.$eval('#title2', e => e.hidden));
-  for (const t of [1.0, 5.0, 10.9, 19.8, 21.3, 23.7, 40.95, 54.45, 60.9, 62.85, 67.95, 73.15, 75.65, 79.65]){ await p.evaluate(t => window.reel.seek(t), t); await p.waitForTimeout(300);
+  // the narration is out for now (v28): its clips are in the mix but muted, and its captions hidden
+  log('narration clips muted:', await p.evaluate(() => { const v = window.reel.sound.mix().clips.filter(c => c.track === 'voice'); const e = window.reel.sound.mix().clips.find(c => c.id === 's_echo'); return `${v.filter(c => c.mute).length} of ${v.length}; the guard's echo muted: ${!!(e && e.mute)}`; }));
+  for (const t of [10.9, 15.6, 18.9, 23.1, 40.35, 53.85, 60.3, 62.25, 67.35, 72.55, 75.05, 79.05]){ await p.evaluate(t => window.reel.seek(t), t); await p.waitForTimeout(300);
     log(`caption at ${t}:`, JSON.stringify(await p.$eval('#subs', e => e.textContent)), '| style:', await p.$eval('#subs', e => e.classList.contains('me') ? 'me' : e.classList.contains('phone') ? 'phone' : 'narrator')); }
   log('script lines:', await p.$$eval('#script li', els => els.length));
   await p.evaluate(() => { window.reel.seek(0); window.reel.sound.open(); }); await p.waitForTimeout(3000);
@@ -29,15 +31,15 @@ const { open } = require('./te_common.cjs');
   const hits = await p.evaluate(() => window.reel._fig.collide());   // (he must never walk through anything in the storage room)
   log('walks into furniture:', hits.length ? `${hits.length} times, first at ${hits[0].t} (${hits[0].x}, ${hits[0].z})` : 'never');
   const lv = await p.evaluate(async () => { const buf = await window.reel.sound.render(44100), d = buf.getChannelData(0), rms = (a, z) => { let s = 0, n = 0; for (let i = Math.floor(a * 44100); i < z * 44100; i++){ s += d[i] * d[i]; n++; } return Math.sqrt(s / n) + 1e-9; };
-    return { dur:buf.duration, hooklive:rms(0, 2.85), hookhold:rms(3.4, 8.4), press:rms(8.45, 9.0), vault:rms(10.3, 11.0), run:rms(10.9, 13.6), doors:rms(22.8, 24.6), crash:rms(13.2, 14.2), pops:rms(15.1, 17.5), sil:rms(17.5, 20.1), walk:rms(34.55, 37.85), bams:rms(46.25, 49.05), locker:rms(49.45, 51.25), burst:rms(53.55, 54.55), close:rms(62.35, 63.85), search:rms(67.25, 70.55), burstwall:rms(53.65, 54.45), box:rms(71.75, 72.45), look:rms(73.35, 74.35), stare:rms(73.3, 74.3), lookround:rms(75.3, 77.2), desk:rms(77.45, 79.25), opening:rms(81.65, 82.75), rise:rms(76.95, 83.55), gap:rms(83.65, 84.0), question:rms(85.4, 89.4) }; });
+    return { dur:buf.duration, hooklive:rms(0, 2.85), hookhold:rms(3.4, 8.4), press:rms(8.45, 9.0), vault:rms(10.3, 11.0), run:rms(10.9, 13.6), crash:rms(13.2, 14.2), figure:rms(14.6, 16.6), pops:rms(17.1, 19.5), doors:rms(22.2, 24.0), walk:rms(33.95, 37.25), bams:rms(45.65, 48.45), locker:rms(48.85, 50.65), burst:rms(52.95, 53.95), close:rms(61.75, 63.25), search:rms(66.65, 69.95), burstwall:rms(53.05, 53.85), box:rms(71.15, 71.85), look:rms(72.75, 73.75), stare:rms(72.7, 73.7), lookround:rms(74.7, 76.6), desk:rms(76.85, 78.65), opening:rms(81.05, 82.15), rise:rms(76.35, 82.95), gap:rms(83.05, 83.4), question:rms(84.8, 88.8) }; });
   log('offline mix (dB):', Object.entries(lv).map(([k, v]) => k === 'dur' ? `dur ${v.toFixed(2)}s` : `${k} ${(20 * Math.log10(v)).toFixed(1)}`).join(' | '));
   // the end card: both questions, pick one answer each
-  await p.evaluate(() => window.reel.seek(84.8)); await p.waitForTimeout(700);
+  await p.evaluate(() => window.reel.seek(84.2)); await p.waitForTimeout(700);
   log('card shown:', await p.$eval('#choice', e => !e.hidden), '| groups:', await p.$$eval('#choice [data-q]', els => els.length));
   await p.click('#choice [data-q="q2"] button[data-k="hide"]'); await p.waitForTimeout(300);
   log('picked:', JSON.stringify(await p.evaluate(() => window.reel.choice.picked())), '| result:', await p.$eval('#choiceRes', e => e.textContent));
   await p.locator('#stage').screenshot({ path:'p2_card_picked.png' });
-  const url = await p.evaluate(() => window.reel.choice.card(84.8)); require('fs').writeFileSync('p2_card_export.png', Buffer.from(url.split(',')[1], 'base64'));
+  const url = await p.evaluate(() => window.reel.choice.card(84.2)); require('fs').writeFileSync('p2_card_export.png', Buffer.from(url.split(',')[1], 'base64'));
   for (const [t, f] of [[1.0, 'q1'], [4.0, 'q2'], [6.4, 'keys'], [8.75, 'picked']]){ const u = await p.evaluate(t => window.reel.choice.card(t), t); require('fs').writeFileSync(`p2_hook_${f}_export.png`, Buffer.from(u.split(',')[1], 'base64')); }   // (the opening as the video draws it)
   await b.close();
   const { b: b2, p: p2, errs: e2 } = await open({ width:390, height:844 }, { page:'the-graveyard-shift-part2.html', timeout:240000 });

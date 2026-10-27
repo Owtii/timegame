@@ -202,7 +202,12 @@ The file named in brackets, under `projects/workspace/`, is a working example.
 - walking through furniture (run the collision check after any path change);
 - hands or boots poking through the suit, or a twitch.
 
-- **A figure seen but not known** (v27: "u see a weird shadow standing in the same shape as the hazmat suit but you cant see if thats the hazmat suit"): his own model, every surface swapped to flat black (unlit; decals hidden, not blacked), standing still and upright at the end of a dark hall with the one light behind him, about 12 m away, for about a second. The light drops out and comes back: gone. A hit when he is gone, then panic (a gasp, panicked breathing, the eyes darting left and right). The camera leans in a touch while he is there and flinches back when the light dies. Make the black materials ready at load (compile them once), so his first frame never stutters.
+- **A figure seen but not known** (v27–v28: "a dark figure like the hazmat suit with feather on the edges, and the room must be darker and matching with the hazmat suit guy"):
+  - His own model in a dark matte skin (albedo about 0.05, rough) that the scene's lights still shade, so he sits in the room's light like everything else. Never flat unlit black: v27's black cutout under a bright light was "very stupid and ugly, make it really match everything".
+  - Feathered: the skin thins toward his outline (alpha from |normal · view| .1 to .8), with a faint dark haze close round him (soft black sprites just behind, about 35%). Decals hidden. You see the hood and the shape, never the visor, the face or the suit.
+  - Far back in a dim room, in its flicker, standing still but breathing; the room darker while he is there (its lights at about 55%, a nearby tube sagging), so he matches it.
+  - A hold while I stare (about 2 s, the world still, the light still flickering), pushing in slowly. When the light dies he is gone; its next flash shows the place empty. A hit on that flash, then panic: a gasp, panicked breathing, the eyes darting left and right.
+  - Compile his skin at load (once), so his first frame never stutters.
 
 ### 1.4 Light that moves
 
@@ -213,7 +218,7 @@ The file named in brackets, under `projects/workspace/`, is a working example.
   - Bursts of 0.04–0.37 s at 1.25–1.55× the steady level.
   - Gaps of 0.04–0.07 s near zero.
 - **A blown tube tries to strike again:** flashes of 0.03–0.2 s, 0.7–0.9 s apart, for about 2 s.
-- **A figure glimpsed in the dark** (v27): every light dead, a far tube catches (1.3× for 0.04 s, off for 0.04 s), holds at 1.15× for about 0.9 s with him standing against it, drops out for 0.3 s, catches again (0.9× for 0.05 s, 0.1× for 0.03 s, 1.1× for 0.85 s): nobody. See **A figure seen but not known** in 1.3.
+- **A figure glimpsed in a failing light** (v28): the far tube keeps flickering through the hold, dimmer than before (bursts of 0.25–0.36 s at 0.7–0.85 of its old level, gaps of 0.04–0.06 s); it blows in a last bright flash with him in it, and dark; its next try to strike shows the place empty. See **A figure seen but not known** in 1.3.
 - **A dead tube catching at a blow:** 1.1× for 0.05 s, off for 0.05 s, 0.8× for 0.08–0.16 s, 0.05× for 0.06 s, 0.55× for 0.04 s.
   - After the last blow it hangs on, weak and stuttering.
   - It catches full once more on the freeze, so his faceplate reads.

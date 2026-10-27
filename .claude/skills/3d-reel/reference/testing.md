@@ -31,7 +31,7 @@ All tools are in `scripts/` (copies) and in `projects/workspace/` (where they ru
 | `te_fonts.cjs` | Like `te_common.cjs`, but serves the reel's own fonts (Archivo, JetBrains Mono, from `cardlab/fonts`) instead of blocking them. Use it whenever text on the picture is being judged: with the fallback fonts, lines wrap differently. |
 
 Full tests per reel, in `projects/workspace/`:
-- `p2_t.cjs` (Part 2): the opening (the first question's words lit over the live shot, gone after the freeze with the second in its place, the keys up, RUN pressed with RUN CHOSEN / PART 2, all gone by 10 s), captions at set times, mix levels per scene, the choice card, collisions and phone width.
+- `p2_t.cjs` (Part 2): the opening (the first question's words lit over the live shot, gone after the freeze with the second in its place, the keys up, RUN pressed with RUN CHOSEN / PART 2, all gone by 10 s), the narration muted with its captions hidden (while it is out), captions at set times, mix levels per scene, the choice card, collisions and phone width.
 - `ns_t1.cjs` (Part 1).
 - Studio regressions:
   - Sound editor: `te1`–`te9` (drag, lanes, live playback, the phone layout, the database round trip with a stand-in runtime), `tdrag`, `timp` (imports), `taud` (offline mix levels).
