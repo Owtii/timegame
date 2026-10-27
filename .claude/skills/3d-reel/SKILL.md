@@ -27,6 +27,7 @@ They review each version in the page itself, leave timed notes in its database, 
 | touch any code | `reference/system.md` (the engine) and `reference/projects.md` (each reel: URL, clocks, beats, what's settled) |
 | animate anything (people, camera, light, transitions, captions, the choice card) | `reference/craft.md` |
 | design a look, a set or a UI | `reference/style.md` |
+| want the exact number: a timing, a distance, a colour, a light, a material, how much detail a room or prop needs | `reference/rules.md` (the house rules in numbers, with checklists to run before publishing) |
 | suggest ideas, write a script, plan a series part | `reference/story.md` |
 | make or mix sound | `reference/sound.md`, and the repository's `sounds/README.md` (every recorded file) |
 | record or sync narration | `reference/narration.md` |
@@ -84,7 +85,7 @@ The session scratchpad is ephemeral. In a new session, clone the repository, cop
 1. **Read the open notes** of the reel(s) they mean: `ArtifactData query` on `notes` with `where: [["done","==",false]]`. Each note is `{created, done, t, text}`, where `t` is the page time they paused at. Also look at `sfxRequests`, and at whether `mix/timeline`, `camera/keys`, `fx/layers` or `settings/look` changed since your last round (note their versions).
 2. **Map page time to the story** with the reel's clocks (`reference/projects.md`). Inserts and recaps shift things.
 3. **Look first.** Render frames around each `t` to see what they saw.
-4. **Implement**, following `craft.md`, `style.md` and `sound.md`:
+4. **Implement**, following `craft.md`, `style.md`, `rules.md` and `sound.md`:
    - story beats and captions: `story.js`;
    - camera: `env.js`;
    - the figure's motion: `updates.js`;
@@ -110,16 +111,16 @@ The session scratchpad is ephemeral. In a new session, clone the repository, cop
 
 1. **Ideas:** offer 5–8 options with a hook line each, then wait for the pick (`story.md`).
 2. **Script:** scenes with times, in the form Environment / Camera (POV) / Audio / Narrator / Transition. If they paste one, build theirs. Deliver it as a text file when asked.
-3. **Fork the newest project.** Copy `ns2/` to a new folder and its build script, give the page its title, lede and credit, and keep the shell, studios, engine, export and choice card. Write the new beats and captions, sets, figures, camera and lights.
+3. **Fork the newest project.** Copy `ns2/` to a new folder and its build script, give the page its title, lede and credit, and keep the shell, studios, engine, export and choice card. Write the new beats and captions, sets, figures, camera and lights to the numbers and detail minimums in `rules.md`, so the first version already looks real.
 4. **Sound:** synthesis plus the free library. ElevenLabs only after a priced yes. No narration yet: captions only.
-5. **Look before publishing** (`testing.md`). Then publish as a **new** artifact with `capabilities` `db`, `downloads` and `user`, and send the link.
+5. **Look before publishing** (`testing.md`) and run the checklists in `rules.md`. Then publish as a **new** artifact with `capabilities` `db`, `downloads` and `user`, and send the link.
 6. From then on, it's the notes loop.
 
 A new part of a series follows the series rules in `story.md`: a short recap with the earlier part's own sound, the same places, one question at the end. Part 3 has notes in `projects.md`.
 
 ## What "good" means (their quality bar)
 
-These come up again and again across 260 messages and notes (evidence in `feedback.md`):
+These come up again and again across 260 messages and notes (evidence in `feedback.md`; the numbers behind each one in `rules.md`):
 
 1. **Smooth:** one continuous camera path, eased moves, transitions that read as transitions, no snaps, stops or sudden switches of focus.
 2. **Natural:** people turn head first and step their feet round, look slowly with holds, are never fully still, duck under doors, never hop, slide or clip.

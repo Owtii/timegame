@@ -1,6 +1,6 @@
 # Style: how the reels should look
 
-Everything here came from the user's requests and notes (see `feedback.md`). Two looks exist so far: the **explainer** look (The Day the Phones Jammed) and the **horror** look (The 13th Floor, The Graveyard Shift). A new reel takes one of them, or the user's reference images, as its starting point.
+Everything here came from the user's requests and notes (see `feedback.md`). Two looks exist so far: the **explainer** look (The Day the Phones Jammed) and the **horror** look (The 13th Floor, The Graveyard Shift). A new reel takes one of them, or the user's reference images, as its starting point. The exact settings of each look (palettes, light colours and levels, the grade, materials) and how much detail a place needs are in `rules.md`.
 
 ## The format every reel shares
 

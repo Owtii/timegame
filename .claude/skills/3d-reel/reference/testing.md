@@ -51,6 +51,7 @@ Update a test's times when the film's length or beats move.
 4. **The full test** (`p2_t.cjs`): captions, levels (the gap must be −180 dB, i.e. silence), the card, no page errors.
 5. **Narration touched?** One frame per phrase, `vo_phrases.py`, `chunks_sim.cjs`, `vo_snr.py`.
 6. **Studios touched?** Their regression tests, plus a phone-width check (390 px, no sideways scroll).
+7. **A new scene, set or figure?** Run the checklists in `rules.md` (section 5): the place, the light, the motion, the look, the frames.
 
 ## How to look at a frame
 

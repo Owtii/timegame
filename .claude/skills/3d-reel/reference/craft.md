@@ -1,6 +1,6 @@
 # Craft: making motion, camera, light and text feel right
 
-Everything here comes from the user's notes (see `feedback.md`). Follow it by default; the user should not have to ask twice. Sound is in `sound.md`, narration in `narration.md`, the look in `style.md`.
+Everything here comes from the user's notes (see `feedback.md`). Follow it by default; the user should not have to ask twice. Sound is in `sound.md`, narration in `narration.md`, the look in `style.md`. The exact numbers for all of it (speeds, turn times, camera moves, field of view, light flicker, sizes, colours, detail minimums) are in `rules.md`.
 
 ## The three things every note is really about
 

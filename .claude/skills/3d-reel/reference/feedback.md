@@ -870,6 +870,14 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 
 > make the skill better and see what I wanted to change and all the sounds and extra studios I made, and upload them all on github: https://github.com/Owtii/skill-3d-reel.git
 
+**2026-10-27 01:17**
+
+> make also rules about how to animate and how to design and what style to use. put it into the skill.
+>
+> and also how much details to make it real looking.
+
+(The skill got `rules.md`: the approved numbers for motion, the camera, light, sets, props, figures, the UI, both looks, materials and how much detail each kind of place needs, with checklists to run before publishing.)
+
 ## Every timed note left in the pages
 
 Each note: the page time (m:ss) where they paused, then their words. All are done. Sorted by when they were written, so the rounds show. Part 2 page times before v19 are on the old clock (recap 7.6 s); see projects.md to map them.
