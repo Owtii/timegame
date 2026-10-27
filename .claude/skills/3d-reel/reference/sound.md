@@ -113,6 +113,11 @@ In a build, pull library sounds with `raw(name)`, `cut(name, a, b)`, `speed(x, k
   - Beds (heart, boots, drones, breathing; `nd`) dip 60%.
   - Hard hits and stings (bams, burst, crash, light pops, strikes, locker hits) never dip.
   - The voice is mixed so its loudest word matches the biggest hits (`VPEAK` .36). A line over loud action gets its own lift of a couple of dB (`VLIFT`), never the whole voice.
+- **A hit the narration names plays alone first.** Leave about 0.4 s between the impact and the voice. In Part 2 the desk crash lands at 13.45 and "Behind me, I heard a crash" starts at 13.85. If the voice sits on the hit, the hit sounds small.
+- **Louder without moving the master:**
+  - A hit's loudest instant must stay under the film's loudest moment (the first bang on the door). Otherwise K drops and every other sound gets quieter.
+  - Make it louder where loudness is heard: denser (more saturation), longer in its body, and with the sounds under it dipped (footsteps for half a second, the heartbeat's first beat after it).
+  - Compare clip loudness (the loudest 0.8 s), not settings: a long reverb tail can hide loudness, and the old crash was louder than its gain said.
 - **Measure, don't guess:**
   - `scripts/vo_snr.py` gives each line's level against everything under it. Aim for 6 dB or more.
   - `check_mix.mp3` plus numpy gives RMS and peaks around a moment.

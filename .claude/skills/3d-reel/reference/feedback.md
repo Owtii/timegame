@@ -864,6 +864,24 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 
 (v23: after the photo he turns away looking round the room and crosses to the desk still looking. The box falls during that look, replacing the shelf search. At the lockers he yanks one open with no hammering, and the question comes right after his head starts to turn. The film went from 1:32 to 1:27.)
 
+**2026-10-27 02:49** (with four new timed notes in Part 2, written at 02:45 to 02:48)
+
+> the first part must also be a hook, so the viewer keeps watching the first 1 to 5 sec, give suggestions first.
+>
+> check notes.
+
+- **0:13.8** make the crash, sound effect loud and really a desk falling to the ground
+- **1:15.9** his arms glitches, fix that
+- **1:20.3** he opens it weirdly with his arms, fix it
+- **1:22.2** make the background have blur and the same effect as part 1, questions background effect.
+
+(v24:
+- **The crash:** a new desk crash that sounds like a real desk going over, about 4 dB louder, heard on its own for 0.4 s before the narrator comes in.
+- **The desk sweep:** his arm had been reaching almost to full stretch, so the elbow flipped. He now reaches behind the things at the back of the desk and drags them off, with the elbow comfortably bent.
+- **The locker:** his turn off the desk no longer gets cut short, his head no longer snaps, and his hand stays on the handle as the door swings open, then lets go and drops.
+- **The question:** the frozen frame behind it is now as soft as Part 1's.
+- **The opening hook:** suggestions given; waiting for the pick.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -966,7 +984,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (77 notes)
+### The Graveyard Shift, Part 2 (81 notes)
 
 *2026-10-25*
 
@@ -1049,3 +1067,9 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **1:01.8** it says it freeze but then walks, so the text dont make sense
 - **1:22.6** cut the part  him hitting the lockers, and just make him open the locker.
 - **1:05.6** make him look around and while he is doing the thing must fall
+*2026-10-27*
+
+- **1:22.2** make the background have blur and the same effect as part 1, questions background effect.
+- **1:15.9** his arms glitches, fix that
+- **1:20.3** he opens it weirdly with his arms, fix it
+- **0:13.8** make the crash, sound effect loud and really a desk falling to the ground

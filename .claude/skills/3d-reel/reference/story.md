@@ -25,7 +25,12 @@ The first seconds decide everything. They asked for "a very catchy hook" on the 
 - The hook raises a question and hints at danger without explaining it. Part 1 settled on: **"Everyone warned me about the night shift. Nobody warned me about my coworker."** The reason was so people won't know at first that the coworker is a weird entity, while sensing he isn't safe.
 - It's short and has no pause inside it ("make the hook now a little less long... because it has weird pause in between and at the end").
 - It comes with a cinematic opening shot ("make the beginning a cinematic shot for the hook"), not a static frame.
-- For a series part, the hook is the recap: a few seconds that say "previously" and drop you back in. See "Series" below.
+- **The first 1 to 5 seconds must hold the viewer, every reel and every part, the recap included** ("the first part must also be a hook, so the viewer keeps watching the first 1 to 5 sec"). In the first seconds:
+  - a striking image within the first second: never more than a moment of black, never a calm establishing shot;
+  - a sound within the first 0.2 s, and something loud or strange within 3 s;
+  - words on screen within the first second: a question, a stake or a hint of danger;
+  - nothing that explains first. A recap can come second, after the jolt.
+- For a series part, the recap must hook too: open on its scariest beat, or on the picked answer, not on calm setup. Offer the user options before changing an opening ("give suggestions first").
 
 ## The explainer shape (The Day the Phones Jammed)
 

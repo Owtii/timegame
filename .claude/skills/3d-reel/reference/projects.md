@@ -8,7 +8,7 @@ Always update a reel **in place**, at the same artifact URL. Never publish a sep
 | The Day the Phones Jammed | https://claude.ai/artifact/RN2HBbKnuBAkLfQKUfUGEC | 1:00 | Finished (explainer) | `phones-jammed-3d.html` (hand-edited page) + `vo/` (sound) |
 | The 13th Floor | https://claude.ai/artifact/171jML4Snda7dxDHRjChNy | 1:14 | Finished and archived: don't touch unless asked | `f13/`, `build13.py` |
 | The Graveyard Shift, Part 1 | https://claude.ai/artifact/SQrLWd74487d4TarLdRdj1 | 1:11 | Done; notes may still arrive | `ns/`, `buildns.py` |
-| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:27 | Active (v23, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
+| The Graveyard Shift, Part 2 (the RUN choice) | https://claude.ai/artifact/Ndam9Yzfit39RGc7iow9mB | 1:27 | Active (v24, narrated) | `ns2/`, `buildns2.py`, `mk_sound2.py`, `sound2_body.py`, `p1recap.py` |
 | The Graveyard Shift, Part 3 | not made yet | | Part 2 ends on RUN FOR THE EXIT / STAY HIDDEN | start from `ns2/` |
 
 ## The Day the Phones Jammed
@@ -81,9 +81,14 @@ The RUN choice:
 - The dead ceiling tube catches at each blow, stutters after the last, and flares on the freeze.
 - His breathing is the respirator model, kept low (the user lowered it 7 dB). My breathing is the realistic breath model, and my heart pounds when scared.
 - Exit glances at the end: two slow ones.
+- The desk crash (13.45) is loud and sounds like a real desk going over. It has 0.4 s alone before "Behind me, I heard a crash" (13.85); my footsteps dip under it, and my heart starts pounding just after (v24).
+- The desk sweep: his right hand reaches behind the things at the back of the desk and drags them off to his right, with the elbow comfortably bent, never at full stretch (v24: "his arms glitches").
+- The locker: he turns off the desk (head first, feet stepping round), steps in, puts his hand on the handle and keeps it there as the door swings open toward him, then lets go and his arm drops. Then he steps back (v24: "he opens it weirdly with his arms").
+- The frozen frame behind the question is blurred as softly as Part 1's (blur 40; v24).
+- The opening (0 to 5 s) must become a hook ("the first part must also be a hook"). Suggestions were sent with v24; wait for the user's pick before changing it.
 - Narration: Grandpa for everything, phrase-synced (see `narration.md`).
 
-**Saved data:** their mix (the door burst muted with a stinger in its place, two heartbeats added, the respirator −7 dB), 75 done notes. No saved camera, effects or look.
+**Saved data:** their mix (the door burst muted with a stinger in its place, two heartbeats added, the respirator −7 dB), 81 done notes (mix version 19 after v24). No saved camera, effects or look.
 
 **Build and test:**
 

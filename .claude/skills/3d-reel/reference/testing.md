@@ -20,6 +20,7 @@ All tools are in `scripts/` (copies) and in `projects/workspace/` (where they ru
 | `projprobe.cjs` | Where the figure, a target and the camera land on screen at given times. Use it to check that what the viewer must see isn't hidden behind him. |
 | `camtrack.cjs` | The camera's position, yaw, pitch, field of view and where he is on screen every 0.1 s (`camtrack.json`). This is the beat map for syncing narration. |
 | `coll.cjs` | Every moment the figure walks into furniture. It must print `collisions: 0`. |
+| `armprobe.cjs` | `WIN="a,b;c,d" GOTO_MS=240000 node armprobe.cjs`: samples his pose 240 times a second over beat windows and prints the fastest hand, elbow and joint motions and the sharpest jolts. An elbow flip, a turn cut short or a pose switched on without easing stands out as a lone spike. Run it after any change to his arms or path. |
 | `gensteps2.cjs` | His footstep times from his walk (`ns2/audio/steps.json`). Rerun after any change to his motion, before the sound build. |
 | `chunks_sim.cjs` | Prints exactly what the captions will show and when. |
 | `vo_phrases.py` / `vo_snr.py` | Pauses inside each placed narration line, and each line's level against the mix under it. |
@@ -46,7 +47,7 @@ Update a test's times when the film's length or beats move.
 ## A round's checks, in order
 
 1. **Build and load:** the build script, `node --check <main>_check.js`, `node errs.cjs`.
-2. **Motion changed?** `gensteps2.cjs`, then the sound build, then build again (to embed the new sound), then `coll.cjs`.
+2. **Motion changed?** `gensteps2.cjs`, then the sound build, then build again (to embed the new sound), then `coll.cjs` and `armprobe.cjs` over the changed moments.
 3. **Frames at every changed moment** (`render2.sh`), from the real camera **and** a lit side view (`dbgpose.cjs`).
 4. **The full test** (`p2_t.cjs`): captions, levels (the gap must be −180 dB, i.e. silence), the card, no page errors.
 5. **Narration touched?** One frame per phrase, `vo_phrases.py`, `chunks_sim.cjs`, `vo_snr.py`.

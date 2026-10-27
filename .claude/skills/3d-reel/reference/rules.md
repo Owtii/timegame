@@ -54,7 +54,7 @@ The file named in brackets, under `projects/workspace/`, is a working example.
 | A door or locker yanked open | 0.3 s to 106°, then rocks for 0.3 s |
 | Words lighting up | exactly when spoken (the narration's word times) |
 | A caption's end | at least 0.1 s before its shot's cut |
-| The choice card | held at least 4 s (Part 2 holds 6.5 s) |
+| The choice card | held at least 4 s (Part 2 holds 6.5 s); the frozen frame behind it blurs over 0.75 s |
 | Black at the end | at least 1 s |
 
 ### 1.2 The camera: first person, the camera is my eyes
@@ -173,8 +173,30 @@ The file named in brackets, under `projects/workspace/`, is a working example.
 | Slamming both hands on a desk | he rounds on it (0.75 s) and both hands land as the turn ends, the left 0.06 s before the right. He grips the edge and breathes 0.5 s, then one arm reaches across and sweeps the desk clear (about 0.5 s in all). He grips again, breathing, for 0.7 s, and pushes off over 0.5 s |
 | Yanking a door open | the hand rises to the handle over about 0.85 s, yanks in 0.2 s and is back at the hip 0.3 s later. Lean in 0.12 rad, then step straight back out of my line of sight |
 
+**Hands on things** (the arm IK, `armTo` in [ns2/updates.js])
+- **A hand that touches something follows it:** the desk's top as he sweeps it, a door's handle as the door swings.
+- **Keep every target within about 0.8 m of the shoulder.**
+  - The IK never goes past 93% of the arm's reach.
+  - A target near full stretch flips the elbow from one side to the other, and that reads as "his arms glitch".
+- **A comfortable reach:** shoulder to knuckles 0.7–0.8 m, elbow bent 45–75°. Under 0.6 m the elbow folds into a wing.
+  - When he leans over a desk his shoulder is above its front edge, so his hand works at the back of it, behind the things he sweeps off.
+- **Lift slowly:** lift a hand off a surface low (about 10 cm) over 0.3 s, never a 17 cm flick in 0.2 s.
+- **Let go before the thing gets away.** On a yanked door the hand stays on the handle for the pull, about the first third of the swing (0.1 s). Then it lets go, and the arm drops to hang over 0.25 s.
+- **A door yanked open:**
+  - it speeds up for 0.07 s as he pulls;
+  - it swings at an even speed and bangs on its stop at 0.3 s;
+  - then it rocks.
+
+**Joins between moves** (where one-frame jumps come from)
+- **A turn must finish inside its segment** (its `dur` no longer than the segment). A turn cut short hands the next segment a body still swinging round.
+- **A walk sets off the way he already faces.** A step at an angle to his facing makes the body swing toward it and back.
+- **Every switch that turns a pose control on eases in with its block's weight** (`P.aim = lerp(P.aim || 0, .5, w)`, never `P.aim = .5`). A bare assignment snaps the pose on that frame.
+- **Head targets match the story.** A head turn left over from an older version (looking at the wrong lockers) shows as a glance that means nothing.
+- **Check it with `armprobe.cjs`.** Outside a blow, no hand faster than about 4.5 m/s, no joint faster than about 15 rad/s, and no jolt spike standing alone. A blow landing is the only place a spike belongs.
+
 **Never:**
 - hopping, sliding feet, a turn without steps, or a body that turns before its head;
+- an arm at full stretch, or a hand left hanging in the air where the thing it held used to be;
 - arms straight out, flung arms, overhead double-fist slams, or jumping-jack sweeps;
 - picking things up;
 - walking through furniture (run the collision check after any path change);
@@ -368,6 +390,8 @@ For reference, the B-108 storage room has:
 7. **Vignette:** × (1 − r²·0.5·(1 + 2·vig)).
 8. **Grain:** ±0.008 × grain, new every frame.
 
+**The frozen frame behind the question:** blur 40 (measured against a 1080-wide frame) over 0.75 s, dimmed to 64%. A detailed frame needs more blur than a simple one to look as soft; match the softness by eye against Part 1's card ("the same effect as part 1, questions background effect"). Part 1's simpler frame used 14.
+
 **The user's starting look for every new reel** (their saved settings): brightness +4, contrast +4, saturation +6, warmth 0, tint 0, glow 100%, vignette +7, grain 35%.
 
 **Rendering**
@@ -551,6 +575,11 @@ The user exports every frame, up to 4K.
 
 ### Before a new scene is done
 
+**The first seconds** (every reel and every part)
+- [ ] Something striking on screen within the first second, with a sound within 0.2 s.
+- [ ] Words on screen in the first second: a question, a stake or danger.
+- [ ] Something loud or strange within 3 s. Nothing slow, calm or explanatory first; a recap comes second.
+
 **The place**
 - [ ] It's a real kind of place with a reason to exist, laid out the way that place really is.
 - [ ] True scale in metres: doors, ceilings and furniture at their real sizes.
@@ -572,7 +601,7 @@ The user exports every frame, up to 4K.
 - [ ] The walk speed matches the stride: no sliding, no hopping.
 - [ ] Never fully still: breathing and sway on, and the camera drifts.
 - [ ] Looks are slow with holds; the camera's look-rounds are even sweeps.
-- [ ] Collision check: 0.
+- [ ] Collision check: 0. The arm check (`armprobe.cjs`): no flips, no lone spikes.
 - [ ] None of my hands or legs in frame.
 
 **The look**

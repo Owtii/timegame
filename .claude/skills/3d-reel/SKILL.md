@@ -131,7 +131,7 @@ These come up again and again across 260 messages and notes (evidence in `feedba
 7. **Detailed:** more detail in rooms, buildings and props; dust and grit; darker darks and brighter brights.
 8. **Logical:** every action has a visible reason, people behave as a normal person would, and captions say exactly what's on screen.
 9. **First person:** no hands, no legs.
-10. **Paced:** a catchy hook, no dead pauses, exact timing changes honoured to the tenth of a second, endings that cut to black.
+10. **Paced:** the first 1 to 5 seconds hook (every reel and every part, the recap included), no dead pauses, exact timing changes honoured to the tenth of a second, endings that cut to black.
 
 ## Don't regress (things already settled across the reels)
 
@@ -166,6 +166,7 @@ These come up again and again across 260 messages and notes (evidence in `feedba
 - **The mix peak:** a new loud clip can become the peak and turn everything down through the master gain. Check `peak at …` after every sound build.
 - **Things on the story clock:** they must be shifted by hand when an insert or the recap changes length. Beat-keyed things shift on their own.
 - **Building code:** a `// comment` dropped mid-line swallows the rest of the line; `const` helpers inside an IIFE above their definition throw; keyed arrays need strictly increasing times; a head yaw from a world target must be clamped (about ±1.3 rad).
+- **Arms that glitch:** an IK target near full stretch flips the elbow, and a pose control switched on without easing jumps in one frame. `scripts/armprobe.cjs` finds both; `rules.md` has the limits.
 - **Stale page text:** read the page's own text after a big change. Part 2's credit kept saying "no narration recorded yet" after the narration went in.
 
 ## Using agents (only when the user, or ultracode, asks for it)

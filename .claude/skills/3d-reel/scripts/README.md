@@ -13,6 +13,7 @@ These are copies of the tools used to build, test and inspect the reels. They ru
 | `projprobe.cjs` | `TIMES=…`: where he, the east lockers, an opened door's tips and the camera land on screen, so you know nothing the viewer needs is behind him. |
 | `camtrack.cjs` | The camera's position, yaw, pitch, fov and where he is on screen every 0.1 s into `camtrack.json`: the beat map for narration sync. |
 | `coll.cjs` | `GOTO_MS=240000 node coll.cjs`: every moment he walks into furniture (must print `collisions: 0`). |
+| `armprobe.cjs` | `WIN="a,b;c,d" GOTO_MS=240000 node armprobe.cjs`: his fastest hand, elbow and joint motions and sharpest jolts over beat windows (finds elbow flips and one-frame jumps). |
 | `gensteps2.cjs` | `GOTO_MS=240000 node gensteps2.cjs`: his footstep times into `ns2/audio/steps.json`, with turn steps flagged. Keep `end` past the film's last beat. |
 | `chunks_sim.cjs` | Prints exactly what the captions show and when (one phrase at a time). |
 | `vo2.py` + `vo2lib.py` | The narration placer (see `reference/narration.md`): splits the take, aligns the words, places each phrase on the page clock, writes `ns2/audio/vo2.json`. Needs pocketsphinx (`pip install --target pylib pocketsphinx`). |
