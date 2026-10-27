@@ -31,16 +31,16 @@ The first seconds decide everything. They asked for "a very catchy hook" on the 
   - words on screen within the first second: a question, a stake or a hint of danger;
   - nothing that explains first. A recap can come second, after the jolt.
 - Offer the user options before changing an opening ("give suggestions first"), and expect them to write their own: for Part 2 they turned down a "Previously · Part 1" recap and five cold opens and wrote the hook themselves.
-- **A series part opens on the last part's question, asked by the narrator** (v25 to v26; the user's words: "what would you do if someone was behind you, and you had only two options turn around and find out or run and escape"). Part 2's first 9.6 s:
-  - 0 s: the moment Part 1 ended, staged again: his boots come up behind my chair and his shadow climbs over the desk as the narrator asks "What would you do if someone was behind you…";
-  - 3 s: his breath at the back of my head, his arms coming up; my eyes flick right and left: "…and you only had two options?";
-  - 5.3 s: my head turns slowly toward my shoulder, into the dark, holds, and snaps back with a gasp: "Turn around and find out…";
-  - 7 s: my eyes go up the hall to the doors at the end, a sound rising: "…or run and escape."; then down to the flashlight;
-  - 8.35 s: the picture holds (the last part's last frame), soft, a low boom, and the title: THE GRAVEYARD SHIFT / PART 2 / RUN CHOSEN; at 9.6 s it comes back to life, straight into the action.
-  - The words stay on screen in big letters, each lighting up as he says it, each line coming up as he gets to it.
+- **A series part opens on the last part's question, asked by the narrator** (v25 to v27; the user's words: "what would you do if someone was behind you, and you had only two options turn around and find out or run and escape"). Part 2's first 9.6 s (v27):
+  - 0 s: the moment Part 1 ended, staged again and live: his boots come up behind my chair, his shadow climbs over the desk, my eyes go right then left, Part 1's riser climbing under it: "What would you do if someone was behind you…" in big words, each lighting as he says it.
+  - 2.9 s: once he stands there, the picture freezes exactly as the last part ended: every sound stops dead, the frozen frame goes soft, a breath of silence, then the low question tone.
+  - 2.95 s: the first question drifts up and away; only then (3.2 s) the second rises into its place: "…and you only had two options?". One after the other, never on top of each other.
+  - 4.85 s: the keys rise one after the other, TURN AROUND (red) and RUN (blue), OR between them; each one's sublabel lights as he says it: "Turn around and find out…" / "…or run and escape."
+  - 8.45 s: RUN is pressed (a soft click); RUN CHOSEN / PART 2 rises under the keys; at 9.2 s the card fades and at 9.6 s the frozen frame comes back to life, straight into the action.
+  - Every piece eases in and out ("with smooth animations"): see `rules.md` 1.5.
 - **A hook is spoken, never text alone.** v25 put the question on screen only, because they had said "dont use credits yet". Their answer: "no why is it a s text??? it should be narrated … with good visuals that let the scene knows". So when credits aren't okayed yet, build it ready for the voice (the words timed to where his phrases will go, the pictures cut to them) and quote the recording; never ship a text-only hook as the answer.
-- **The pictures show each part of the question** ("good visuals that let the scene knows"): someone behind you (his shadow climbing over the desk, his breath), two options (eyes flicking), turn around (the head turning toward the shoulder and snapping back), run (the eyes going up the hall to the exit).
-- **No recap, no buttons:** the user asked to "delete the part of recap just say part 2 run choosen". Part 1's keys and the RUN press are gone; a title says which answer won.
+- **The pictures show the question** ("good visuals that let the scene knows"): someone behind you is the live shot (his steps, his shadow climbing over the desk, his breath at the back of my head); the two options are the keys. (v26 acted the rest out too: eyes flicking, the head turning to the shoulder and snapping back, the eyes up the hall. v27 freezes instead, as the user asked.)
+- **No recap; the freeze, the keys and the press stay** (v27). v26 had dropped the keys for a title (THE GRAVEYARD SHIFT / PART 2 / RUN CHOSEN) after "just say part 2 run choosen". The user's answer: "no have the visual with the question then once the shadow is standing there, it freezes like on part 1. then the other questions goed away then the next question comes then the buttons, it presses run then the part 2 starts. with smooth animations." So the opening ends the way the last part did (the freeze, the question, the keys) and the winning answer is pressed, with ANSWER CHOSEN / PART N under the keys.
 
 ## The explainer shape (The Day the Phones Jammed)
 
@@ -77,9 +77,9 @@ The first seconds decide everything. They asked for "a very catchy hook" on the 
   2. The background blurs and a quiet horror tone holds attention.
   3. The choice card shows **one** question ("at the end only one question"): "What would you do?" with two short options, such as TURN AROUND or RUN, or RUN FOR THE EXIT or STAY HIDDEN.
   4. Hold it about 2 s longer than feels necessary ("make the question on the end a bit longer 2sec longer").
-- **The start of the next part** (v26, the user's hook; see **Hooks** above):
-  1. The narrator asks the last part's question ("What would you do if someone was behind you… and you only had two options? Turn around and find out… or run and escape.") over the moment the last part ended, the words big on screen, the pictures showing each part of it.
-  2. Then the held frame and a title with the answer that won (PART 2 · RUN CHOSEN), and straight into the action. About 9.5 s.
+- **The start of the next part** (v27, the user's hook; see **Hooks** above):
+  1. The narrator asks the last part's question ("What would you do if someone was behind you… and you only had two options? Turn around and find out… or run and escape.") over the moment the last part ended, live, the words big on screen.
+  2. Once the figure stands there, it freezes as the last part ended; the second question replaces the first; the keys rise; the winning answer is pressed (RUN CHOSEN / PART 2 under the keys), and straight into the action. About 9.5 s.
   3. Before v25 it was a short recap of key shots with a tiny "Previously · Part 1" tag ("something small, so u understand"; "make the first part w part 1 a little less just a quick good hook"). The user then asked for a hook in the first 1 to 5 seconds, wrote the question themselves, and asked for it narrated with no recap.
 - **Continuity:** the next part uses the same places, props and look ("dont change rooms or visuals that is different from part1"). Only the story changes, plus what time has done, like a suit more stained and dirty.
 - **Character logic across parts:** keep a hidden logic the viewer can sense. Here the man in the suit is an entity that left his body and is searching for it, getting angrier because he can't find it, and he never talks. His actions in every part come from that.

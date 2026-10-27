@@ -202,6 +202,8 @@ The file named in brackets, under `projects/workspace/`, is a working example.
 - walking through furniture (run the collision check after any path change);
 - hands or boots poking through the suit, or a twitch.
 
+- **A figure seen but not known** (v27: "u see a weird shadow standing in the same shape as the hazmat suit but you cant see if thats the hazmat suit"): his own model, every surface swapped to flat black (unlit; decals hidden, not blacked), standing still and upright at the end of a dark hall with the one light behind him, about 12 m away, for about a second. The light drops out and comes back: gone. A hit when he is gone, then panic (a gasp, panicked breathing, the eyes darting left and right). The camera leans in a touch while he is there and flinches back when the light dies. Make the black materials ready at load (compile them once), so his first frame never stutters.
+
 ### 1.4 Light that moves
 
 - **A working fluorescent tube is never steady.** Its level wobbles ±14%: 0.42 ± 0.06·sin(13.7t)·sin(5.1t).
@@ -211,6 +213,7 @@ The file named in brackets, under `projects/workspace/`, is a working example.
   - Bursts of 0.04–0.37 s at 1.25–1.55× the steady level.
   - Gaps of 0.04–0.07 s near zero.
 - **A blown tube tries to strike again:** flashes of 0.03–0.2 s, 0.7–0.9 s apart, for about 2 s.
+- **A figure glimpsed in the dark** (v27): every light dead, a far tube catches (1.3× for 0.04 s, off for 0.04 s), holds at 1.15× for about 0.9 s with him standing against it, drops out for 0.3 s, catches again (0.9× for 0.05 s, 0.1× for 0.03 s, 1.1× for 0.85 s): nobody. See **A figure seen but not known** in 1.3.
 - **A dead tube catching at a blow:** 1.1× for 0.05 s, off for 0.05 s, 0.8× for 0.08–0.16 s, 0.05× for 0.06 s, 0.55× for 0.04 s.
   - After the last blow it hangs on, weak and stuttering.
   - It catches full once more on the freeze, so his faceplate reads.
@@ -236,7 +239,12 @@ The file named in brackets, under `projects/workspace/`, is a working example.
   - Closed, each lid's solid part reaches 30% of the frame past the middle, so the corners shut too.
   - A blink can hide a cut.
 - **A recap cut:** a 0.04–0.05 s flicker of black under a burst of static.
-- **The opening question** (a series part): each word lights where the narrator says it (until his line is recorded, at the times it will be placed at: about 3 words a second, a beat after each "…" and "?"); unlit words at 42%. Each line after the first comes up 0.25 s before its first word. The card fades as my eyes drop to the flashlight, 0.25 s before the hold; the title fades in over 0.2 s on the hold and out 0.2 s before the action.
+- **The opening question** (a series part, v27): each word lights where the narrator says it (until his line is recorded, at the times it will be placed at: about 3 words a second, a beat after each "…" and "?"); unlit words at 42%.
+  - The first question over the live shot. On the freeze it drifts up 1.6% and fades in 0.25 s; the second rises 1.6% into its place over 0.4 s, starting only once the first is gone.
+  - The keys rise one after the other, 0.15 s apart, each over 0.45 s from 3% lower and 96% size; OR comes with the second.
+  - The press: 0.16 s; the other key dims over 0.25 s; ANSWER CHOSEN / PART N rises 1.2% over 0.4 s from 0.15 s after the press.
+  - The card fades 0.75–1.0 s after the press; the picture comes back to life 0.4 s later.
+  - All moves ease out (cubic). Every piece is placed in CSS and moved per frame by the same functions the video uses, so page and video match.
 - **The end:** a hard cut to black, held at least 1 s, then the card.
 
 ## 2. Design
@@ -368,10 +376,12 @@ For reference, the B-108 storage room has:
   - **Matte only:** a 16% white highlight along the top edge, 16% black along the bottom, and a three-layer soft shadow under the side wall. No glow, no gloss, no pill shape, no icons.
   - **Picked:** latched down, its face a shade lighter (#842125 / #2a4a80). The other goes dull but stays solid (#352325 / #252c3c, text #857677 / #6d7484).
 - **The opening question card** (`.rcard` in `choice.css`; the video draws it in `drawRecap`, `choice.js`, from positions measured off the page with the real fonts):
-  - Question: Archivo 800 at 7.6%, line height 1.06, #ECE6DB, broken by hand: WHAT WOULD / YOU DO / IF SOMEONE WAS / BEHIND YOU…; its first line at 24% of the frame's height.
-  - The rest, one line each at Archivo 800 4.4%: …AND YOU ONLY HAD / TWO OPTIONS?, TURN AROUND AND FIND OUT…, …OR RUN AND ESCAPE.
-  - No keys and no press (they were Part 1's card again).
-- **The title on the hold:** THE GRAVEYARD SHIFT (JetBrains Mono 700 at 3.2%, tracking 0.25 em, 55%), PART 2 (Archivo 800 at 13%), RUN CHOSEN (mono 700 at 4.2%, tracking 0.15 em, 78%), centred; the held frame behind it blurred to 18.
+  - First question: Archivo 800 at 7.6%, line height 1.06, #ECE6DB, broken by hand: WHAT WOULD / YOU DO / IF SOMEONE WAS / BEHIND YOU…; its top at 39.5% of the width from the top (about 22% of the height).
+  - Second question, the same size in its place (top at 43.5%): …AND YOU / ONLY HAD / TWO OPTIONS?
+  - The keys: the end card's keys (above), their tops at 74% of the width from the top; OR between them.
+  - Under each key its sublabel, AND FIND OUT / AND ESCAPE: JetBrains Mono 700 at 3.4%, tracking 0.12 em, #E9E4DA, 42% until he says it.
+  - RUN CHOSEN (mono 600 at 3.6%, tracking 0.16 em, 70%) with PART 2 under it (Archivo 800 at 5.5%), centred, top at 113%.
+  - The held frame behind it blurred to 40, as soft as the end's.
 - **Nothing else on the picture** unless asked: no part counter, no "watch again", no viewfinder corners, no info text.
 
 ## 3. Style: which look, and its exact settings
@@ -585,7 +595,7 @@ The user exports every frame, up to 4K.
 - [ ] Something striking on screen within the first second, with a sound within 0.2 s.
 - [ ] Words on screen in the first second: a question, a stake or danger.
 - [ ] Something loud or strange within 3 s. Nothing slow, calm or explanatory first; a recap comes second.
-- [ ] A series part opens on the last part's question, asked by the narrator over pictures that show it, then a title with the answer that won. No "Previously" recap, no buttons.
+- [ ] A series part opens on the last part's question, asked by the narrator over the live moment that part ended; it freezes as that part ended, the second question comes once the first is gone, the keys rise and the winning answer is pressed. No "Previously" recap.
 
 **The place**
 - [ ] It's a real kind of place with a reason to exist, laid out the way that place really is.

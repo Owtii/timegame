@@ -23,7 +23,7 @@ These are copies of the tools used to build, test and inspect the reels. They ru
 | `migrate_mix.py` | `python3 migrate_mix.py <timeline read from the DB> <out.json> <previous build's clips.json> [shift_at shift]`: carries the user's saved mix onto a rebuilt `clips.json` (their lanes, mutes, volumes, trims, fades, pans, swapped sounds, moves and their own clips). |
 | `mkwork.sh` | `./mkwork.sh NAME`: a private working copy `wk_NAME/` (its own `ns2/`, everything else linked) for an agent to edit, build and render in. |
 | `review_render.sh` | Renders the review sheets into `review/` for an independent review. Edit its time lists for the beats being reviewed. |
-| `p2_t.cjs` | Part 2's full test: the opening (the question's words and lines on time, the title), captions, sound editor, camera editor, offline mix levels per scene, the choice card, collisions, phone width. |
+| `p2_t.cjs` | Part 2's full test: the opening (the questions one after the other, the keys, RUN pressed), captions, sound editor, camera editor, offline mix levels per scene, the choice card, collisions, phone width. |
 | `ns_t1.cjs` | Part 1's full test. |
 | `cardlab/` | The choice card without the 3D page. `capbg.cjs` grabs the frozen frames without the cards; `mock.html` is the card markup over them with the real fonts (`fonts.css` + `fonts/`); `node cardlab/shot.cjs <dir>` renders `<dir>/card.css` in four states (`W=390` for phone width) in seconds. The shipped CSS is `choice.css`. |
 

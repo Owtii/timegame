@@ -121,7 +121,7 @@ In a build, pull library sounds with `raw(name)`, `cut(name, a, b)`, `speed(x, k
 - **Measure, don't guess:**
   - `scripts/vo_snr.py` gives each line's level against everything under it. Aim for 6 dB or more.
   - `check_mix.mp3` plus numpy gives RMS and peaks around a moment.
-  - The test (`p2_t.cjs`) prints the levels per scene: the opening (hook, hooktitle), run, crash, bangs, rage, the quiet, the question, and the gap, which must be silence (−180 dB).
+  - The test (`p2_t.cjs`) prints the levels per scene: the opening (hooklive, hookhold, press), run, the figure (sil), crash, bangs, rage, the quiet, the question, and the gap, which must be silence (−180 dB).
 - **Taking lines out of the narration moves its level.** The voice is levelled to its loudest word (`VMAX`) and its median line (`vref`). In v25 the loudest word had been in the cut recap, so every line came out 3.3 dB louder and the master fell from 1.765 to 1.434. Pin both to their old values when lines leave (Part 2: `vref = .06949177`, `VMAX = .71256598`), and check that `K` comes back.
 - **Sample rates:** the mix engine runs at 44.1 kHz (`vo/synth.py` SR), the narration tools at 48 kHz. Index stems with the right one.
 - **After every sound rebuild, migrate the user's saved mix** (`scripts/migrate_mix.py`; see `studios.md`).

@@ -76,7 +76,7 @@ Check it with one frame per phrase before publishing (what is on screen while ea
 - Keep at least ~0.3 s between two separate lines so they don't run together.
 - The hook has no pause inside it: "make the hook now a little less long and make it fit the hook, because it has weird pause in between and at the end".
 - A spoken recap needs time. Each line gets its own shot, long enough for the words and a breath (Part 2's recap grew from 7.6 to 9.85 s, before the question hook replaced it in v25).
-- **A line written for the picture before it is recorded** (Part 2's hook, v26): the words on screen carry their planned times (`HOOK_Q`…`HOOK_Q4`), and the pictures are cut to them. When the take comes, place each phrase at its planned start (tempo up to about 1.1 if it runs long), then light the words from the alignment.
+- **A line written for the picture before it is recorded** (Part 2's hook, v26–v27): the words on screen carry their planned times (`HOOK_Q`…`HOOK_Q4`), and the pictures are cut to them. When the take comes, place each phrase at its planned start (tempo up to about 1.1 if it runs long), then light the words from the alignment.
 - **A line can leave the film without a new take.** Keep it in `vo2.py`'s LINES with its caption set to None, so the take still splits into the right number of lines; it is cut from nothing and placed nowhere. Renumber the captions of the lines after it (and `VLIFT`, which is keyed by caption).
 
 ## Mixing the voice

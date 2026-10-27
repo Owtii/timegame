@@ -5,7 +5,7 @@ Everything here came from the user's requests and notes (see `feedback.md`). Two
 ## The format every reel shares
 
 - **Vertical 9:16**, played in a phone-sized player on the reel's page. Exports at 1080×1920 by default, up to 1440p and 4K.
-- **One to two minutes** long. The explainer ran 1:00; the horror shorts ran 1:11 to 1:39 (Part 2 was later trimmed to 1:27). Every second must earn its place: no dead pauses ("why is there a random pause here?").
+- **One to two minutes** long. The explainer ran 1:00; the horror shorts ran 1:11 to 1:39 (Part 2 was later trimmed to 1:27, then grew to 1:30 with the figure in the look back). Every second must earn its place: no dead pauses ("why is there a random pause here?").
 - **One self-contained HTML page**: a three.js scene with post-processing (bloom, colour grade, grain, vignette), captions over the picture, a clip-based sound mix, a studio panel, and the page's database for notes and saved edits.
 - **Text sits clear of the platform buttons.** The first storyboard had a safe-zone toggle for the TikTok and Instagram buttons. Keep captions in the lower middle, above the bottom bar.
 - **First person means the camera is the eyes.** Never show the player's hands or legs (said on The 13th Floor and in the Part 1 brief). Doors, phones and lockers move on their own in front of the camera.

@@ -757,7 +757,7 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 >
 > what should also be option. give me a suggestion
 
-### The Graveyard Shift, Part 2 (1:27, the RUN choice)
+### The Graveyard Shift, Part 2 (1:30, the RUN choice)
 
 **2026-10-24 22:09**
 
@@ -895,6 +895,17 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 > dont use credits yet
 
 (v26: the opening is narrated. The big words stay as they were, each lighting where the narrator says it: "What would you do if someone was behind you… and you only had two options? Turn around and find out… or run and escape." The pictures show each part: his boots and his shadow climbing over my desk, his breath at the back of my head, my eyes flicking round, my head turning toward my shoulder and snapping back, my eyes going up the hall to the doors. The keys and the RUN press are gone; the picture holds under THE GRAVEYARD SHIFT / PART 2 / RUN CHOSEN. Part 2's own sound throughout. No credits: the line is timed and ready, and the recording (about 240 credits for 2 takes) waits for their go-ahead. The film is 1:27 again.)
+
+**2026-10-27 14:23**
+
+> no have the visual with the question then once the shadow is standing there, it freezes like on part 1. then the other questions goed away then the next question comes then the buttons, it presses run then the part 2 starts. with smooth animations.
+>
+> but little change when running and turning around the lights flicker and turns dark and turns on for a sec, u see a weird shadow standing in the same shape as the hazmat suit but you cant see if thats the hazmat suit. it just stands there then the light goes off and back on he disappears then you panic and then the scene comes with trying to open the door but its locked...
+
+(v27:
+- **The opening:** "What would you do if someone was behind you…" over the live shot of his shadow climbing over my desk. Once he stands behind me the picture freezes as Part 1 ended: every sound stops dead, the frame goes soft, then the low tone. The first question drifts away and only then does the second come in its place. The keys rise one after the other, their sublabels lighting on the narrator's words. RUN is pressed with a soft click, RUN CHOSEN / PART 2 comes up under the keys, and the frozen frame comes back to life. Everything eases in and out.
+- **The figure:** in the look back, after the lights die, the lobby tube catches and holds for a second. A black shape in his form stands at the end of the hall, still, so you can't tell it's him. The light drops out, catches again, and he's gone. A hit, a gasp, my eyes darting, panicked breathing, then the locked doors. The narrator's "nobody was there…" now waits until he's gone.
+- **Narration:** the hook still isn't recorded; nothing spent. The film went from 1:27 to 1:30; everything after page 17.5 is 2.6 s later.)
 
 ### This repository
 
