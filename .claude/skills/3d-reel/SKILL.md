@@ -116,7 +116,7 @@ The session scratchpad is ephemeral. In a new session, clone the repository, cop
 5. **Look before publishing** (`testing.md`) and run the checklists in `rules.md`. Then publish as a **new** artifact with `capabilities` `db`, `downloads` and `user`, and send the link.
 6. From then on, it's the notes loop.
 
-A new part of a series follows the series rules in `story.md`: it opens on the earlier part's question put to the viewer, over that part's last seconds and its own sound (no "Previously" recap); the same places; one question at the end. Part 3 has notes in `projects.md`.
+A new part of a series follows the series rules in `story.md`: it opens on the earlier part's question asked by the narrator, over the moment that part ended, with pictures that show it, then a title with the answer that won (no "Previously" recap, no buttons); the same places; one question at the end. Part 3 has notes in `projects.md`.
 
 ## What "good" means (their quality bar)
 

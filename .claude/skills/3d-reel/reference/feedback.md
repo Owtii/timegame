@@ -757,7 +757,7 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 >
 > what should also be option. give me a suggestion
 
-### The Graveyard Shift, Part 2 (1:23 now, the RUN choice)
+### The Graveyard Shift, Part 2 (1:27, the RUN choice)
 
 **2026-10-24 22:09**
 
@@ -887,6 +887,14 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 > no make something like: what would you do if someone was behind you, and you had only two options turn around and find out or run and escape, something like this but dont yse credits yet
 
 (v25: the recap of Part 1 is gone: the doors at 2:14, his stare, the call, the "Previously · Part 1" tag and its three narrator lines. Part 2 now opens on Part 1's last seconds under the question "What would you do if someone was behind you… and you only had two options?", its words lighting up one by one. The frame holds and blurs, the keys TURN AROUND (and find out) and RUN (and escape) come up, RUN is pressed, and the run starts at 5.6 s. Text only, no credits spent. The film went from 1:27 to 1:23; everything after the opening is 4.25 s earlier.)
+
+**2026-10-27 13:34**
+
+> no why is it a s text??? it should be narrated
+> leave the text as it was and that shouldve been narrated before with good visuals that let the scene knows, and delete the part of recap just say part 2 run choosen
+> dont use credits yet
+
+(v26: the opening is narrated. The big words stay as they were, each lighting where the narrator says it: "What would you do if someone was behind you… and you only had two options? Turn around and find out… or run and escape." The pictures show each part: his boots and his shadow climbing over my desk, his breath at the back of my head, my eyes flicking round, my head turning toward my shoulder and snapping back, my eyes going up the hall to the doors. The keys and the RUN press are gone; the picture holds under THE GRAVEYARD SHIFT / PART 2 / RUN CHOSEN. Part 2's own sound throughout. No credits: the line is timed and ready, and the recording (about 240 credits for 2 takes) waits for their go-ahead. The film is 1:27 again.)
 
 ### This repository
 
