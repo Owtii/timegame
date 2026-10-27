@@ -757,7 +757,7 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 >
 > what should also be option. give me a suggestion
 
-### The Graveyard Shift, Part 2 (1:29, the RUN choice)
+### The Graveyard Shift, Part 2 (1:27, the RUN choice)
 
 **2026-10-24 22:09**
 
@@ -942,6 +942,24 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **The figure:** 15% taller, the lobby much darker (its tube at 35%, the panels in front of him nearly off, the room's reflections dimmed), his edges feathered the way After Effects feathers a mask, in the open floor of the lobby, clear of the desk, his shadow pooled on the floor at his feet; in the tube's death flash it lies black in front of him.
 - **Narration:** still muted, the hook still not recorded; nothing spent.)
 
+**2026-10-27 18:53** (with five new timed notes in Part 2, written from 18:50 to 18:52)
+
+> check notes
+
+- **0:06.9** make the '...and you only' just: 'you only had two options?'
+- **0:14.7** make scary sound effect when seeing him
+- **0:16.3** make him also stand a bit farther away.
+- **0:17.4** he should dissapear if all lights are going out for a moment then back on, so it becomes pitch dark.
+- **0:18.6** these seconds are too long looking once he is gone give it like 1-2 sec then the scene with trying to open the door.
+
+(v30:
+- **The card** says just "You only had two options?" (YOU ONLY HAD / TWO OPTIONS?), in the video too; the narrator's line follows.
+- **Seeing him:** a scare sting lands as the camera lands on him (page 14.55): strings stabbing high and hard in a dissonant cluster, a recorded stinger, whispers under it; the reversed swell into a boom lands with it.
+- **Farther back:** 0.9 m deeper into the lobby (about 16.5 m from me), still clear of the desk, his shadow pooled at his feet.
+- **The blackout:** at page 17.1 every light goes out at once, the flashlight in my hand too and the room's reflections with them: pitch black for 0.7 s, the breakers dropping ragged with a sub hit, the hum dying; my breath catches and I let it out shaking. At 17.8 the lights come back on with a starter's stutter, the lobby's first, then up the hall toward me, each tube ticking and striking (recorded), the hum back. The lobby is empty: a hit, a gasp. The lobby's tube's death flash and the lights dying one by one (v27–v29) are gone; the desk lamp stays dead.
+- **Shorter look:** once the lights are back, about 1.2 s of my eyes darting left and right, then I turn to the doors (2.05 s cut, page 19.0). The film went from 1:29 to 1:27; everything after 19.0 is 2.05 s earlier.
+- **Narration:** still muted; nothing spent.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -1044,7 +1062,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (91 notes)
+### The Graveyard Shift, Part 2 (96 notes)
 
 *2026-10-25*
 
@@ -1143,3 +1161,8 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:09.3** make the run chosen part 2 a little bit longer so you understand run has been chosen. like 0.6s longer
 - **0:15.1** make him taller and the room must be much darker already and not too bright, so you can barely see him but because he is so dark and tall, you still see his silhoutte. the silhoutte must have more feather and have shadows working with the ground and back and standing on the right place and not overlapping or standing in the desk, but infront of behind it.
 - **0:15.1** with feather I mean like on after effects you apply more feather it softens the edges more.
+- **0:06.9** make the '...and you only' just: 'you only had two options?'
+- **0:14.7** make scary sound effect when seeing him
+- **0:16.3** make him also stand a bit farther away.
+- **0:17.4** he should dissapear if all lights are going out for a moment then back on, so it becomes pitch dark.
+- **0:18.6** these seconds are too long looking once he is gone give it like 1-2 sec then the scene with trying to open the door.

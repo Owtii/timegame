@@ -46,6 +46,7 @@ The build sets the length (`TOTAL`), the length label ("1:29") and the scrubber'
 - **Page clock:** what the player shows and what the user's notes use (`t` in seconds).
 - **Story clock:** a part can start with something that isn't the story, such as Part 2's recap of Part 1. Then `ts = page - OFF`.
 - **Beats clock:** the story's named moments. Held moments ("inserts"), where the world stops while the camera looks round, stretch the story clock without moving the beats: `t = warp(ts)`, and `toNew(beat)` converts back.
+- **A negative insert cuts** (v30): `[a, -d]` skips beats `a` to `a + d`, so a stretch of the story goes without touching a single beat. `toNew` clamps a beat inside the cut to the cut point (`d > 0 ? n + d : n + Math.max(d, a - u)`, the same in the sound script), and `warp` works unchanged. Make the camera keys either side of the cut nearly the same, so the move flows across it; move things written on the story clock after it by hand, and the user's mix with `shift_at` at the cut's page time.
 - Things keyed to beats move automatically when an insert grows. Things written on the story clock or the page clock must be shifted by hand. Check every hand-placed time after a timing change, and re-time the user's saved effect layers and mix (`migrate_mix.py` with `shift_at shift`).
 
 ## `story.js`: beats, captions, chapters

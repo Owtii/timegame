@@ -61,6 +61,8 @@ In a build, pull library sounds with `raw(name)`, `cut(name, a, b)`, `speed(x, k
 **Horror rooms:**
 - A fluorescent tube: hum and buzz, a pop-buzz as it strikes, flutter when failing.
 - Lights cutting off: the buzz strains, then a breaker CHUNK, the hum dies in a falling whoomp, a spark, glass ticking. "Real light getting cut off."
+- Every light out at once (v30, `s_blackout`): three breakers dropping ragged within 35 ms, far to near, a sub hit 0.38 s in, the hum gone: then real silence in the dark but for my breath. Coming back on (`s_relight`): the recorded tube strikes (`light_on`, `light_on_2`), far to near on each light's stagger, and the fluorescent hum fading back in under them.
+- Seeing the thing (v30: "make scary sound effect when seeing him", `s_sil_sting`): a scare sting landing as the camera lands on him: a bowed-string cluster stabbing high (1.2–2.4 kHz, dissonant), a recorded stinger (`stinger_2`) and whispers under it, soft-clipped and in a little room, −7 dB, not ducked.
 - A light switching on: a switch click and a subtle electrical buzz rising, "like subtle electricity". Not a glow sound.
 - A clock: a real tick-tock, subtle (`clock_tick`).
 - A call cut off: a click and the long flat beep, with CALL ENDED shown on the phone.
@@ -121,7 +123,7 @@ In a build, pull library sounds with `raw(name)`, `cut(name, a, b)`, `speed(x, k
 - **Measure, don't guess:**
   - `scripts/vo_snr.py` gives each line's level against everything under it. Aim for 6 dB or more.
   - `check_mix.mp3` plus numpy gives RMS and peaks around a moment.
-  - The test (`p2_t.cjs`) prints the levels per scene: the opening (hooklive, hookhold, press), run, the figure (figure), the lights dying (pops), crash, bangs, rage, the quiet, the question, and the gap, which must be silence (−180 dB).
+  - The test (`p2_t.cjs`) prints the levels per scene: the opening (hooklive, hookhold, press), run, the figure (figure, sting), the blackout and the lights coming back (dark, relight), crash, bangs, rage, the quiet, the question, and the gap, which must be silence (−180 dB).
 - **Taking lines out of the narration moves its level.** The voice is levelled to its loudest word (`VMAX`) and its median line (`vref`). In v25 the loudest word had been in the cut recap, so every line came out 3.3 dB louder and the master fell from 1.765 to 1.434. Pin both to their old values when lines leave (Part 2: `vref = .06949177`, `VMAX = .71256598`), and check that `K` comes back.
 - **Sample rates:** the mix engine runs at 44.1 kHz (`vo/synth.py` SR), the narration tools at 48 kHz. Index stems with the right one.
 - **After every sound rebuild, migrate the user's saved mix** (`scripts/migrate_mix.py`; see `studios.md`).
