@@ -18,24 +18,24 @@ CUE_TEXTS = re.findall(r'\{ t:[^,]+,\s+text:"(.*?)"', story)   # (every caption,
 # word index), when (page clock): a time for the phrase's start, (word, time) to land that word on a beat, or None to
 # follow the phrase before with a natural pause; the line's tempo; the latest it may end; optionally its own pauses).
 # A line with no caption (None) is in the take but not in the film (the old recap's three lines)
-LINES = [
+LINES = [   # (v32: the narration rewritten; only the first line's words are unchanged, so only it is placed from this take)
     (None, 'narrator', 'two fourteen a m he walked in', [0], [0], 1.0, 0),
     (None, 'narrator', 'he just stared at me', [0], [0], 1.0, 0),
     (None, 'narrator', 'something was behind my chair', [0], [0], 1.0, 0),
     (0,  'narrator', "i didn't turn around i grabbed the flashlight and ran", [0, 4, 8], [9.61, None, None], 1.05, 13.15, {'.': .22, '…': .22}),   # (up out of the chair, over the desk, down the hall; done before the desk crashes)
-    (1,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.60, None, None, 17.30, None], 1.14, 20.2, {',': .07, '.': .16, '…': .1}),   # (the crash as I reach the doors and come round; "When I looked back," while I stare at him; "nobody was there…" from the pitch dark, "there" as the lights come back on; the desk over the empty lobby, ending as I turn to the doors)
-    (2,  'me',       'the doors are locked', [0], [22.05], 1.0, 23.45),   # (shoving the bars)
-    (3,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [25.05], 1.0, 28.40),   # ("locked" as the lock turns)
-    (4,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.85, (8, 37.35)], 1.0, 38.60),   # (my beam going round the room; "photo" as it comes back to it)
-    (5,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [39.00, None, None], 1.0, 44.25, {'…': .3, '.': .3}),
-    (6,  'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [45.80, None], 1.0, 51.70),
-    (7,  'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [52.45, None, None], 1.0, 56.70),
-    (8,  'narrator', 'his suit was covered in dark stains now', [0], [56.95], 1.0, 59.75),
-    (9,  'narrator', 'he stopped right at my locker', [0], [59.85], 1.0, 61.80),   # (as he stops there)
-    (10, 'narrator', 'then something beside it caught his eye', [0], [(4, 63.20)], 1.0, 65.00),   # ("caught" as he freezes on the photo)
-    (11, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [65.40, None], 1.0, 68.90),
-    (13, 'narrator', 'he knew someone was hiding in there', [0], [73.50], 1.0, 75.60),
-    (14, 'narrator', 'the exit was open this might be my chance', [0, 4], [76.90, None], 1.06, 79.50, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
+    (None,  'narrator', 'behind me i heard a crash when i looked back nobody was there just my desk thrown upside down', [0, 2, 6, 10, 13], [13.60, None, None, 17.30, None], 1.14, 20.2, {',': .07, '.': .16, '…': .1}),   # (the crash as I reach the doors and come round; "When I looked back," while I stare at him; "nobody was there…" from the pitch dark, "there" as the lights come back on; the desk over the empty lobby, ending as I turn to the doors)
+    (None,  'me',       'the doors are locked', [0], [22.05], 1.0, 23.45),   # (shoving the bars)
+    (None,  'narrator', 'so i ran into the room right next to it and locked the door', [0], [25.05], 1.0, 28.40),   # ("locked" as the lock turns)
+    (None,  'narrator', 'when i looked around i found this old photo on the wall', [0, 4], [34.85, (8, 37.35)], 1.0, 38.60),   # (my beam going round the room; "photo" as it comes back to it)
+    (None,  'me',       'wait this guy is the guy from the morning shift why does he have that suit on', [0, 1, 10], [39.00, None, None], 1.0, 44.25, {'…': .3, '.': .3}),
+    (None,  'narrator', 'then someone started trying to break the door down so i panicked and hid inside a locker', [0, 9], [45.80, None], 1.0, 51.70),
+    (None,  'narrator', 'then the door burst open and he came in slowly', [0, 5, 9], [52.45, None, None], 1.0, 56.70),
+    (None,  'narrator', 'his suit was covered in dark stains now', [0], [56.95], 1.0, 59.75),
+    (None,  'narrator', 'he stopped right at my locker', [0], [59.85], 1.0, 61.80),   # (as he stops there)
+    (None, 'narrator', 'then something beside it caught his eye', [0], [(4, 63.20)], 1.0, 65.00),   # ("caught" as he freezes on the photo)
+    (None, 'narrator', 'he was looking for someone and he was getting angry', [0, 5], [65.40, None], 1.0, 68.90),
+    (None, 'narrator', 'he knew someone was hiding in there', [0], [73.50], 1.0, 75.60),
+    (None, 'narrator', 'the exit was open this might be my chance', [0, 4], [76.90, None], 1.06, 79.50, {'…': .25}),   # (as my eyes reach the exit; done before his first fist on the lockers)
 ]
 WMAP = {}   # (a caption's words -> the recogniser's, where they differ)
 GAP = {',': .16, '.': .3, '!': .3, '?': .3, '…': .36}   # (the pause after a phrase, by how it ends)
@@ -98,4 +98,43 @@ for k, (spec, (a, b)) in enumerate(zip(LINES, segs)):
     out.append({'i': k, 'cue': cue, 'who': who, 'clock': 'page', 't': round(t0, 3), 'dur': round(len(line) / SR, 3), 'tempo': tempo, 'w': w, 'd': d, 'ph': ph, 'text': CUE_TEXTS[cue]})
     gaps_txt = '  '.join(f'+{s - (starts[i - 1] + len(phrases[i - 1]["y"]) / SR):.2f}' for i, s in enumerate(starts) if i)
     print(f'{k:2d} cue {cue:2d} {t0:6.2f} → {t0 + d:6.2f} (limit {latest:6.2f})  pauses {gaps_txt or "-":24s} "{CUE_TEXTS[cue][:48]}"')
-json.dump({'lines': out}, open('ns2/audio/vo2.json', 'w'), indent=1)
+# the lines written but not recorded yet (v32): each phrase on the moment it belongs to, its words timed the way the
+# narrator speaks (about 0.08 s a word plus 0.042 s a letter, his pace in this take, and his pauses), so the captions light as he will say them;
+# [caption, who, where each phrase starts (caption word index), when: a time for the phrase's start, (word, time) to land
+# that word on a beat, or None to follow the phrase before]. When the take comes, these are its placements
+PLAN = [
+    (1,  'narrator', [0, 4, 8, 12], [13.55, 15.10, (10, 17.18), 17.95]),   # (the crash as I reach the doors and come round; him, while I stare; "went out" as every light cuts out; the lights back, the lobby empty)
+    (2,  'me',       [0], [21.55]),                                  # (shoving the bars)
+    (3,  'narrator', [0, 5], [24.45, (6, 26.80)]),                    # (the beam swings to the last door; "locked" as the lock turns)
+    (4,  'narrator', [0, 1, 3, 7], [33.50, 34.30, 35.50, (8, 36.75)]),   # (the beam going round the room; "photo" as it comes back to it)
+    (5,  'me',       [0, 1, 8], [38.50, None, None]),
+    (6,  'narrator', [0, 3], [45.30, 46.75]),                          # (after the second bang; into the locker)
+    (7,  'narrator', [0, 4, 8], [51.60, (6, 53.90), None]),           # (the door gives; "came" as he does)
+    (8,  'narrator', [0, 5], [56.45, None]),
+    (9,  'narrator', [0, 2], [59.20, 60.10]),                          # (he stops at my locker; and hunches to the slits)
+    (10, 'narrator', [0], [(3, 62.65)]),                               # ("caught" as he freezes on the photo)
+    (11, 'narrator', [0, 5], [64.90, None]),
+    (13, 'narrator', [0, 2], [73.00, None]),
+    (14, 'narrator', [0, 5], [76.40, None]),                           # (my eyes going to the exit)
+]
+def word_d(x): return .08 + .042 * len(re.sub(r'[^A-Za-z]', '', x))
+planned = []
+for cue, who, splits, targets in PLAN:
+    cw = CUE_TEXTS[cue].split(' '); w = [0.0] * len(cw); starts = []
+    for p, f in enumerate(splits):
+        l = splits[p + 1] if p + 1 < len(splits) else len(cw)
+        rel = []; at = 0.0
+        for i in range(f, l):
+            rel.append(at); at += word_d(cw[i]) + (GAP.get(cw[i][-1], 0) * .6 if i < l - 1 and cw[i][-1] in GAP else 0)
+        tg = targets[p]
+        if tg is None: t = starts[-1][1] + GAP.get(cw[f - 1][-1], .2)
+        elif isinstance(tg, tuple): t = tg[1] - rel[tg[0] - f]
+        else: t = tg
+        if starts and t < starts[-1][1] + .1: t = starts[-1][1] + .1
+        for i in range(f, l): w[i] = t + rel[i - f]
+        starts.append((t, t + at))
+    t0 = starts[0][0]
+    planned.append({'cue': cue, 'who': who, 'clock': 'page', 't': round(t0, 3), 'w': [round(x - t0, 3) for x in w], 'd': round(starts[-1][1] - t0, 3),
+                    'ph': [[f, round(e - t0, 3)] for f, (s0, e) in zip(splits, starts)], 'text': CUE_TEXTS[cue], 'planned': True})
+    print(f'   cue {cue:2d} planned {t0:6.2f} → {starts[-1][1]:6.2f}  "{CUE_TEXTS[cue][:56]}"')
+json.dump({'lines': out, 'planned': planned}, open('ns2/audio/vo2.json', 'w'), indent=1)

@@ -970,6 +970,37 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **Every other line checked against a frame at its key word:** "locked" on the lock, "photo" as the beam comes back to it, "came in" as he does, "stopped right at my locker" as he stops, "caught" as he freezes on the photo, "the exit was open" as my eyes go to it.
 - **Clear over the bangs:** the line about the door being broken down starts after the second bang, is lifted 5 dB, and the bangs under it duck like the rest (the first two stay full); a few other lines over loud action lifted 1–3 dB. The master held at its level.)
 
+**2026-10-27 20:03**
+
+> make the voice and text better so it wont, say all the time then this happens.. then, then, then all the time make better text. and show it
+
+(Shown, not changed: a rewrite with no "then", the narrator saying what the picture can't, about 1,000 credits to record, 1,200 with the opening's question, or a free fix cutting the three "Then"s from the old take.)
+
+**2026-10-27 20:10**
+
+> line 11. is bad
+
+("Whatever was on his suit… it was fresh." Offered: "His suit was soaked in something dark." / "His suit was stained now… dark red." / the old line / no line.)
+
+**2026-10-27 20:12**
+
+> his suit was stained
+
+(Read as "His suit was stained now… dark red.")
+
+**2026-10-27 20:28**
+
+> yes do that but dont use credits yet
+
+(v32: the new script in the reel as captions, on the times it will be spoken at, words lighting at the narrator's pace; only the unchanged first line and the guard's warning still voiced; the look at the empty lobby back to 1.5 s; everything after page 19.0 is 0.5 s earlier than v31. Nothing spent. The script:
+  1. "I didn't turn around. I grabbed the flashlight… and ran." (their own line, kept; still voiced)
+  2. "Something crashed behind me." 3. "Someone was standing there." 4. "Every light went out… and he was gone."
+  5. (me) "No… no, no… it's locked!" 6. "There was one door left… I locked myself in." 7. "Shelves. Old boxes. And on the wall… a photo."
+  8. (me) "Wait… that's the guy from the morning shift. Why is he wearing that suit?" 9. "He'd found me. I hid in the only place I could… and held my breath."
+  10. "The door gave way… and he came in. Slowly." 11. "His suit was stained now… dark red." 12. "He stopped… right in front of me."
+  13. "But something else caught his eye…" 14. "Whoever he was looking for… he was losing patience." 15. (the guard, Part 1's recording) "…and do not look at—"
+  16. "He knew. Someone was in here." 17. "The exit was wide open… if I ran now…")
+
 ### This repository
 
 **2026-10-26 21:28**

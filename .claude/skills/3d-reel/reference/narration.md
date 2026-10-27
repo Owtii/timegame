@@ -81,6 +81,13 @@ Check it with one frame per phrase before publishing (what is on screen while ea
 - **When it comes back** (v31: "put now the voices and text in it, but dont use credits yet, and let everything match the scenes"): switch it on in the build and unmute it in the saved mix, then re-place every line against the picture as it is now, with a frame at each key word. If the picture has moved under a line, re-pin its phrases rather than the whole line: a phrase can start in the dark before a reveal so its key word lands as the light comes back ("nobody" in the dark, "there" as the lights return), and a hold can be stretched a little, within the user's own numbers, so a phrase about what is on screen ends before the camera leaves it. No new take, no credits.
 - **A line can leave the film without a new take.** Keep it in `vo2.py`'s LINES with its caption set to None, so the take still splits into the right number of lines; it is cut from nothing and placed nowhere. Renumber the captions of the lines after it (and `VLIFT`, which is keyed by caption).
 
+## Writing it
+
+- **Never a chain of "then… then… then"** (v32: "make the voice and text better so it wont, say all the time then this happens.. then, then, then all the time make better text"). The picture already shows what happens; the narrator says what it can't: what I felt, what I noticed, what it meant ("He stopped… right in front of me." over him stopping at my locker, not "He stopped right at my locker").
+- Short lines, varied rhythm: a fragment or two ("Shelves. Old boxes. And on the wall… a photo."), a turn word where the story turns ("But something else caught his eye…"), a last line that hands over to the question ("The exit was wide open… if I ran now…").
+- Keep the user's own lines when they're good (Part 2's first line stayed), and show the rewrite before recording it: they rewrite lines they don't like ("line 11. is bad") and pick from options.
+- **Until it is recorded, show it.** Put the new words on screen on the times they will be spoken at, words lighting at the narrator's measured pace (Grandpa: about 0.08 s a word plus 0.042 s a letter, his pauses after commas, full stops and "…"), with the same pins a recording would get. The user sees the pacing before a credit is spent.
+
 ## Mixing the voice
 
 - The voice sits on top of a ducked room: three tiers (see `sound.md`).
