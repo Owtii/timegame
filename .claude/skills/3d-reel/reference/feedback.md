@@ -1023,6 +1023,21 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 
 (v34: the opening's question recorded in Grandpa's voice, one take, 166 credits: two takes with delivery tags between the phrases would have been 506, more than the ~240 quoted, so one take with one tag. It came back as six phrases with clear pauses (7.4 s of speech for a 9.6 s opening); each phrase placed on its moment at 1.1x, his pauses 0.1–0.15 s: "What would you do…" 0.06, "…if you were working alone at night…" 1.1, "…and someone was standing behind you?" 2.86 (the picture freezes on "was"), "You only had two options?" 4.83 as the card rises (now at 4.6), "Turn around…" 6.3 and "…or run?" 7.07 each lighting its key, RUN pressed at 7.95. The words on screen light where he says them; each phrase comes in as he starts it and goes as he starts the next.)
 
+**2026-10-28 14:12** (with four new timed notes in Part 2, written from 14:08 to 14:12)
+
+> check notes,
+
+- **0:05.8** the sound effects are too loud, and you can raelly hear the narration voice. so fix that
+- **0:15.8** make the silhoutte more visible, make him also move a little farther away, and dont zoom in too much on him. make a scary sound once the sec you see him, loud scary sound effect.
+- **1:15.7** the arms still are weird when he is moving on the desk with his arms.
+- **1:15.9** the arms gets inwards moving and thats not natural movement.
+
+(v35:
+- **The opening, the narrator clear** (read as "you can't really hear"): the glitches' electrical zaps had landed on his words ("only", "options", "around", "run"); they now fall in his pauses (4.69, 6.19, 7.72) and are softer, the freeze's under his words softer still; the opening's tone, buzz, riser, his breath and the dread 2–3 dB lower; his voice 3 dB up. Measured: 14–24 dB above everything under it, from 7–19.
+- **The figure:** 0.9 m farther back, the lobby's light behind him .378 → .52, his edges a touch tighter: about 25% more visible than v34 although smaller; the lens closes in 5° while I stare instead of 16°, the push-in 4 cm instead of 13.
+- **The scare on sight:** he swings into view at 14.25, mid-turn, with the lobby still bright; the sting landed at 14.55, after the lobby had dimmed. It now lands at 14.27, with the reversed swell's boom, and is loud: its loudest 0.4 s −10.8 dB, about the desk crash's (−9.9), under the first bang on the door (−5.0).
+- **The arms at the desk:** his hands were planted close under his chest while he leant hard, so from behind both arms folded in and vanished as he breathed, and the reach before the sweep crossed his chest to the far side of the desk. Now his hands are planted wide and further forward (left −.5, right .4, .53 forward), he leans a touch less, the reach goes straight forward in front of his right shoulder, and his left hand slides in a little as he turns into the sweep (otherwise the left elbow flipped in one frame).)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -1125,7 +1140,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (97 notes)
+### The Graveyard Shift, Part 2 (101 notes)
 
 *2026-10-25*
 
@@ -1230,3 +1245,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:17.4** he should dissapear if all lights are going out for a moment then back on, so it becomes pitch dark.
 - **0:18.6** these seconds are too long looking once he is gone give it like 1-2 sec then the scene with trying to open the door.
 - **0:14.6** make it a bit more visible the silhoutte by 7%
+- **0:05.8** the sound effects are too loud, and you can raelly hear the narration voice. so fix that
+- **0:15.8** make the silhoutte more visible, make him also move a little farther away, and dont zoom in too much on him. make a scary sound once the sec you see him, loud scary sound effect.
+- **1:15.7** the arms still are weird when he is moving on the desk with his arms.
+- **1:15.9** the arms gets inwards moving and thats not natural movement.

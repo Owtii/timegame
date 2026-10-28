@@ -61,8 +61,9 @@ In a build, pull library sounds with `raw(name)`, `cut(name, a, b)`, `speed(x, k
 **Horror rooms:**
 - A fluorescent tube: hum and buzz, a pop-buzz as it strikes, flutter when failing.
 - Lights cutting off: the buzz strains, then a breaker CHUNK, the hum dies in a falling whoomp, a spark, glass ticking. "Real light getting cut off."
+- **Under a narrated opening** (v35: "the sound effects are too loud, and you can raelly hear the narration voice"): no hit or zap on a word; put the glitches' zaps in the narrator's pauses, keep the beds (tone, buzz, riser) 2–3 dB lower than they'd sit without him, and check each phrase with `vo_snr.py` (aim for 10 dB and up there).
 - Every light out at once (v30, `s_blackout`): three breakers dropping ragged within 35 ms, far to near, a sub hit 0.38 s in, the hum gone: then real silence in the dark but for my breath. Coming back on (`s_relight`): the recorded tube strikes (`light_on`, `light_on_2`), far to near on each light's stagger, and the fluorescent hum fading back in under them.
-- Seeing the thing (v30: "make scary sound effect when seeing him", `s_sil_sting`): a scare sting landing as the camera lands on him: a bowed-string cluster stabbing high (1.2–2.4 kHz, dissonant), a recorded stinger (`stinger_2`) and whispers under it, soft-clipped and in a little room, −7 dB, not ducked.
+- Seeing the thing (v30: "make scary sound effect when seeing him"; v35: "once the sec you see him, loud", `s_sil_sting`): a scare sting landing the moment he is first in frame (Part 2: 14.27, mid-turn): a bowed-string cluster stabbing high (1.2–2.4 kHz, dissonant), a recorded stinger (`stinger_2`) and whispers under it, soft-clipped harder and in a little room, −1 dB (its loudest 0.4 s about the desk crash's, under the first bang), not ducked.
 - A light switching on: a switch click and a subtle electrical buzz rising, "like subtle electricity". Not a glow sound.
 - A clock: a real tick-tock, subtle (`clock_tick`).
 - A call cut off: a click and the long flat beep, with CALL ENDED shown on the phone.
