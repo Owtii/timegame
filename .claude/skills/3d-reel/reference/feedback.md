@@ -1017,6 +1017,12 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
 - **The silhouette 7% more visible:** the lobby's light behind him while he stands there from 35% to 37.8%, measured: the difference between him and what is behind him up 7% (18.2 to 19.5 at 0:14.6, 11.7 to 12.4 at 0:15.6, on a 255 scale); he stays near-black and feathered.
 - **The storage room told from inside my locker:** "Through the slits… I watched him come in. Slowly." / "Even in the dark, I could see it… his suit was stained dark red." / nothing while he walks up to my locker and peers in (2.6 s: his breathing and mine) / "But something caught his attention…" ("attention" as he freezes on the photo) / "He knew that face…" / "Whoever he was looking for… he was losing patience." / "I didn't move… I didn't even breathe." / "The exit was wide open… if I ran now…". Still words on screen only; nothing spent.)
 
+**2026-10-28 02:30**
+
+> do the voice grandpa for the hook
+
+(v34: the opening's question recorded in Grandpa's voice, one take, 166 credits: two takes with delivery tags between the phrases would have been 506, more than the ~240 quoted, so one take with one tag. It came back as six phrases with clear pauses (7.4 s of speech for a 9.6 s opening); each phrase placed on its moment at 1.1x, his pauses 0.1–0.15 s: "What would you do…" 0.06, "…if you were working alone at night…" 1.1, "…and someone was standing behind you?" 2.86 (the picture freezes on "was"), "You only had two options?" 4.83 as the card rises (now at 4.6), "Turn around…" 6.3 and "…or run?" 7.07 each lighting its key, RUN pressed at 7.95. The words on screen light where he says them; each phrase comes in as he starts it and goes as he starts the next.)
+
 ### This repository
 
 **2026-10-26 21:28**

@@ -137,4 +137,40 @@ for cue, who, splits, targets in PLAN:
     planned.append({'cue': cue, 'who': who, 'clock': 'page', 't': round(t0, 3), 'w': [round(x - t0, 3) for x in w], 'd': round(starts[-1][1] - t0, 3),
                     'ph': [[f, round(e - t0, 3)] for f, (s0, e) in zip(splits, starts)], 'text': CUE_TEXTS[cue], 'planned': True})
     print(f'   cue {cue:2d} planned {t0:6.2f} → {starts[-1][1]:6.2f}  "{CUE_TEXTS[cue][:56]}"')
+# the opening's question (v34, "do the voice grandpa for the hook"): its own take of the narrator, cut at its five pauses
+# into its six phrases, each placed on its moment at tempo 1.1 (the take runs 7.4 s of speech; the opening has 9.6 s):
+# the three phrases of the first question, one after the other, over the live shot and into the freeze; "You only had
+# two options?" as the card rises; "Turn around…" and "…or run?" as each key is named, RUN pressed just after. The
+# words light from the recording: story.js's HOOK_LINES, HOOK_HEAD and HOOK_NAME carry these times
+HOOK_TAKE, HOOK_TEMPO = 'ns2/vo2/hook2_A.mp3', 1.1
+HOOK_PH = [('what would you do', .06), ('if you were working alone at night', .15), ('and someone was standing behind you', .12),
+           ('you only had two options', (4.72, .15)), ('turn around', .12), ('or run', .10)]   # (the first phrase's start; then each one's pause after the
+# phrase before, where its speech ends; (no earlier than, pause) for the card's question, which waits for the card)
+hx = load(HOOK_TAKE); hsegs, _ = segments(hx, len(HOOK_PH))
+hparts = []
+for k, ((words, at), (a, b)) in enumerate(zip(HOOK_PH, hsegs)):
+    lo = hsegs[k - 1][1] if k else 0; hi = hsegs[k + 1][0] if k < len(HOOK_PH) - 1 else len(hx) / SR
+    a0 = max(lo + .5 * (a - lo), a - LEAD); b0 = min(b + .5 * (hi - b), b + (TAIL_END if k == len(HOOK_PH) - 1 else TAIL) + .05)
+    y = hx[int(a0 * SR):int(b0 * SR)]
+    e = env(y, int(.01 * SR)); on = np.where(e > np.max(e) * .03)[0]; y = y[max(0, on[0] - int(LEAD * SR)):on[-1] + int((TAIL_END if k == len(HOOK_PH) - 1 else TAIL) * SR)]
+    y = fades(ff(y, f'atempo={HOOK_TEMPO:.4f}'))
+    st, en = align2(y, words)
+    ey = env(y, int(.01 * SR)); spoke = (np.where(ey > np.max(ey) * .03)[0][-1]) / SR   # (where its speech ends, in the piece)
+    if k == 0: t = at
+    else:
+        prev_end = hparts[-1][3]; gap = at[1] if isinstance(at, tuple) else at
+        t = max(prev_end + gap, at[0] if isinstance(at, tuple) else 0)
+    hparts.append((t, y, [t + v for v in st], t + spoke))
+ht0 = hparts[0][0]; hend = hparts[-1][0] + len(hparts[-1][1]) / SR
+hline = np.zeros(int((hend - ht0) * SR) + 1)
+for at, y, _, _ in hparts:
+    i = int(round((at - ht0) * SR)); hline[i:i + len(y)] += y
+hline = ff(hline, 'highpass=f=60')
+hy = np.interp(np.arange(0, len(hline), SR / MIX_SR), np.arange(len(hline)), hline) if MIX_SR != SR else hline
+np.save('ns2/audio/vo2_90.npy', hy.astype(np.float32))
+hw = [w for _, _, ws, _ in hparts for w in ws]
+out.append({'i': 90, 'cue': None, 'who': 'narrator', 'clock': 'page', 't': round(ht0, 3), 'dur': round(len(hline) / SR, 3), 'tempo': HOOK_TEMPO,
+            'w': [round(w - ht0, 3) for w in hw], 'd': round(hparts[-1][3] - ht0, 3), 'ph': [], 'text': 'HOOK'})
+for (words, _), (at, y, ws, e) in zip(HOOK_PH, hparts):
+    print(f'   hook {at:5.2f} → {e:5.2f}  ' + ' '.join(f'{w}@{t:.3f}' for w, t in zip(words.split(), ws)))
 json.dump({'lines': out, 'planned': planned}, open('ns2/audio/vo2.json', 'w'), indent=1)

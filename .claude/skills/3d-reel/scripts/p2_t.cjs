@@ -17,7 +17,7 @@ const { open } = require('./te_common.cjs');
   log('opening at 5.6:', JSON.stringify(await hook(5.6)), '| 8.6:', JSON.stringify(await hook(8.6)), '| 9.2:', JSON.stringify(await hook(9.2)), '| 9.5:', JSON.stringify(await hook(9.5)));
   await p.evaluate(() => window.reel.seek(10.0)); await p.waitForTimeout(300);
   log('card/title at 10.0 hidden:', await p.$eval('#rcard', e => e.hidden), await p.$eval('#title2', e => e.hidden));
-  // the narration (v32: rewritten; only its first line and the guard's warning are recorded, the rest shows as captions on its planned times)
+  // the narration (v34: the opening question and the first line recorded, the guard's warning from Part 1; the rest shows as captions on its planned times)
   log('narration clips muted:', await p.evaluate(() => { const v = window.reel.sound.mix().clips.filter(c => c.track === 'voice'); const e = window.reel.sound.mix().clips.find(c => c.id === 's_echo'); return `${v.filter(c => c.mute).length} of ${v.length}; the guard's echo muted: ${!!(e && e.mute)}`; }));
   for (const t of [10.9, 15.5, 18.4, 22.3, 38.9, 52.1, 57.5, 60.6, 65.5, 70.5, 73.5, 76.8]){ await p.evaluate(t => window.reel.seek(t), t); await p.waitForTimeout(300);
     log(`caption at ${t}:`, JSON.stringify(await p.$eval('#subs', e => e.textContent)), '| style:', await p.$eval('#subs', e => e.classList.contains('me') ? 'me' : e.classList.contains('phone') ? 'phone' : 'narrator')); }
