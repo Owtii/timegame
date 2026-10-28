@@ -109,12 +109,12 @@ PLAN = [
     (4,  'narrator', [0, 1, 3, 7], [33.50, 34.30, 35.50, (8, 36.75)]),   # (the beam going round the room; "photo" as it comes back to it)
     (5,  'me',       [0, 1, 8], [38.50, None, None]),
     (6,  'narrator', [0, 3], [45.30, 46.75]),                          # (after the second bang; into the locker)
-    (7,  'narrator', [0, 4, 8], [51.60, (6, 53.90), None]),           # (the door gives; "came" as he does)
-    (8,  'narrator', [0, 5], [56.45, None]),
-    (9,  'narrator', [0, 2], [59.20, 60.10]),                          # (he stops at my locker; and hunches to the slits)
-    (10, 'narrator', [0], [(3, 62.65)]),                               # ("caught" as he freezes on the photo)
-    (11, 'narrator', [0, 5], [64.90, None]),
-    (13, 'narrator', [0, 2], [73.00, None]),
+    (7,  'narrator', [0, 3, 8], [51.70, (6, 53.90), None]),           # (through the slits, the door gives; "come" as he steps in)
+    (8,  'narrator', [0, 8], [55.25, None]),                          # (while he looks round the room)
+    (9,  'narrator', [0], [(4, 62.60)]),                               # (quiet while he walks up to my locker and peers in; "attention" as he freezes on the photo)
+    (10, 'narrator', [0], [63.90]),                                    # (backing away, still staring at it)
+    (11, 'narrator', [0, 5], [65.50, None]),                          # (crossing to the desk, looking round)
+    (13, 'narrator', [0, 3], [72.90, None]),                          # (while he looks round the room)
     (14, 'narrator', [0, 5], [76.40, None]),                           # (my eyes going to the exit)
 ]
 def word_d(x): return .08 + .042 * len(re.sub(r'[^A-Za-z]', '', x))

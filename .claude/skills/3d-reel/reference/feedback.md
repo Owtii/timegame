@@ -1001,6 +1001,22 @@ Verbatim (their spelling), in order. "(screenshot attached)" marks a reference i
   13. "But something else caught his eye…" 14. "Whoever he was looking for… he was losing patience." 15. (the guard, Part 1's recording) "…and do not look at—"
   16. "He knew. Someone was in here." 17. "The exit was wide open… if I ran now…")
 
+**2026-10-27 22:57**
+
+> who is the narrotr voice? just tell me his name
+
+(Spuds Oxley, ElevenLabs' "Grandpa".)
+
+**2026-10-28 00:27** (with one new timed note in Part 2, written at 00:24)
+
+> check notes, but make the text in the locker room more pov type of narrations text, like if he is looking at the locker he is in, let him be quite for a moment then say like something caught his eye or attention, this type of text.
+
+- **0:14.6** make it a bit more visible the silhoutte by 7%
+
+(v33:
+- **The silhouette 7% more visible:** the lobby's light behind him while he stands there from 35% to 37.8%, measured: the difference between him and what is behind him up 7% (18.2 to 19.5 at 0:14.6, 11.7 to 12.4 at 0:15.6, on a 255 scale); he stays near-black and feathered.
+- **The storage room told from inside my locker:** "Through the slits… I watched him come in. Slowly." / "Even in the dark, I could see it… his suit was stained dark red." / nothing while he walks up to my locker and peers in (2.6 s: his breathing and mine) / "But something caught his attention…" ("attention" as he freezes on the photo) / "He knew that face…" / "Whoever he was looking for… he was losing patience." / "I didn't move… I didn't even breathe." / "The exit was wide open… if I ran now…". Still words on screen only; nothing spent.)
+
 ### This repository
 
 **2026-10-26 21:28**
@@ -1103,7 +1119,7 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:59.0** there is a little weird camera movement on this time stamp when he wants to look at the phone, fix that.
 - **1:08.9** delete the icons, only text, centred and with correct padding. / make the 'or' just text no border or background color.
 
-### The Graveyard Shift, Part 2 (96 notes)
+### The Graveyard Shift, Part 2 (97 notes)
 
 *2026-10-25*
 
@@ -1207,3 +1223,4 @@ Each note: the page time (m:ss) where they paused, then their words. All are don
 - **0:16.3** make him also stand a bit farther away.
 - **0:17.4** he should dissapear if all lights are going out for a moment then back on, so it becomes pitch dark.
 - **0:18.6** these seconds are too long looking once he is gone give it like 1-2 sec then the scene with trying to open the door.
+- **0:14.6** make it a bit more visible the silhoutte by 7%
